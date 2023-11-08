@@ -8,9 +8,9 @@ public class WaveConfigSO : ScriptableObject
     [SerializeField] List<GameObject> enemies;
     public Transform pathPrefab;
 
-    public float moveSpeed = 30f;
-    public float shootSpeed = 30f;
-    public float shootInterval = 1f;
+    // public float moveSpeed = 30f;
+    // public float shootSpeed = 30f;
+    // public float shootInterval = 1f;
 
     [SerializeField] float timeBetweenEnemySpawns = 1f;
     [SerializeField] float spawnTimeVariance = 0f;
