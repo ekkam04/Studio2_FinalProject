@@ -1,45 +1,73 @@
 using System.Collections;
 using System.Collections.Generic;
+using Ekkam;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Wave Config", fileName = "New Wave Config")]
 public class WaveConfigSO : ScriptableObject
 {
-    [SerializeField] List<GameObject> enemies;
-    public Transform pathPrefab;
+    // [HideInInspector]
+    public List<GameObject> enemies;
 
-    // public float moveSpeed = 30f;
-    // public float shootSpeed = 30f;
-    // public float shootInterval = 1f;
+    // [HideInInspector]
+    public List<Transform> enemyPaths;
 
-    [SerializeField] float timeBetweenEnemySpawns = 1f;
-    [SerializeField] float spawnTimeVariance = 0f;
-    [SerializeField] float minSpawnTime = 0.2f;
+    // [HideInInspector]
+    public List<bool> spawnNextEnemyTogether;
+
+    public bool randomizeSpawnTime = false;
+    public float timeBetweenEnemySpawns = 1f;
+    public float spawnTimeVariance = 0f;
+    public float minSpawnTime = 0.2f;
+
+    public float waitTimeBeforeNextWave = 0f;
 
     public int GetEnemyCount()
     {
         return enemies.Count;
     }
 
-    public GameObject GetEnemy(int index)
+    public Enemy GetEnemy(int index)
     {
-        return enemies[index];
-    }
-
-    public List<Transform> GetWaypoints()
-    {
-        List<Transform> waypoints = new List<Transform>();
-        foreach(Transform child in pathPrefab )
+        if (enemies[index].GetComponent<Enemy>() != null)
         {
-            waypoints.Add(child);
+            return enemies[index].GetComponent<Enemy>();
         }
-        return waypoints;
+        else
+        {
+            Debug.LogWarning("Enemy not set for enemy " + index + " in wave " + name + ". Using first enemy in list.");
+            return enemies[0].GetComponent<Enemy>();
+        }
     }
 
-    public float GetRandomSpawnTime()
+    public Transform GetPathOfEnemy(int index)
     {
-        float spawnTime = Random.Range(timeBetweenEnemySpawns - spawnTimeVariance, timeBetweenEnemySpawns + spawnTimeVariance);
+        if (enemyPaths[index] != null)
+        {
+            return enemyPaths[index];
+        }
+        else
+        {
+            Debug.LogWarning("Enemy path not set for enemy " + index + " in wave " + name + ". Using first path in list.");
+            return enemyPaths[0];
+        }
+    }
 
-        return Mathf.Clamp(spawnTime, minSpawnTime, Mathf.Infinity);
+    public float GetSpawnTime(int index)
+    {
+        if (spawnNextEnemyTogether[index])
+        {
+            return 0f;
+        }
+        else if (randomizeSpawnTime)
+        {
+            float spawnTime = Random.Range(timeBetweenEnemySpawns - spawnTimeVariance, timeBetweenEnemySpawns + spawnTimeVariance);
+            return Mathf.Clamp(spawnTime, minSpawnTime, Mathf.Infinity);
+        }
+        else
+        {
+            return timeBetweenEnemySpawns;
+        }
+        
     }
 }

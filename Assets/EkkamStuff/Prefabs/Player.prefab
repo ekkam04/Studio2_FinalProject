@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 671869548464397975}
   - component: {fileID: 692145711449980683}
   - component: {fileID: 2212650676498329963}
+  - component: {fileID: 500853067486141094}
   - component: {fileID: 1792663288401086769}
   m_Layer: 3
   m_Name: Player
@@ -134,7 +135,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 1
-  m_Constraints: 112
+  m_Constraints: 116
   m_CollisionDetection: 1
 --- !u!114 &2212650676498329963
 MonoBehaviour:
@@ -148,12 +149,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 568a98971bae255419faa35fa3fa1210, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerNumber: 0
   playerMeshes:
   - {fileID: 638523861631414334, guid: 7caaf0ba83e07254dbdff1638edd18d1, type: 3}
   - {fileID: 3300887527594331929, guid: c3243430cd7d9aa479ca13a9e47ad748, type: 3}
-  playerNumber: 0
-  speed: 20
+  playerDuo: {fileID: 0}
+  allowMovement: 1
+  inDuoMode: 0
+  health: 100
+  moveSpeed: 20
   maxSpeed: 25
+  dodgeSpeed: 2
+  attackSpeed: 0.05
+  dodgeCooldown: 0.75
+--- !u!114 &500853067486141094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2354661645630340860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4570564c4c9d44741b2738df37de894c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  projectilePrefab: {fileID: 3387986238477384891, guid: 2e368539337c9824b9b09871b90e94a6, type: 3}
+  projectilePool: []
+  projectileSpeed: 90
+  projectileDamage: 5
+  projectileSize: 1
+  multishotCount: 3
+  multishotGapX: 3
+  burstFireCount: 1
+  burstFireDelay: 0.08
 --- !u!114 &1792663288401086769
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,6 +228,38 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: e43b0fb3-6700-4a9a-af60-c5f499119099
     m_ActionName: Player/Join[/XInputControllerWindows/buttonWest]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2212650676498329963}
+        m_TargetAssemblyTypeName: Ekkam.Player, Assembly-CSharp
+        m_MethodName: OnShoot
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: ba97f59b-5e97-46fe-8bf7-49624da473e9
+    m_ActionName: Player/Shoot[/XInputControllerWindows/buttonSouth,/XInputControllerWindows1/buttonSouth,/Mouse/leftButton]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2212650676498329963}
+        m_TargetAssemblyTypeName: Ekkam.Player, Assembly-CSharp
+        m_MethodName: OnDodge
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: ff8fa2f9-8677-4a17-8d14-0d07c9683e87
+    m_ActionName: Player/Dodge[/XInputControllerWindows/leftShoulder,/XInputControllerWindows1/leftShoulder,/XInputControllerWindows/rightShoulder,/XInputControllerWindows1/rightShoulder]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

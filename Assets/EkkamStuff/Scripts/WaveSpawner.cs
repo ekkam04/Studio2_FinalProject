@@ -6,9 +6,9 @@ namespace Ekkam {
     public class WaveSpawner : MonoBehaviour
     {
         [SerializeField] WaveConfigSO[] waves;
+
         public WaveConfigSO currentWave;
 
-        [SerializeField] float timeBetweenWaves = 2f;
         [SerializeField] float enemyRotationY = 180f;
 
         void Start()
@@ -23,16 +23,18 @@ namespace Ekkam {
                 currentWave = wave;
                 for (int i = 0; i < wave.GetEnemyCount(); i++)
                 {
+                    Enemy currentEnemy = currentWave.GetEnemy(i);
+                    currentEnemy.pathPrefab = currentWave.GetPathOfEnemy(i);
                     Instantiate(
-                        currentWave.GetEnemy(i),
-                        currentWave.pathPrefab.GetChild(0).position,
+                        currentEnemy.gameObject,
+                        currentEnemy.pathPrefab.GetChild(0).position,
                         Quaternion.Euler(0, enemyRotationY, 0),
                         transform
                     );
-                    yield return new WaitForSeconds(currentWave.GetRandomSpawnTime());
+                    yield return new WaitForSeconds(currentWave.GetSpawnTime(i));
                 }
 
-                yield return new WaitForSeconds(timeBetweenWaves);
+                yield return new WaitForSeconds(currentWave.waitTimeBeforeNextWave);
             }
 
             print("All waves spawned");
