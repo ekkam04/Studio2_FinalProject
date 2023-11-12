@@ -7,28 +7,25 @@ namespace Ekkam {
     {
         public Transform[] waypoints;
 
-        void Awake()
-        {
-            waypoints = new Transform[transform.childCount];
-            for (int i = 0; i < transform.childCount; i++)
-            {
-                waypoints[i] = transform.GetChild(i);
-            }
-        }
-
         private void OnDrawGizmos()
         {
+            transform.position = Vector3.zero;
             waypoints = new Transform[transform.childCount];
             for (int i = 0; i < transform.childCount; i++)
             {
                 waypoints[i] = transform.GetChild(i);
             }
-            
+
             for (int i = 0; i < waypoints.Length; i++)
             {
-                Gizmos.DrawSphere(waypoints[i].position, 0.5f);
+                if (i == 0) Gizmos.color = Color.green;
+                else if (i == waypoints.Length - 1) Gizmos.color = Color.red;
+                else Gizmos.color = Color.yellow;
+
+                Gizmos.DrawSphere(waypoints[i].position, 2f);
                 if (i < waypoints.Length - 1)
                 {
+                    Gizmos.color = Color.white;
                     Gizmos.DrawLine(waypoints[i].position, waypoints[i + 1].position);
                 }
             }

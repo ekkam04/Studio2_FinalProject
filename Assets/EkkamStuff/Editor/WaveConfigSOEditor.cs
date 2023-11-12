@@ -13,8 +13,8 @@ namespace Ekkam
         {
             WaveConfigSO waveConfig = (WaveConfigSO)target;
 
-            // base.OnInspectorGUI();
-            // EditorGUILayout.Space();
+            base.OnInspectorGUI();
+            EditorGUILayout.Space();
 
             EditorGUILayout.LabelField("Enemies", EditorStyles.boldLabel);
             for (int i = 0; i < waveConfig.enemies.Count; i++)
@@ -23,11 +23,13 @@ namespace Ekkam
                 waveConfig.enemies[i] = (GameObject)EditorGUILayout.ObjectField(waveConfig.enemies[i], typeof(GameObject), true);
                 waveConfig.enemyPaths[i] = (Transform)EditorGUILayout.ObjectField(waveConfig.enemyPaths[i], typeof(Transform), true);
                 EditorGUILayout.Space(width: 20);
-                waveConfig.spawnNextEnemyTogether[i] = EditorGUILayout.ToggleLeft("Spawn Next Enemy Together", waveConfig.spawnNextEnemyTogether[i]);
+                waveConfig.invertPathX[i] = EditorGUILayout.ToggleLeft("Invert Path X", waveConfig.invertPathX[i], GUILayout.Width(100));
+                waveConfig.spawnNextEnemyTogether[i] = EditorGUILayout.ToggleLeft("Spawn Next Enemy Together", waveConfig.spawnNextEnemyTogether[i], GUILayout.Width(200));
                 if (GUILayout.Button("-"))
                 {
                     waveConfig.enemies.RemoveAt(i);
                     waveConfig.enemyPaths.RemoveAt(i);
+                    waveConfig.invertPathX.RemoveAt(i);
                     waveConfig.spawnNextEnemyTogether.RemoveAt(i);
                 }
                 EditorGUILayout.EndHorizontal();
@@ -37,6 +39,7 @@ namespace Ekkam
             {
                 waveConfig.enemies.Add(null);
                 waveConfig.enemyPaths.Add(null);
+                waveConfig.invertPathX.Add(false);
                 waveConfig.spawnNextEnemyTogether.Add(false);
 
                 // If the user adds a new enemy, set the new enemy to be the same as the previous enemy.

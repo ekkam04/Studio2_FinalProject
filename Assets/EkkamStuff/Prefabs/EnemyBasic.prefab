@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 131104301743788670}
   - component: {fileID: 6605887546655481270}
   - component: {fileID: 1899445987849418053}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: EnemyBasic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -144,5 +144,5 @@ MonoBehaviour:
   projectileSize: 0.75
   multishotCount: 3
   multishotGapX: 3
-  burstFireCount: 3
+  burstFireCount: 1
   burstFireDelay: 0.08

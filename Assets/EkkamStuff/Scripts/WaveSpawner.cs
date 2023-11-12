@@ -24,7 +24,12 @@ namespace Ekkam {
                 for (int i = 0; i < wave.GetEnemyCount(); i++)
                 {
                     Enemy currentEnemy = currentWave.GetEnemy(i);
-                    currentEnemy.pathPrefab = currentWave.GetPathOfEnemy(i);
+                    Transform path = Instantiate(currentWave.GetPathOfEnemy(i), transform);
+                    if (currentWave.GetPathXInversion(i))
+                    {
+                        path.localScale = new Vector3(-1, 1, 1);
+                    }
+                    currentEnemy.pathPrefab = path;
                     Instantiate(
                         currentEnemy.gameObject,
                         currentEnemy.pathPrefab.GetChild(0).position,

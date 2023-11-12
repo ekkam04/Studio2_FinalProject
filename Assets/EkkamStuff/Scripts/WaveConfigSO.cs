@@ -6,14 +6,10 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Wave Config", fileName = "New Wave Config")]
 public class WaveConfigSO : ScriptableObject
 {
-    // [HideInInspector]
-    public List<GameObject> enemies;
-
-    // [HideInInspector]
-    public List<Transform> enemyPaths;
-
-    // [HideInInspector]
-    public List<bool> spawnNextEnemyTogether;
+    public List<GameObject> enemies = new List<GameObject>();
+    public List<Transform> enemyPaths = new List<Transform>();
+    public List<bool> spawnNextEnemyTogether = new List<bool>();
+    public List<bool> invertPathX = new List<bool>();
 
     public bool randomizeSpawnTime = false;
     public float timeBetweenEnemySpawns = 1f;
@@ -53,6 +49,11 @@ public class WaveConfigSO : ScriptableObject
         }
     }
 
+    public bool GetPathXInversion(int index)
+    {
+        return invertPathX[index];
+    }
+
     public float GetSpawnTime(int index)
     {
         if (spawnNextEnemyTogether[index])
@@ -67,7 +68,6 @@ public class WaveConfigSO : ScriptableObject
         else
         {
             return timeBetweenEnemySpawns;
-        }
-        
+        } 
     }
 }
