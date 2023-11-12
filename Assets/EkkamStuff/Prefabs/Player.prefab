@@ -158,7 +158,7 @@ MonoBehaviour:
   inDuoMode: 0
   health: 100
   moveSpeed: 20
-  maxSpeed: 25
+  maxSpeed: 50
   dodgeSpeed: 2
   attackSpeed: 0.05
   dodgeCooldown: 0.75
