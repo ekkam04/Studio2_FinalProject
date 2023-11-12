@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,9 +13,13 @@ namespace Ekkam {
 
         [SerializeField] GameObject playerDuoPrefab;
 
+        [SerializeField] GameObject gameVCam;
+        [SerializeField] GameObject combinedVCam;
+
         void Start()
         {
-            
+            gameVCam.SetActive(true);
+            combinedVCam.SetActive(false);
         }
 
         void Update()
@@ -48,6 +53,8 @@ namespace Ekkam {
             if (OnCombinePlayers != null)
             {
                 OnCombinePlayers();
+                combinedVCam.SetActive(true);
+                gameVCam.SetActive(false);
                 yield return new WaitUntil(() => AllPlayersInDuoMode());
                 GameObject playerDuo = Instantiate(playerDuoPrefab, PlayerInput.all[0].transform.position, Quaternion.identity);
                 foreach (PlayerInput playerInput in PlayerInput.all)
@@ -62,6 +69,8 @@ namespace Ekkam {
             if (OnSeperatePlayers != null)
             {
                 OnSeperatePlayers();
+                gameVCam.SetActive(true);
+                combinedVCam.SetActive(false);
                 yield return new WaitUntil(() => !AllPlayersInDuoMode());
                 foreach (PlayerInput playerInput in PlayerInput.all)
                 {
