@@ -120,7 +120,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffe661b23f8bd1d43ab3f6567f88fd4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pathPrefab: {fileID: 0}
+  pathPrefab: {fileID: 5265960071402110549, guid: 752ec9bb198c47a4d984334a93e1daef, type: 3}
   health: 100
   moveSpeed: 30
   attackSpeed: 2
