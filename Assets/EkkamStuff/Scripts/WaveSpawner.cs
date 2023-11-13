@@ -6,10 +6,18 @@ namespace Ekkam {
     public class WaveSpawner : MonoBehaviour
     {
         [SerializeField] WaveConfigSO[] waves;
+        [SerializeField] int upgradesInterval = 3;
 
         public WaveConfigSO currentWave;
+        public int currentWaveNumber = 0;
+        UpgradeManager upgradeManager;
 
         [SerializeField] float enemyRotationY = 180f;
+
+        void Awake()
+        {
+            upgradeManager = FindObjectOfType<UpgradeManager>();
+        }
 
         void Start()
         {
@@ -21,6 +29,7 @@ namespace Ekkam {
             foreach (WaveConfigSO wave in waves)
             {
                 currentWave = wave;
+                currentWaveNumber++;
                 for (int i = 0; i < wave.GetEnemyCount(); i++)
                 {
                     Enemy currentEnemy = currentWave.GetEnemy(i);
@@ -39,6 +48,12 @@ namespace Ekkam {
                     yield return new WaitForSeconds(currentWave.GetSpawnTime(i));
                 }
 
+                if (currentWaveNumber % upgradesInterval == 0 && currentWaveNumber != 0)
+                {
+                    upgradeManager.ShowUpgrades();
+                    yield return new WaitUntil(() => !upgradeManager.waitingForUpgrade);
+                }
+                
                 yield return new WaitForSeconds(currentWave.waitTimeBeforeNextWave);
             }
 

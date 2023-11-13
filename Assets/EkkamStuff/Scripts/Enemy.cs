@@ -45,7 +45,7 @@ namespace Ekkam {
             shootTimer += Time.deltaTime;
             if (shootTimer >= attackSpeed)
             {
-                shootingManager.Shoot();
+                shootingManager.Shoot("EnemyProjectile");
                 shootTimer = 0f;
             }
 
@@ -79,6 +79,15 @@ namespace Ekkam {
                 waypoints.Add(child);
             }
             return waypoints;
+        }
+
+        public void TakeDamage(float damage)
+        {
+            health -= damage;
+            if (health <= 0)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

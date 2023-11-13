@@ -114,12 +114,12 @@ namespace Ekkam {
                 {
                     if (playerNumber == 2)
                     {
-                        playerDuo.shootingManager.Shoot();
+                        playerDuo.shootingManager.Shoot("PlayerProjectile");
                     }
                 }
                 else
                 {
-                    shootingManager.Shoot();
+                    shootingManager.Shoot("PlayerProjectile");
                 }
             }
         }
@@ -237,6 +237,15 @@ namespace Ekkam {
         public void AssignMesh()
         {
             GetComponent<MeshFilter>().mesh = playerMeshes[playerNumber - 1];
+        }
+
+        public void TakeDamage(float damage)
+        {
+            health -= damage;
+            if (health <= 0)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }
