@@ -8,30 +8,36 @@ using System;
 namespace Ekkam {
     public class Card : MonoBehaviour
     {
+        public Player ownerPlayer;
+
         public TMP_Text upgradeName;
         public TMP_Text upgradeDescription;
         public Button upgradeButton;
 
+        UpgradeManager upgradeManager;
+
         void Awake()
         {
             upgradeButton = GetComponent<Button>();
+            upgradeManager = FindObjectOfType<UpgradeManager>();
         }
 
-        void OnCardSelected(Player player)
+        public void OnCardSelected(TMP_Text waitingText)
         {
-            ShootingManager shootingManager = player.GetComponent<ShootingManager>();
-            switch (upgradeName.text.ToLower())
+            print("Player " + ownerPlayer.playerNumber + " selected " + upgradeName.text);
+            ownerPlayer.cardPicked = true;
+            
+            if (ownerPlayer.playerNumber == 1)
             {
-                case "damage":
-                    // upgrade
-                    break;
-                case "projectile size":
-                    // upgrade
-                    break;
-                case "projectile speed":
-                    shootingManager.projectileSpeed += 5f;
-                    break;
+                waitingText.text = "Waiting for Player 2 to select an upgrade";
             }
+            else
+            {
+                waitingText.text = "Waiting for Player 1 to select an upgrade";
+            }
+            waitingText.gameObject.SetActive(true);
+            
+            upgradeManager.UpgradePlayer(ownerPlayer, this);
         }
     }
 }

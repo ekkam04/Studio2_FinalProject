@@ -101,11 +101,11 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 9000081312944733210, guid: c5e12de1cf6ea5549bcffefa8f7e4f27, type: 3}
 --- !u!114 &6605887546655481270
@@ -121,7 +121,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pathPrefab: {fileID: 0}
-  health: 100
+  health: 2
   moveSpeed: 30
   attackSpeed: 2
   damageOnImpact: 1
@@ -140,7 +140,7 @@ MonoBehaviour:
   projectilePrefab: {fileID: 3479318975902545842, guid: 79f61d7ea2a7fac43b6e20323e287e96, type: 3}
   projectilePool: []
   projectileSpeed: 90
-  projectileDamage: 5
+  projectileDamage: 1
   projectileSize: 0.75
   multishotCount: 3
   multishotGapX: 3

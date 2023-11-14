@@ -22,10 +22,10 @@ namespace Ekkam {
 
         [Header("----- Enemy Stats -----")]
 
-        [Tooltip("The total health")] [SerializeField] float health = 100f; // Still need to implement
-        [Tooltip("The speed of the enemy")] [SerializeField] float moveSpeed = 30f;
-        [Tooltip("The cooldown time before the enemy can shoot again")] [SerializeField] float attackSpeed = 2f;
-        [Tooltip("The damage dealt to a player when they collide with the enemy")] [SerializeField] float damageOnImpact = 1f; // Still need to implement
+        [Tooltip("The total health")] public float health = 5f;
+        [Tooltip("The speed of the enemy")] public float moveSpeed = 30f;
+        [Tooltip("The cooldown time before the enemy can shoot again")] public float attackSpeed = 2f;
+        [Tooltip("The damage dealt to a player when they collide with the enemy")] public float damageOnImpact = 1f;
 
         void Awake()
         {
@@ -41,7 +41,7 @@ namespace Ekkam {
         }
 
         void Update()
-        {
+        {       
             shootTimer += Time.deltaTime;
             if (shootTimer >= attackSpeed)
             {
