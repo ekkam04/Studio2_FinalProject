@@ -56,6 +56,10 @@ PrefabInstance:
       propertyPath: dodgeSpeed
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2212650676498329963, guid: 296b24d54fc532e40b86949cfa6d75d8, type: 3}
+      propertyPath: playerCanvasZOffset
+      value: -25
+      objectReference: {fileID: 0}
     - target: {fileID: 2354661645630340860, guid: 296b24d54fc532e40b86949cfa6d75d8, type: 3}
       propertyPath: m_Name
       value: PlayerDuo
@@ -63,6 +67,10 @@ PrefabInstance:
     - target: {fileID: 2354661645630340860, guid: 296b24d54fc532e40b86949cfa6d75d8, type: 3}
       propertyPath: m_TagString
       value: PlayerDuo
+      objectReference: {fileID: 0}
+    - target: {fileID: 4094189148969583656, guid: 296b24d54fc532e40b86949cfa6d75d8, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -25
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1792663288401086769, guid: 296b24d54fc532e40b86949cfa6d75d8, type: 3}

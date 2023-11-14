@@ -7,6 +7,9 @@ using UnityEngine.InputSystem;
 namespace Ekkam {
     public class GameManager : MonoBehaviour
     {
+        public static GameManager instance;
+        public bool gamePaused = false;
+
         public delegate void PlayerEvent();
         public static event PlayerEvent OnCombinePlayers;
         public static event PlayerEvent OnSeperatePlayers;
@@ -16,8 +19,21 @@ namespace Ekkam {
         [SerializeField] GameObject gameVCam;
         [SerializeField] GameObject combinedVCam;
 
+        void Awake()
+        {
+            if (instance == null)
+            {
+                instance = this;
+            }
+            else
+            {
+                Destroy(this);
+            }
+        }   
+
         void Start()
         {
+            Time.timeScale = 1;
             gameVCam.SetActive(true);
             combinedVCam.SetActive(false);
         }
@@ -38,13 +54,12 @@ namespace Ekkam {
         {
             Player player = playerInput.GetComponent<Player>();
             
-            // Assign player number
             player.playerNumber = PlayerInput.all.Count;
             playerInput.gameObject.name = "Player_" + player.playerNumber;
             print("Player " + player.playerNumber + " joined");
 
-            // Assign player mesh
             player.AssignMesh();
+            player.ApplySeparationForce();
         }
 
         IEnumerator CombinePlayers()
@@ -56,11 +71,21 @@ namespace Ekkam {
                 combinedVCam.SetActive(true);
                 gameVCam.SetActive(false);
                 yield return new WaitUntil(() => AllPlayersInDuoMode());
-                GameObject playerDuo = Instantiate(playerDuoPrefab, PlayerInput.all[0].transform.position, Quaternion.identity);
+                GameObject playerDuoGameObject = Instantiate(playerDuoPrefab, PlayerInput.all[0].transform.position, Quaternion.identity);
+                playerDuoGameObject.name = "PlayerDuo";
+                Player playerDuo = playerDuoGameObject.GetComponent<Player>();  
+
+                playerDuo.health = 0f;
+                playerDuo.maxHealth = 0f;
                 foreach (PlayerInput playerInput in PlayerInput.all)
                 {
-                    playerInput.GetComponent<Player>().playerDuo = playerDuo.GetComponent<Player>();
+                    Player player = playerInput.GetComponent<Player>();
+                    player.playerDuo = playerDuo;
+                    playerDuo.health += player.health;
+                    playerDuo.maxHealth += player.maxHealth;
                 }
+                playerDuo.healthBar.maxValue = playerDuo.maxHealth;
+                playerDuo.healthBar.value = playerDuo.health;
             }
         }
 
@@ -87,6 +112,16 @@ namespace Ekkam {
                 if (playerInput.GetComponent<Player>().inDuoMode == false) return false;
             }
             return true;
+        }
+
+        public void CombinePlayersButtonPressed()
+        {
+            if (OnCombinePlayers != null) StartCoroutine(CombinePlayers());
+        }
+
+        public void SeperatePlayersButtonPressed()
+        {
+            if (OnSeperatePlayers != null) StartCoroutine(SeperatePlayers());
         }
     }
 }
