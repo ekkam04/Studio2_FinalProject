@@ -593,7 +593,15 @@ MonoBehaviour:
   waves:
   - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
   - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
-  upgradesInterval: 2
+  - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
+  - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
+  - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
+  - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
+  - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
+  - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
+  - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
+  - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
+  upgradesInterval: 10
   currentWave: {fileID: 0}
   currentWaveNumber: 0
   enemyRotationY: 180
