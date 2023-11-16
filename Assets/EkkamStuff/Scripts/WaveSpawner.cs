@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Ekkam {
     public class WaveSpawner : MonoBehaviour
     {
+        public bool spawnWaves = false;
         [SerializeField] WaveConfigSO[] waves;
         [SerializeField] int upgradesInterval = 3;
 
@@ -21,7 +22,19 @@ namespace Ekkam {
 
         void Start()
         {
+            // StartSpawningWaves();
+        }
+
+        public void StartSpawningWaves()
+        {
+            spawnWaves = true;
             StartCoroutine(SpawnWaves());
+        }
+
+        public void StopSpawningWaves()
+        {
+            spawnWaves = false;
+            StopCoroutine(SpawnWaves());
         }
 
         IEnumerator SpawnWaves()

@@ -283,6 +283,11 @@ namespace Ekkam {
 
         public void AddCardsToUpgradeMenu()
         {
+            if (gameObject.tag == "PlayerDuo")
+            {
+                cardPicked = true;
+                return;
+            }
             GameObject newPlayerCards = Instantiate(playerCards, upgradeManager.upgradeMenu.transform);
             newPlayerCards.name = "Player" + playerNumber + "Cards";
             if (playerNumber == 1)

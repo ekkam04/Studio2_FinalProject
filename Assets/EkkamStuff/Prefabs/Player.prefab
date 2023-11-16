@@ -396,10 +396,10 @@ MonoBehaviour:
   inDuoMode: 0
   cardPicked: 0
   maxHealth: 0
-  health: 5
+  health: 10
   moveSpeed: 30
   maxSpeed: 35
-  dodgeSpeed: 2
+  dodgeSpeed: 1
   attackSpeed: 0.05
   dodgeCooldown: 0.75
 --- !u!114 &500853067486141094

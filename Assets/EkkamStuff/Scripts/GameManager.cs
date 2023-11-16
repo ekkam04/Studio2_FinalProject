@@ -19,8 +19,11 @@ namespace Ekkam {
         [SerializeField] GameObject gameVCam;
         [SerializeField] GameObject combinedVCam;
 
+        WaveSpawner waveSpawner;
+
         void Awake()
         {
+            waveSpawner = FindObjectOfType<WaveSpawner>();
             if (instance == null)
             {
                 instance = this;
@@ -47,6 +50,12 @@ namespace Ekkam {
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 if (OnSeperatePlayers != null) StartCoroutine(SeperatePlayers());
+            }
+
+            // start game when there are 2 players
+            if (PlayerInput.all.Count == 2 && !waveSpawner.spawnWaves)
+            {
+                waveSpawner.StartSpawningWaves();
             }
         }
 
@@ -122,6 +131,11 @@ namespace Ekkam {
         public void SeperatePlayersButtonPressed()
         {
             if (OnSeperatePlayers != null) StartCoroutine(SeperatePlayers());
+        }
+
+        public void QuitGameButtonPressed()
+        {
+            Application.Quit();
         }
     }
 }
