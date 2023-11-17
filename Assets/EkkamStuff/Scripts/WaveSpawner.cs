@@ -5,12 +5,15 @@ using UnityEngine;
 namespace Ekkam {
     public class WaveSpawner : MonoBehaviour
     {
-        public bool spawnWaves = false;
+        public bool spawningWaves = false;
         [SerializeField] WaveConfigSO[] waves;
         [SerializeField] int upgradesInterval = 3;
 
+        public List<Enemy> enemiesOnScreen = new List<Enemy>();
+
         public WaveConfigSO currentWave;
         public int currentWaveNumber = 0;
+        public bool waitForAllEnemiesToDieBeforeSpawningNextWave = true;
         UpgradeManager upgradeManager;
 
         [SerializeField] float enemyRotationY = 180f;
@@ -27,13 +30,13 @@ namespace Ekkam {
 
         public void StartSpawningWaves()
         {
-            spawnWaves = true;
+            spawningWaves = true;
             StartCoroutine(SpawnWaves());
         }
 
         public void StopSpawningWaves()
         {
-            spawnWaves = false;
+            spawningWaves = false;
             StopCoroutine(SpawnWaves());
         }
 
@@ -54,11 +57,21 @@ namespace Ekkam {
                     currentEnemy.pathPrefab = path;
                     Instantiate(
                         currentEnemy.gameObject,
-                        currentEnemy.pathPrefab.GetChild(0).position,
+                        // currentEnemy.pathPrefab.GetChild(0).position,
+                        new Vector3(currentEnemy.pathPrefab.GetChild(0).position.x, 0, currentEnemy.pathPrefab.GetChild(0).position.z),
                         Quaternion.Euler(0, enemyRotationY, 0),
                         transform
                     );
                     yield return new WaitForSeconds(currentWave.GetSpawnTime(i));
+                }
+
+                if (waitForAllEnemiesToDieBeforeSpawningNextWave)
+                {
+                    yield return new WaitUntil(() => enemiesOnScreen.Count == 0);
+                }
+                else
+                {
+                    yield return new WaitForSeconds(currentWave.waitTimeBeforeNextWave);
                 }
 
                 if (currentWaveNumber % upgradesInterval == 0 && currentWaveNumber != 0)
@@ -66,10 +79,11 @@ namespace Ekkam {
                     upgradeManager.ShowUpgrades();
                     yield return new WaitUntil(() => !upgradeManager.waitingForUpgrade);
                 }
-                
-                yield return new WaitForSeconds(currentWave.waitTimeBeforeNextWave);
+
+                print("Spawning next wave");
             }
 
+            currentWave = null;
             print("All waves spawned");
         }
     }

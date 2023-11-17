@@ -389,7 +389,7 @@ MonoBehaviour:
   - {fileID: 3300887527594331929, guid: c3243430cd7d9aa479ca13a9e47ad748, type: 3}
   playerCanvas: {fileID: 1891858151252943537}
   playerCards: {fileID: 3683245239006980493, guid: 0ff80f775c881d94084551214ae3860c, type: 3}
-  mainCanvas: {fileID: 0}
+  crosshair: {fileID: 0}
   healthBar: {fileID: 4881066733859490969}
   playerDuo: {fileID: 0}
   allowMovement: 1
@@ -400,7 +400,7 @@ MonoBehaviour:
   moveSpeed: 30
   maxSpeed: 35
   dodgeSpeed: 1
-  attackSpeed: 0.05
+  attackSpeed: 0.2
   dodgeCooldown: 0.75
 --- !u!114 &500853067486141094
 MonoBehaviour:
@@ -416,6 +416,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 3387986238477384891, guid: 2e368539337c9824b9b09871b90e94a6, type: 3}
   projectilePool: []
+  shootProjectile: 1
+  shootBackShots: 0
   projectileSpeed: 90
   projectileDamage: 1
   projectileSize: 1
@@ -423,6 +425,11 @@ MonoBehaviour:
   multishotGapX: 3
   burstFireCount: 1
   burstFireDelay: 0.08
+  shootLightning: 0
+  chainLightning: 1
+  chainLightningCount: 3
+  chainLightingAtOnce: 1
+  lightningDamage: 0.25
 --- !u!114 &1792663288401086769
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -504,6 +511,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 544e8bed-7b25-4dc9-b1c6-ed98369e91c1
     m_ActionName: Player/Select[/XInputControllerWindows/buttonSouth,/XInputControllerWindows1/buttonSouth]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2212650676498329963}
+        m_TargetAssemblyTypeName: Ekkam.Player, Assembly-CSharp
+        m_MethodName: OnAim
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 540e8382-49c8-496a-a2c0-dc3bd49ed4e8
+    m_ActionName: Player/Aim[/XInputControllerWindows/rightStick,/XInputControllerWindows1/rightStick]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

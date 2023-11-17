@@ -20,10 +20,12 @@ namespace Ekkam {
         [SerializeField] GameObject combinedVCam;
 
         WaveSpawner waveSpawner;
+        UpgradeManager upgradeManager;
 
         void Awake()
         {
             waveSpawner = FindObjectOfType<WaveSpawner>();
+            upgradeManager = FindObjectOfType<UpgradeManager>();
             if (instance == null)
             {
                 instance = this;
@@ -51,9 +53,17 @@ namespace Ekkam {
             {
                 if (OnSeperatePlayers != null) StartCoroutine(SeperatePlayers());
             }
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                upgradeManager.ShowUpgrades();
+            }
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Application.Quit();
+            }
 
             // start game when there are 2 players
-            if (PlayerInput.all.Count == 2 && !waveSpawner.spawnWaves)
+            if (PlayerInput.all.Count == 2 && !waveSpawner.spawningWaves)
             {
                 waveSpawner.StartSpawningWaves();
             }

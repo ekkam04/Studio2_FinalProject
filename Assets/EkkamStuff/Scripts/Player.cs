@@ -16,17 +16,21 @@ namespace Ekkam {
         [SerializeField] Mesh[] playerMeshes; // 0 = player 1, 1 = player 2
         [SerializeField] GameObject playerCanvas;
         [SerializeField] GameObject playerCards;
-        [SerializeField] GameObject mainCanvas;
+        [SerializeField] GameObject crosshair;
         public Slider healthBar;
 
         public Player playerDuo;
 
         Rigidbody rb;
         Collider col;
+        PlayerInput playerInput;
         ShootingManager shootingManager;
         UpgradeManager upgradeManager;
+        UIManager uiManager;
         MultiplayerEventSystem eventSystem;
-        Vector2 input;
+        Vector2 movementInput;
+        Vector2 aimInput;
+        float rightTriggerAxis;
 
         public bool allowMovement = true;
         public bool inDuoMode = false;
@@ -50,17 +54,28 @@ namespace Ekkam {
         {
             rb = GetComponent<Rigidbody>();
             col = GetComponent<Collider>();
+            playerInput = GetComponent<PlayerInput>();
             shootingManager = GetComponent<ShootingManager>();
             upgradeManager = FindObjectOfType<UpgradeManager>();
+            uiManager = FindObjectOfType<UIManager>();
             eventSystem = GetComponentInChildren<MultiplayerEventSystem>();
+            eventSystem.SetSelectedGameObject(null);
             maxHealth = health;
             healthBar.maxValue = maxHealth;
             healthBar.value = health;
         }
 
+        void OnDestroy()
+        {
+            if (playerInput == null)
+            {
+                crosshair.SetActive(false);
+            }
+        }
+
         void OnEnable()
         {
-            if (GetComponent<PlayerInput>() != null)
+            if (playerInput != null)
             {
                 GameManager.OnCombinePlayers += EnableDuoMode;
                 GameManager.OnSeperatePlayers += DisableDuoMode;
@@ -69,7 +84,7 @@ namespace Ekkam {
 
         void OnDisable()
         {
-            if (GetComponent<PlayerInput>() != null)
+            if (playerInput != null)
             {
                 GameManager.OnCombinePlayers -= EnableDuoMode;
                 GameManager.OnSeperatePlayers -= DisableDuoMode;
@@ -79,8 +94,15 @@ namespace Ekkam {
         void Start()
         {
             Camera mainCamera = Camera.main;
-            RotationConstraint rc = playerCanvas.GetComponent<RotationConstraint>();
-            rc.AddSource(new ConstraintSource { sourceTransform = mainCamera.transform, weight = 1 });
+            RotationConstraint playerCanvasRC = playerCanvas.GetComponent<RotationConstraint>();
+            playerCanvasRC.AddSource(new ConstraintSource { sourceTransform = mainCamera.transform, weight = 1 });
+
+            if (playerInput == null)
+            {
+                crosshair.SetActive(true);
+                RotationConstraint crosshairRC = crosshair.GetComponent<RotationConstraint>();
+                crosshairRC.AddSource(new ConstraintSource { sourceTransform = mainCamera.transform, weight = 1 });
+            } 
         }
 
         void Update()
@@ -89,14 +111,24 @@ namespace Ekkam {
             dodgeTimer += Time.deltaTime;
 
             ControlSpeed();
+            Aim();
 
             if (inDuoMode && playerDuo != null)
             {
                 transform.position = playerDuo.transform.position;
                 if (playerNumber == 1)
                 {
-                    playerDuo.input = input;
+                    playerDuo.movementInput = movementInput;
                 }
+                else if (playerNumber == 2)
+                {
+                    playerDuo.aimInput = aimInput;
+                }   
+            }
+
+            if (rightTriggerAxis > 0.5f)
+            {
+                Shoot();
             }
         }
 
@@ -108,8 +140,35 @@ namespace Ekkam {
         void Move()
         {
             if (!allowMovement) return;
-            Vector3 movement = new Vector3(input.x, 0, input.y);
+            Vector3 movement = new Vector3(movementInput.x, 0, movementInput.y);
             rb.AddForce(movement * moveSpeed * 100);
+        }
+
+        void Aim()
+        {
+            if (crosshair == null) return;
+            Vector3 aimDirection = new Vector3(aimInput.x, 0, aimInput.y);
+            if (aimDirection.magnitude > 0.1f)
+            {
+                crosshair.transform.localPosition = aimDirection.normalized * 60;
+            }
+        }
+
+        void Shoot()
+        {
+            if (shootTimer < attackSpeed) return;
+            shootTimer = 0f;
+            if (inDuoMode && playerDuo != null)
+            {
+                if (playerNumber == 2)
+                {
+                    playerDuo.shootingManager.Shoot("PlayerProjectile", this.gameObject, playerDuo.crosshair.transform);
+                }
+            }
+            else
+            {
+                shootingManager.Shoot("PlayerProjectile", this.gameObject);
+            }
         }
 
         void ControlSpeed()
@@ -125,27 +184,17 @@ namespace Ekkam {
 
         public void OnMove(InputAction.CallbackContext context)
         {
-            input = context.ReadValue<Vector2>();
+            movementInput = context.ReadValue<Vector2>();
+        }
+
+        public void OnAim(InputAction.CallbackContext context)
+        {
+            aimInput = context.ReadValue<Vector2>();
         }
 
         public void OnShoot(InputAction.CallbackContext context)
         {
-            if (context.performed)
-            {
-                if (shootTimer < attackSpeed) return;
-                shootTimer = 0f;
-                if (inDuoMode && playerDuo != null)
-                {
-                    if (playerNumber == 2)
-                    {
-                        playerDuo.shootingManager.Shoot("PlayerProjectile");
-                    }
-                }
-                else
-                {
-                    shootingManager.Shoot("PlayerProjectile");
-                }
-            }
+            rightTriggerAxis = context.ReadValue<float>();
         }
 
         public void OnDodge(InputAction.CallbackContext context)
@@ -189,11 +238,11 @@ namespace Ekkam {
         IEnumerator FlyTowardsTheOtherPlayer()
         {
             GameObject targetPlayer = null;
-            foreach (PlayerInput playerInput in PlayerInput.all)
+            foreach (PlayerInput pi in PlayerInput.all)
             {
-                if (playerInput.gameObject != this.gameObject)
+                if (pi.gameObject != this.gameObject)
                 {
-                    targetPlayer = playerInput.gameObject;
+                    targetPlayer = pi.gameObject;
                 }
             }
 
@@ -309,6 +358,7 @@ namespace Ekkam {
                 if (i == 0) {
                     eventSystem.firstSelectedGameObject = card.gameObject;
                     eventSystem.SetSelectedGameObject(card.gameObject);
+                    card.gameObject.GetComponent<Button>().OnSelect(null);
                 }
                 card.ownerPlayer = this;
                 if (playerNumber == 1)
@@ -326,40 +376,6 @@ namespace Ekkam {
         {
             switch (upgradeName)
             {
-                /* Damage 
-                Increases Your Projectile damage
-
-                Projectile size 
-                Increases Your Projectile size 
-
-
-                Projectile speed
-                Increases Your Projectile 
-
-                Defense 
-                Increase Your Defense
-
-                Extra dash
-                Adds another dash to your 
-
-                Lightning
-                Adds another weapon to your ship
-
-                Shotgun 
-                Adds another weapon to your ship
-
-                Diagonal shots 
-                You shoot diagonally as well
-
-                Backshots 
-                You shoot backwards 
-
-                Multishot
-                Adds another Projectile
-                
-                Burst
-                Shoot another Projectile at once
-                */
                 case "Damage":
                     shootingManager.projectileDamage += 1;
                     break;
@@ -369,29 +385,28 @@ namespace Ekkam {
                 case "Projectile Speed":
                     shootingManager.projectileSpeed += 10f;
                     break;
-                case "Defense":
-                    health += 1;
-                    break;
-                case "Extra Dash":
-                    print("Extra Dash"); // TODO: Implement
+                case "Health":
+                    maxHealth += 3;
+                    health += 3;
+                    healthBar.maxValue = maxHealth;
+                    healthBar.value = health;
                     break;
                 case "Lightning":
-                    print("Lightning Weapon"); // TODO: Implement
-                    break;
-                case "Shotgun":
-                    print("Shotgun Weapon"); // TODO: Implement
-                    break;
-                case "Diagonal Shots":
-                    print("Diagonal Shots"); // TODO: Implement
+                    shootingManager.shootLightning = true;
                     break;
                 case "Backshots":
-                    print("Backshots"); // TODO: Implement
+                    shootingManager.shootBackShots = true;
                     break;
                 case "Multishot":
                     shootingManager.multishotCount += 1;
                     break;
                 case "Burst":
                     shootingManager.burstFireCount += 1;
+                    break;
+                case "Fire Rate":
+                    attackSpeed -= 0.05f;
+                    break;
+                default:
                     break;
             }
         }
@@ -402,6 +417,39 @@ namespace Ekkam {
                 print("Player collided with enemy");
                 TakeDamage(other.GetComponent<Enemy>().damageOnImpact);
             }
+        }
+
+        public Enemy FindClosestEnemy()
+        {
+            Enemy closestEnemy = null;
+            float closestDistance = Mathf.Infinity;
+            foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+            {
+                float distance = Vector3.Distance(transform.position, enemy.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestEnemy = enemy;
+                }
+            }
+            return closestEnemy;
+        }
+
+        public Player FindClosestPlayer()
+        {
+            Player closestPlayer = null;
+            float closestDistance = Mathf.Infinity;
+            foreach (Player player in FindObjectsOfType<Player>())
+            {
+                if (player == this) continue;
+                float distance = Vector3.Distance(transform.position, player.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestPlayer = player;
+                }
+            }
+            return closestPlayer;
         }
     }
 }

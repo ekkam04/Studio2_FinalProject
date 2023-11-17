@@ -13,8 +13,8 @@ namespace Ekkam
         {
             WaveConfigSO waveConfig = (WaveConfigSO)target;
 
-            base.OnInspectorGUI();
-            EditorGUILayout.Space();
+            // base.OnInspectorGUI();
+            // EditorGUILayout.Space();
 
             EditorGUILayout.LabelField("Enemies", EditorStyles.boldLabel);
             for (int i = 0; i < waveConfig.enemies.Count; i++)

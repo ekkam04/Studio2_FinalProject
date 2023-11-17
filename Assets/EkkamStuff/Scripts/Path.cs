@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Ekkam {
     public class Path : MonoBehaviour
     {
+        [HideInInspector]
         public Transform[] waypoints;
 
         private void OnDrawGizmos()

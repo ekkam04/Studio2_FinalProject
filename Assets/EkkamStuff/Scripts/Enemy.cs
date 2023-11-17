@@ -38,6 +38,7 @@ namespace Ekkam {
             waveConfig = waveSpawner.currentWave;
             waypoints = GetWaypoints();
             transform.position = waypoints[waypointIndex].position;
+            waveSpawner.enemiesOnScreen.Add(this);
         }
 
         void Update()
@@ -45,7 +46,7 @@ namespace Ekkam {
             shootTimer += Time.deltaTime;
             if (shootTimer >= attackSpeed)
             {
-                shootingManager.Shoot("EnemyProjectile");
+                shootingManager.Shoot("EnemyProjectile", this.gameObject);
                 shootTimer = 0f;
             }
 
@@ -56,7 +57,8 @@ namespace Ekkam {
         {
             if (waypointIndex < waypoints.Count)
             {
-                Vector3 targetPosition = waypoints[waypointIndex].position;
+                // Vector3 targetPosition = waypoints[waypointIndex].position;
+                Vector3 targetPosition = new Vector3(waypoints[waypointIndex].position.x, 0, waypoints[waypointIndex].position.z);
                 float movementThisFrame = moveSpeed * Time.deltaTime;
                 transform.position = Vector3.MoveTowards(transform.position, targetPosition, movementThisFrame);
 
@@ -67,6 +69,7 @@ namespace Ekkam {
             }
             else
             {
+                waveSpawner.enemiesOnScreen.Remove(this);
                 Destroy(gameObject);
             }
         }
@@ -88,6 +91,44 @@ namespace Ekkam {
             {
                 Destroy(gameObject);
             }
+        }
+
+        private void OnDestroy() {
+            waveSpawner.enemiesOnScreen.Remove(this);
+            Destroy(pathPrefab.gameObject);
+        }
+
+        public Enemy FindClosestEnemy()
+        {
+            Enemy closestEnemy = null;
+            float closestDistance = Mathf.Infinity;
+            foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+            {
+                float distance = Vector3.Distance(transform.position, enemy.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestEnemy = enemy;
+                }
+            }
+            return closestEnemy;
+        }
+
+        public Player FindClosestPlayer()
+        {
+            Player closestPlayer = null;
+            float closestDistance = Mathf.Infinity;
+            foreach (Player player in FindObjectsOfType<Player>())
+            {
+                if (player == this) continue;
+                float distance = Vector3.Distance(transform.position, player.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestPlayer = player;
+                }
+            }
+            return closestPlayer;
         }
     }
 }

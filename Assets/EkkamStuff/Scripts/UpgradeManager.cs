@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
 
 namespace Ekkam {
     public class UpgradeManager : MonoBehaviour
     {
         public bool waitingForUpgrade = false;
         public GameObject upgradeMenu;
+        UIManager uiManager;
         public List<Card> player1Cards;
         public List<Card> player2Cards;
 
@@ -18,6 +20,7 @@ namespace Ekkam {
 
         void Start()
         {
+            uiManager = FindObjectOfType<UIManager>();
             HideUpgrades();
         }
 
@@ -38,8 +41,9 @@ namespace Ekkam {
             }
         }
 
-        public void ShowUpgrades()
+        async public void ShowUpgrades()
         {
+            upgradeMenu.SetActive(false);
             if (player1Cards.Count == 0 || player2Cards.Count == 0)
             {
                 foreach (Player p in FindObjectsOfType<Player>())
@@ -54,14 +58,18 @@ namespace Ekkam {
             }
 
             waitingForUpgrade = true;
+            Time.timeScale = 0.5f;
+            await Task.Delay(1000);
             Time.timeScale = 0;
             AssignRandomUpgrades(player1Cards);
             AssignRandomUpgrades(player2Cards);
-            upgradeMenu.SetActive(true);
+            uiManager.OpenUpgradeMenu();
         }
 
-        public void HideUpgrades()
+        async public void HideUpgrades()
         {
+            uiManager.CloseUpgradeMenu();
+            await Task.Delay(500);
             foreach (Player player in FindObjectsOfType<Player>())
             {
                 player.allowMovement = true;
@@ -76,7 +84,6 @@ namespace Ekkam {
             player1Cards.Clear();
             player2Cards.Clear();
 
-            upgradeMenu.SetActive(false);
             waitingForUpgrade = false;
             Time.timeScale = 1;
         }
