@@ -33,6 +33,7 @@ namespace Ekkam {
         float rightTriggerAxis;
 
         public bool allowMovement = true;
+        public bool allowDodging = true;
         public bool inDuoMode = false;
         public bool cardPicked = false;
 
@@ -237,6 +238,7 @@ namespace Ekkam {
         public void EnableDuoMode()
         {
             allowMovement = false;
+            allowDodging = false;
             playerCanvas.SetActive(false);
             rb.velocity = Vector3.zero;
             col.enabled = false;
@@ -271,6 +273,7 @@ namespace Ekkam {
 
         IEnumerator Dodge(int direction)
         {
+            if (!allowDodging) yield break;
             allowMovement = false;
             rb.velocity = Vector3.zero;
             // spin the player 360 degrees according to the direction
@@ -298,6 +301,7 @@ namespace Ekkam {
         {
             inDuoMode = false;
             allowMovement = true;
+            allowDodging = true;
             playerCanvas.SetActive(true);
 
             print("Duo mode disabled for player " + playerNumber);
