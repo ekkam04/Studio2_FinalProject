@@ -31,5 +31,15 @@ namespace Ekkam {
                 }
             }
         }
+
+        public Enemy SpawnPreviewEnemy(Enemy enemyPrefab)
+        {
+            Enemy previewEnemy = Instantiate(enemyPrefab, transform.position, Quaternion.Euler(0f, 180f, 0f)).GetComponent<Enemy>();
+            previewEnemy.gameObject.name = "PreviewEnemy";
+            previewEnemy.pathPrefab = transform;
+            previewEnemy.waypoints = previewEnemy.GetWaypoints();
+            previewEnemy.transform.position = previewEnemy.waypoints[0].position;
+            return previewEnemy;
+        }
     }
 }

@@ -8,14 +8,15 @@ namespace Ekkam {
     public class Enemy : MonoBehaviour
     {
         WaveSpawner waveSpawner;
-        WaveConfigSO waveConfig;
 
-        List<Transform> waypoints;
+        [HideInInspector]
+        public List<Transform> waypoints;
         int waypointIndex = 0;
 
         ShootingManager shootingManager;
 
         float shootTimer = 0f;
+        float OnMoveTimer;
 
         [HideInInspector]
         public Transform pathPrefab;
@@ -23,7 +24,13 @@ namespace Ekkam {
         [Header("----- Enemy Stats -----")]
 
         [Tooltip("The total health")] public float health = 5f;
-        [Tooltip("The speed of the enemy")] public float moveSpeed = 30f;
+
+        [HideInInspector]
+        public AnimationCurve speedCurve; // This is now controlled by the WaveConfigSO
+
+        [HideInInspector]
+        public float moveSpeed = 30f; // This is now controlled by the WaveConfigSO
+
         [Tooltip("The cooldown time before the enemy can shoot again")] public float attackSpeed = 2f;
         [Tooltip("The damage dealt to a player when they collide with the enemy")] public float damageOnImpact = 1f;
 
@@ -35,7 +42,6 @@ namespace Ekkam {
 
         void Start()
         {
-            waveConfig = waveSpawner.currentWave;
             waypoints = GetWaypoints();
             transform.position = waypoints[waypointIndex].position;
             waveSpawner.enemiesOnScreen.Add(this);
@@ -57,20 +63,42 @@ namespace Ekkam {
         {
             if (waypointIndex < waypoints.Count)
             {
-                // Vector3 targetPosition = waypoints[waypointIndex].position;
+                OnMoveTimer += Time.deltaTime;
                 Vector3 targetPosition = new Vector3(waypoints[waypointIndex].position.x, 0, waypoints[waypointIndex].position.z);
-                float movementThisFrame = moveSpeed * Time.deltaTime;
+                float movementThisFrame = moveSpeed * Time.deltaTime * speedCurve.Evaluate(OnMoveTimer);
                 transform.position = Vector3.MoveTowards(transform.position, targetPosition, movementThisFrame);
 
                 if (transform.position == targetPosition)
                 {
                     waypointIndex++;
+                    OnMoveTimer = 0f;
                 }
             }
             else
             {
                 waveSpawner.enemiesOnScreen.Remove(this);
                 Destroy(gameObject);
+            }
+        }
+
+        public void FollowEditorPath(float time)
+        {
+            if (waypointIndex < waypoints.Count)
+            {
+                OnMoveTimer += time;
+                Vector3 targetPosition = new Vector3(waypoints[waypointIndex].position.x, 0, waypoints[waypointIndex].position.z);
+                float movementThisFrame = moveSpeed * time * speedCurve.Evaluate(OnMoveTimer);
+                transform.position = Vector3.MoveTowards(transform.position, targetPosition, movementThisFrame);
+
+                if (transform.position == targetPosition)
+                {
+                    waypointIndex++;
+                    OnMoveTimer = 0f;
+                }
+            }
+            else
+            {
+                DestroyImmediate(gameObject);
             }
         }
 

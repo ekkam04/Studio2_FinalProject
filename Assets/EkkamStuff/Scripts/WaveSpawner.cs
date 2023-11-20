@@ -46,18 +46,19 @@ namespace Ekkam {
             {
                 currentWave = wave;
                 currentWaveNumber++;
-                for (int i = 0; i < wave.GetEnemyCount(); i++)
+                for (int i = 0; i < wave.waveEnemies.Count; i++)
                 {
-                    Enemy currentEnemy = currentWave.GetEnemy(i);
-                    Transform path = Instantiate(currentWave.GetPathOfEnemy(i), transform);
-                    if (currentWave.GetPathXInversion(i))
+                    Enemy currentEnemy = currentWave.waveEnemies[i].enemy.GetComponent<Enemy>();
+                    Transform path = Instantiate(currentWave.waveEnemies[i].enemyPath, transform);
+                    if (currentWave.waveEnemies[i].invertPathX)
                     {
                         path.localScale = new Vector3(-1, 1, 1);
                     }
                     currentEnemy.pathPrefab = path;
+                    currentEnemy.moveSpeed = currentWave.waveEnemies[i].moveSpeed;
+                    currentEnemy.speedCurve = currentWave.waveEnemies[i].speedCurve;
                     Instantiate(
                         currentEnemy.gameObject,
-                        // currentEnemy.pathPrefab.GetChild(0).position,
                         new Vector3(currentEnemy.pathPrefab.GetChild(0).position.x, 0, currentEnemy.pathPrefab.GetChild(0).position.z),
                         Quaternion.Euler(0, enemyRotationY, 0),
                         transform
