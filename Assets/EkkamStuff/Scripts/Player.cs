@@ -38,12 +38,14 @@ namespace Ekkam {
 
         float shootTimer = 0f;
         float dodgeTimer = 0f;
+        float onMoveTimer = 0f;
 
         [HideInInspector]
         public float maxHealth;
 
         [Header("----- Player Stats -----")]
-        [Tooltip("The total health")] public float health = 5f; // Still need to implement
+        [Tooltip("The total health")] public float health = 5f;
+        public AnimationCurve speedCurve;
         public float moveSpeed = 20f;
         public float maxSpeed = 25f;
         public float dodgeSpeed = 1f;
@@ -130,6 +132,11 @@ namespace Ekkam {
             {
                 Shoot();
             }
+
+            if (movementInput == Vector2.zero)
+            {
+                onMoveTimer = 0f;
+            }
         }
 
         private void FixedUpdate()
@@ -140,8 +147,9 @@ namespace Ekkam {
         void Move()
         {
             if (!allowMovement) return;
+            onMoveTimer += Time.deltaTime;
             Vector3 movement = new Vector3(movementInput.x, 0, movementInput.y);
-            rb.AddForce(movement * moveSpeed * 100);
+            rb.AddForce(movement * moveSpeed * 100 * speedCurve.Evaluate(onMoveTimer));
         }
 
         void Aim()
