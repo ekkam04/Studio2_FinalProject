@@ -7,18 +7,10 @@ namespace Ekkam {
     {
         public GameObject mainCanvas;
         [SerializeField] RectTransform upgradeMenu;
-        void Start()
-        {
-            
-        }
-
-        void Update()
-        {
-            
-        }
 
         public void OpenUpgradeMenu()
         {
+            GetComponent<UIStateMachine>().OpenUpgradeMenu();
             upgradeMenu.anchoredPosition = new Vector2(upgradeMenu.anchoredPosition.x, -Screen.height);
             upgradeMenu.gameObject.SetActive(true);
             LeanTween.moveY(upgradeMenu, 0, 0.5f).setEaseOutCubic().setIgnoreTimeScale(true);
@@ -26,6 +18,7 @@ namespace Ekkam {
 
         public void CloseUpgradeMenu()
         {
+            GetComponent<UIStateMachine>().CloseUpgradeMenu();
             upgradeMenu.gameObject.SetActive(false);
         }  
     }
