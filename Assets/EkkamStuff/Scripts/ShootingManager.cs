@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using System.Runtime.Serialization.Formatters;
+using UnityEngine.InputSystem;
 
 namespace Ekkam {
     public class ShootingManager : MonoBehaviour
@@ -15,6 +16,11 @@ namespace Ekkam {
         GameObject projectilePoolHolder;
 
         bool lightningActive = false;
+        bool playerInDuoMode = false;
+
+        int projectileCountBeforeLightning = 0;
+
+        GameObject crosshair;
 
         [Header("----- Projectile Stats -----")]
 
@@ -39,6 +45,7 @@ namespace Ekkam {
         [Tooltip("The amount of enemies the lightning can chain to")] public int chainLightningCount = 3;
         [Tooltip("The amount of enemies the lightning chains to at once")] public int chainLightingAtOnce = 1;
         [Tooltip("The amount of damage dealt to each enemy hit by the lightning")] public float lightningDamage = 0.25f;
+        public int shootLightningEveryXShots = 5;
 
 
         private void OnEnable()
@@ -67,10 +74,16 @@ namespace Ekkam {
         private void Awake()
         {
             originalProjectileScale = projectilePrefab.transform.localScale;
+            if (GetComponent<Player>() != null && GetComponent<PlayerInput>() == null)
+            {
+                playerInDuoMode = true;
+                crosshair = GetComponent<Player>().crosshair;
+            }
         }
 
         public void Shoot(string tagToApply, GameObject owner, Transform target = null)
         {
+            projectileCountBeforeLightning++;
             if (target != null)
             {
                 if (shootProjectile) ShootProjectile(tagToApply, (target.position - owner.transform.position).normalized);
@@ -82,8 +95,9 @@ namespace Ekkam {
                 if (shootBackShots) ShootProjectile(tagToApply, -transform.forward);
             }
 
-            if (shootLightning)
+            if (shootLightning && projectileCountBeforeLightning >= shootLightningEveryXShots)
             {
+                projectileCountBeforeLightning = 0;
                 Enemy closestEnemy = GetComponent<Player>().FindClosestEnemy();
                 if (closestEnemy != null) ShootLightning(tagToApply, owner, closestEnemy.gameObject);
             }
@@ -107,10 +121,10 @@ namespace Ekkam {
                         if (!projectilePool[k].activeInHierarchy)
                         {
                             print("Reusing projectile from pool");
-                            projectilePool[k].transform.position = transform.position + new Vector3(bulletGapX, 0, 0);
                             projectilePool[k].tag = tagToApply;
                             projectilePool[k].GetComponent<Projectile>().projectileDamage = projectileDamage;
-                            projectilePool[k].transform.rotation = Quaternion.Euler(90, 0, 0);
+                            projectilePool[k].transform.rotation = GetProjectileRotation();
+                            projectilePool[k].transform.position = transform.position + (projectilePool[k].transform.right * bulletGapX);
                             projectilePool[k].transform.localScale = originalProjectileScale * projectileSize;
                             projectilePool[k].SetActive(true);
                             projectilePool[k].GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
@@ -125,10 +139,10 @@ namespace Ekkam {
                         print("Adding new projectile to pool");
                         GameObject newProjectile = SpawnProjectile();
                         projectilePool.Add(newProjectile);
-                        newProjectile.transform.position = transform.position + new Vector3(bulletGapX, 0, 0);
                         newProjectile.tag = tagToApply;
                         newProjectile.GetComponent<Projectile>().projectileDamage = projectileDamage;
-                        newProjectile.transform.rotation = Quaternion.Euler(90, 0, 0);
+                        newProjectile.transform.rotation = GetProjectileRotation();
+                        newProjectile.transform.position = transform.position + (newProjectile.transform.right * bulletGapX);
                         newProjectile.transform.localScale = originalProjectileScale * projectileSize;
                         newProjectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
                         StartCoroutine(DeactivateProjectile(newProjectile));
@@ -145,11 +159,23 @@ namespace Ekkam {
             GameObject newProjectile = Instantiate(
                 projectilePrefab,
                 transform.position,
-                Quaternion.Euler(90, 0, 0),
+                GetProjectileRotation(),
                 projectilePoolHolder.transform
             );
             projectilePool.Add(newProjectile);
             return newProjectile;
+        }
+
+        Quaternion GetProjectileRotation()
+        {
+            if (playerInDuoMode)
+            {
+                return Quaternion.Euler(90, crosshair.transform.rotation.eulerAngles.y, 0);
+            }
+            else
+            {
+                return Quaternion.Euler(90, 0, 0);
+            }
         }
 
         IEnumerator DeactivateProjectile(GameObject projectile)

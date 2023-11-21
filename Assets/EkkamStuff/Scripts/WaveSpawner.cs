@@ -9,6 +9,7 @@ namespace Ekkam {
         [SerializeField] WaveConfigSO[] waves;
         [SerializeField] int upgradesInterval = 3;
 
+        [HideInInspector]
         public List<Enemy> enemiesOnScreen = new List<Enemy>();
 
         public WaveConfigSO currentWave;

@@ -11,11 +11,12 @@ namespace Ekkam {
             get
             {
                 if (Application.isPlaying) return UnityEngine.Time.timeSinceLevelLoad;
-                else return EditorPrefs.GetFloat("PreviewTime", 0f);
+                // else return EditorPrefs.GetFloat("PreviewTime", 0f);
+                return 0f;
             }
             set
             {
-                EditorPrefs.SetFloat("PreviewTime", value);
+                // EditorPrefs.SetFloat("PreviewTime", value);
             }
         }
     }

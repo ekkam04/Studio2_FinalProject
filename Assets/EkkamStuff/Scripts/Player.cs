@@ -13,16 +13,18 @@ namespace Ekkam {
     {
         public int playerNumber;
 
-        [SerializeField] Mesh[] playerMeshes; // 0 = player 1, 1 = player 2
+        [SerializeField] Material[] playerMaterials;
+        [SerializeField] GameObject[] playerParts;
         [SerializeField] GameObject playerCanvas;
         [SerializeField] GameObject playerCards;
-        [SerializeField] GameObject crosshair;
+        public GameObject crosshair;
         public Slider healthBar;
 
         public Player playerDuo;
 
         Rigidbody rb;
         Collider col;
+        MeshRenderer meshRenderer;
         PlayerInput playerInput;
         ShootingManager shootingManager;
         UpgradeManager upgradeManager;
@@ -30,15 +32,27 @@ namespace Ekkam {
         MultiplayerEventSystem eventSystem;
         Vector2 movementInput;
         Vector2 aimInput;
+        Vector3 viewportPosition;
+        Vector3 repellingForceDirection;
+        Vector3 lastRepellingForceDirection;
         float rightTriggerAxis;
 
         public bool allowMovement = true;
+        public bool allowDodging = true;
+        public bool allowShooting = true;
         public bool inDuoMode = false;
+        bool isDodging = false;
+        float dodgeDirection = 0f;
         public bool cardPicked = false;
 
+        bool lockLeftMovement = false;
+        bool lockRightMovement = false;
+        bool lockUpMovement = false;
+        bool lockDownMovement = false;
+
         float shootTimer = 0f;
-        float dodgeTimer = 0f;
         float onMoveTimer = 0f;
+        float lockMovementTimer = 0f;
 
         [HideInInspector]
         public float maxHealth;
@@ -50,12 +64,13 @@ namespace Ekkam {
         public float maxSpeed = 25f;
         public float dodgeSpeed = 1f;
         [Tooltip("The cooldown time before the player can shoot again")] public float attackSpeed = 0.05f;
-        [Tooltip("The cooldown time before the player can dodge again")] public float dodgeCooldown = 1f;
+        [Tooltip("The cooldown time before the player can dodge again")] public float dodgeCooldown = 0.1f;
 
         void Awake()
         {
             rb = GetComponent<Rigidbody>();
             col = GetComponent<Collider>();
+            meshRenderer = GetComponent<MeshRenderer>();
             playerInput = GetComponent<PlayerInput>();
             shootingManager = GetComponent<ShootingManager>();
             upgradeManager = FindObjectOfType<UpgradeManager>();
@@ -99,19 +114,19 @@ namespace Ekkam {
             RotationConstraint playerCanvasRC = playerCanvas.GetComponent<RotationConstraint>();
             playerCanvasRC.AddSource(new ConstraintSource { sourceTransform = mainCamera.transform, weight = 1 });
 
-            if (playerInput == null)
-            {
-                crosshair.SetActive(true);
-                RotationConstraint crosshairRC = crosshair.GetComponent<RotationConstraint>();
-                crosshairRC.AddSource(new ConstraintSource { sourceTransform = mainCamera.transform, weight = 1 });
-            } 
+            if (playerInput == null) crosshair.SetActive(true);
+
         }
 
         void Update()
         {
-            shootTimer += Time.deltaTime;
-            dodgeTimer += Time.deltaTime;
+            viewportPosition = Camera.main.WorldToViewportPoint(transform.position);
+            repellingForceDirection = GetRepellingDirection();
 
+            lockMovementTimer += Time.deltaTime; 
+            shootTimer += Time.deltaTime;
+
+            ConstraintMovement();
             ControlSpeed();
             Aim();
 
@@ -128,7 +143,7 @@ namespace Ekkam {
                 }   
             }
 
-            if (rightTriggerAxis > 0.5f)
+            if (rightTriggerAxis > 0.5f && allowShooting)
             {
                 Shoot();
             }
@@ -141,7 +156,25 @@ namespace Ekkam {
 
         private void FixedUpdate()
         {
-            Move();
+            if (repellingForceDirection == Vector3.zero)
+            {
+                Move();
+            }
+            else
+            {
+                lastRepellingForceDirection = repellingForceDirection;
+                lockMovementTimer = 0f;
+            }
+
+            if (lockMovementTimer < 0.1f)
+            {
+                rb.AddForce(lastRepellingForceDirection * 1000);
+            }
+
+            if (isDodging)
+            {
+                rb.AddForce(new Vector3(dodgeDirection * dodgeSpeed, 0, 0) * 1000);
+            }
         }
 
         void Move()
@@ -158,7 +191,10 @@ namespace Ekkam {
             Vector3 aimDirection = new Vector3(aimInput.x, 0, aimInput.y);
             if (aimDirection.magnitude > 0.1f)
             {
-                crosshair.transform.localPosition = aimDirection.normalized * 60;
+                crosshair.transform.localPosition = aimDirection.normalized * 5;
+                // rotate the crosshair to face the direction of the aim but keep the x rotation at 90 degrees
+                crosshair.transform.rotation = Quaternion.LookRotation(aimDirection, Vector3.up);
+                crosshair.transform.eulerAngles = new Vector3(90, crosshair.transform.eulerAngles.y, crosshair.transform.eulerAngles.z);
             }
         }
 
@@ -190,6 +226,103 @@ namespace Ekkam {
             }
         }
 
+        void ConstraintMovement()
+        {
+            // prevent the player from moving the direction they were moving before they got repelled but allow them to move in other directions
+            if (lockMovementTimer < 0.75f)
+            {
+                if (lastRepellingForceDirection == Vector3.left && movementInput.x > 0) lockRightMovement = true;
+                if (lastRepellingForceDirection == Vector3.right && movementInput.x < 0) lockLeftMovement = true;
+                if (lastRepellingForceDirection == Vector3.forward && movementInput.y < 0) lockDownMovement = true;
+                if (lastRepellingForceDirection == Vector3.back && movementInput.y > 0) lockUpMovement = true;
+            }
+
+            // prevent the player from moving in the direction they are moving if they are being repelled until they move in the opposite direction
+            if (movementInput.x > 0)
+            {
+                if (lockRightMovement)
+                {
+                    movementInput.x = 0;
+                }
+                else
+                {
+                    lockLeftMovement = false;
+                }
+            }
+            else if (movementInput.x < 0)
+            {
+                if (lockLeftMovement)
+                {
+                    movementInput.x = 0;
+                }
+                else
+                {
+                    lockRightMovement = false;
+                }
+            }
+            if (movementInput.y > 0)
+            {
+                if (lockUpMovement)
+                {
+                    movementInput.y = 0;
+                }
+                else
+                {
+                    lockDownMovement = false;
+                }
+            }
+            else if (movementInput.y < 0)
+            {
+                if (lockDownMovement)
+                {
+                    movementInput.y = 0;
+                }
+                else
+                {
+                    lockUpMovement = false;
+                }
+            }
+
+            // unlock movement depending on viewport position
+            if (viewportPosition.x > 0.07f)
+            {
+                lockLeftMovement = false;
+            }
+            if (viewportPosition.x < 0.93f)
+            {
+                lockRightMovement = false;
+            }
+            if (viewportPosition.y > 0.12f)
+            {
+                lockDownMovement = false;
+            }
+            if (viewportPosition.y < 0.88f)
+            {
+                lockUpMovement = false;
+            }
+        }
+
+        Vector3 GetRepellingDirection()
+        {
+            if (viewportPosition.x < 0f)
+            {
+                return Vector3.right;
+            }
+            else if (viewportPosition.x > 1f)
+            {
+                return Vector3.left;
+            }
+            if (viewportPosition.y < 0.05f)
+            {
+                return Vector3.forward;
+            }
+            else if (viewportPosition.y > 0.95f)
+            {
+                return Vector3.back;
+            }
+            return Vector3.zero;
+        }
+
         public void OnMove(InputAction.CallbackContext context)
         {
             movementInput = context.ReadValue<Vector2>();
@@ -210,26 +343,19 @@ namespace Ekkam {
             // read 1D input, roll left if < 0, right if > 0
             if (context.performed)
             {
-                if (dodgeTimer < dodgeCooldown) return;
-                dodgeTimer = 0f;
+                if (!allowDodging) return;
                 if (inDuoMode && playerDuo != null)
                 {
                     if (playerNumber == 1)
                     {
+                        playerDuo.dodgeDirection = context.ReadValue<float>();
                         playerDuo.OnDodge(context);
                     }
                 }
                 else
                 {
-                    float dodgeDirection = context.ReadValue<float>();
-                    if (dodgeDirection < 0)
-                    {
-                        StartCoroutine(Dodge(-1));
-                    }
-                    else if (dodgeDirection > 0)
-                    {
-                        StartCoroutine(Dodge(1));
-                    }
+                    if (playerInput != null) dodgeDirection = context.ReadValue<float>();
+                    StartCoroutine(Dodge());
                 }
             }
         }
@@ -237,6 +363,7 @@ namespace Ekkam {
         public void EnableDuoMode()
         {
             allowMovement = false;
+            allowDodging = false;
             playerCanvas.SetActive(false);
             rb.velocity = Vector3.zero;
             col.enabled = false;
@@ -266,16 +393,21 @@ namespace Ekkam {
 
             print("Duo mode enabled for player " + playerNumber);
             inDuoMode = true;
-            GetComponent<MeshRenderer>().enabled = false;
+            allowDodging = true;
+            HidePlayer();
         }
 
-        IEnumerator Dodge(int direction)
+        IEnumerator Dodge()
         {
+            col.enabled = false;
             allowMovement = false;
-            rb.velocity = Vector3.zero;
+            allowDodging = false;
+            allowShooting = false;
+            if (playerInput == null) DisableShootingForAllPlayers();
+            if (crosshair != null) crosshair.SetActive(false);
             // spin the player 360 degrees according to the direction
             float startingRotationZ = transform.rotation.eulerAngles.z;
-            float targetRotationZ = startingRotationZ + (-direction * 360);
+            float targetRotationZ = startingRotationZ + (-dodgeDirection * 360);
             float rotationTimer = 0f;
             float rotationDuration = 0.5f;
             while (rotationTimer < rotationDuration)
@@ -284,33 +416,76 @@ namespace Ekkam {
                 float rotationZ = Mathf.Lerp(startingRotationZ, targetRotationZ, rotationTimer / rotationDuration) % 360;
                 transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, rotationZ);
                 // add a force to the player to move them left or right
-                rb.AddForce(new Vector3(direction * dodgeSpeed * 1000, 0, 0));
+                if (
+                    (lockMovementTimer > 0.75f || (lastRepellingForceDirection != Vector3.left && dodgeDirection > 0))
+                    || (lockMovementTimer > 0.75f || (lastRepellingForceDirection != Vector3.right && dodgeDirection < 0))
+                )
+                {
+                    isDodging = true;
+                }
+                else
+                {
+                    isDodging = false;
+                }
                 yield return null;
             }
+            isDodging = false;
             transform.rotation = Quaternion.identity;
             
-            yield return new WaitForSeconds(0.2f);
-            transform.rotation = Quaternion.identity;
             allowMovement = true;
+            col.enabled = true;
+            yield return new WaitForSeconds(dodgeCooldown);
+
+            if (dodgeDirection > 0) lockLeftMovement = false;
+            else if (dodgeDirection < 0) lockRightMovement = false;
+
+            transform.rotation = Quaternion.identity;
+            allowShooting = true;
+            if (playerInput == null) EnableShootingForAllPlayers();
+            if (crosshair != null) crosshair.SetActive(true);
+            allowDodging = true;
         }
 
         public void DisableDuoMode()
         {
             inDuoMode = false;
             allowMovement = true;
+            allowDodging = true;
             playerCanvas.SetActive(true);
 
             print("Duo mode disabled for player " + playerNumber);
-            GetComponent<MeshRenderer>().enabled = true;
+            ShowPlayer();
             col.enabled = true;
 
             // Add a force to the player to separate them, player 1 to the left, player 2 to the right
             ApplySeparationForce();
         }
 
-        public void AssignMesh()
+        void DisableShootingForAllPlayers()
         {
-            GetComponent<MeshFilter>().mesh = playerMeshes[playerNumber - 1];
+            foreach (Player player in FindObjectsOfType<Player>())
+            {
+                player.allowShooting = false;
+            }
+        }
+
+        void EnableShootingForAllPlayers()
+        {
+            foreach (Player player in FindObjectsOfType<Player>())
+            {
+                player.allowShooting = true;
+            }
+        }
+
+        public void AssignMaterial()
+        {
+            GetComponent<MeshRenderer>().material = playerMaterials[playerNumber - 1];
+            // apply material to all parts
+            foreach (GameObject playerPart in playerParts)
+            {
+                if (playerPart.name.Contains("Glass")) continue;
+                playerPart.GetComponent<MeshRenderer>().material = playerMaterials[playerNumber - 1];
+            }
         }
 
         public void TakeDamage(float damage)
@@ -320,6 +495,10 @@ namespace Ekkam {
             if (health <= 0)
             {
                 Destroy(gameObject);
+            }
+            else
+            {
+                StartCoroutine(FlashColor(Color.red, 0.1f));
             }
         }
 
@@ -427,6 +606,24 @@ namespace Ekkam {
             }
         }
 
+        void ShowPlayer()
+        {
+            meshRenderer.enabled = true;
+            foreach (GameObject playerPart in playerParts)
+            {
+                playerPart.SetActive(true);
+            }
+        }
+
+        void HidePlayer()
+        {
+            meshRenderer.enabled = false;
+            foreach (GameObject playerPart in playerParts)
+            {
+                playerPart.SetActive(false);
+            }
+        }
+
         public Enemy FindClosestEnemy()
         {
             Enemy closestEnemy = null;
@@ -458,6 +655,26 @@ namespace Ekkam {
                 }
             }
             return closestPlayer;
+        }
+
+        IEnumerator FlashColor(Color color, float duration)
+        {
+            // flash smoothly between the current color and the new color
+            float timer = 0f;
+            while (timer < duration)
+            {
+                meshRenderer.material.color = Color.Lerp(meshRenderer.material.color, color, timer / duration);
+                timer += Time.deltaTime;
+                yield return null;
+            }
+            // flash smoothly back to the original color
+            timer = 0f;
+            while (timer < duration * 2)
+            {
+                meshRenderer.material.color = Color.Lerp(meshRenderer.material.color, Color.white, timer / duration);
+                timer += Time.deltaTime;
+                yield return null;
+            }
         }
     }
 }

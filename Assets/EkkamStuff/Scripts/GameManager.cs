@@ -16,8 +16,8 @@ namespace Ekkam {
 
         [SerializeField] GameObject playerDuoPrefab;
 
-        [SerializeField] GameObject gameVCam;
-        [SerializeField] GameObject combinedVCam;
+        // [SerializeField] GameObject gameVCam;
+        // [SerializeField] GameObject combinedVCam;
 
         WaveSpawner waveSpawner;
         UpgradeManager upgradeManager;
@@ -39,8 +39,8 @@ namespace Ekkam {
         void Start()
         {
             Time.timeScale = 1;
-            gameVCam.SetActive(true);
-            combinedVCam.SetActive(false);
+            // gameVCam.SetActive(true);
+            // combinedVCam.SetActive(false);
         }
 
         void Update()
@@ -77,7 +77,7 @@ namespace Ekkam {
             playerInput.gameObject.name = "Player_" + player.playerNumber;
             print("Player " + player.playerNumber + " joined");
 
-            player.AssignMesh();
+            player.AssignMaterial();
             player.ApplySeparationForce();
         }
 
@@ -87,8 +87,8 @@ namespace Ekkam {
             if (OnCombinePlayers != null)
             {
                 OnCombinePlayers();
-                combinedVCam.SetActive(true);
-                gameVCam.SetActive(false);
+                // combinedVCam.SetActive(true);
+                // gameVCam.SetActive(false);
                 yield return new WaitUntil(() => AllPlayersInDuoMode());
                 GameObject playerDuoGameObject = Instantiate(playerDuoPrefab, PlayerInput.all[0].transform.position, Quaternion.identity);
                 playerDuoGameObject.name = "PlayerDuo";
@@ -113,8 +113,8 @@ namespace Ekkam {
             if (OnSeperatePlayers != null)
             {
                 OnSeperatePlayers();
-                gameVCam.SetActive(true);
-                combinedVCam.SetActive(false);
+                // gameVCam.SetActive(true);
+                // combinedVCam.SetActive(false);
                 yield return new WaitUntil(() => !AllPlayersInDuoMode());
                 foreach (PlayerInput playerInput in PlayerInput.all)
                 {
