@@ -1840,6 +1840,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
   - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
   - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
+  - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
+  - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
   upgradesInterval: 2
   enemiesOnScreen: []
   currentWave: {fileID: 0}
@@ -2809,8 +2811,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gamePaused: 0
   playerDuoPrefab: {fileID: 7823480186774308539, guid: 2198d5bf95bf58b47b844d6b895b12fd, type: 3}
-  gameVCam: {fileID: 0}
-  combinedVCam: {fileID: 0}
 --- !u!1 &1974691232
 GameObject:
   m_ObjectHideFlags: 0

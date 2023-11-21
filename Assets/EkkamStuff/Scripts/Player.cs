@@ -13,6 +13,7 @@ namespace Ekkam {
     {
         public int playerNumber;
 
+        [SerializeField] Material[] playerMaterials;
         [SerializeField] GameObject[] playerParts;
         [SerializeField] GameObject playerCanvas;
         [SerializeField] GameObject playerCards;
@@ -478,7 +479,13 @@ namespace Ekkam {
 
         public void AssignMaterial()
         {
-            // Need to implement
+            GetComponent<MeshRenderer>().material = playerMaterials[playerNumber - 1];
+            // apply material to all parts
+            foreach (GameObject playerPart in playerParts)
+            {
+                if (playerPart.name.Contains("Glass")) continue;
+                playerPart.GetComponent<MeshRenderer>().material = playerMaterials[playerNumber - 1];
+            }
         }
 
         public void TakeDamage(float damage)

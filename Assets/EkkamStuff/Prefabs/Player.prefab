@@ -801,6 +801,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerNumber: 0
+  playerMaterials:
+  - {fileID: 2100000, guid: 316dc25e2b60cf84e84e83a0a0995b59, type: 2}
+  - {fileID: 2100000, guid: d29677146096e2e44a5d0dc42b09e592, type: 2}
   playerParts:
   - {fileID: 2020149138261952087}
   - {fileID: 5250455057387406571}
@@ -880,6 +883,7 @@ MonoBehaviour:
   chainLightningCount: 3
   chainLightingAtOnce: 1
   lightningDamage: 0.1
+  shootLightningEveryXShots: 5
 --- !u!114 &1792663288401086769
 MonoBehaviour:
   m_ObjectHideFlags: 0
