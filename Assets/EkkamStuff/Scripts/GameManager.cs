@@ -77,7 +77,7 @@ namespace Ekkam {
             playerInput.gameObject.name = "Player_" + player.playerNumber;
             print("Player " + player.playerNumber + " joined");
 
-            player.AssignMesh();
+            player.AssignMaterial();
             player.ApplySeparationForce();
         }
 

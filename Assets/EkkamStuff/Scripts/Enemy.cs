@@ -14,6 +14,7 @@ namespace Ekkam {
         int waypointIndex = 0;
 
         ShootingManager shootingManager;
+        MeshRenderer meshRenderer;
 
         float shootTimer = 0f;
         float OnMoveTimer;
@@ -38,6 +39,7 @@ namespace Ekkam {
         {
             waveSpawner = FindObjectOfType<WaveSpawner>();
             shootingManager = GetComponent<ShootingManager>();
+            meshRenderer = GetComponent<MeshRenderer>();
         }
 
         void Start()
@@ -119,6 +121,10 @@ namespace Ekkam {
             {
                 Destroy(gameObject);
             }
+            else
+            {
+                StartCoroutine(FlashColor(Color.red, 0.1f));
+            }
         }
 
         private void OnDestroy() {
@@ -157,6 +163,26 @@ namespace Ekkam {
                 }
             }
             return closestPlayer;
+        }
+
+        IEnumerator FlashColor(Color color, float duration)
+        {
+            // flash smoothly between the current color and the new color
+            float timer = 0f;
+            while (timer < duration)
+            {
+                meshRenderer.material.color = Color.Lerp(meshRenderer.material.color, color, timer / duration);
+                timer += Time.deltaTime;
+                yield return null;
+            }
+            // flash smoothly back to the original color
+            timer = 0f;
+            while (timer < duration * 2)
+            {
+                meshRenderer.material.color = Color.Lerp(meshRenderer.material.color, Color.white, timer / duration);
+                timer += Time.deltaTime;
+                yield return null;
+            }
         }
     }
 }

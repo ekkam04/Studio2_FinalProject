@@ -31,8 +31,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: -1.5336, z: 100}
-  m_LocalScale: {x: 0.5, y: 1.13135, z: 0.5}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2173019584359670989}
   - {fileID: 4254901196144291627}
@@ -105,7 +105,7 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
@@ -124,8 +124,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffe661b23f8bd1d43ab3f6567f88fd4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  waypoints: []
   pathPrefab: {fileID: 0}
   health: 2
+  speedCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   moveSpeed: 60
   attackSpeed: 2
   damageOnImpact: 1
@@ -157,6 +164,7 @@ MonoBehaviour:
   chainLightningCount: 3
   chainLightingAtOnce: 1
   lightningDamage: 0.25
+  shootLightningEveryXShots: 5
 --- !u!1 &2141065758741607909
 GameObject:
   m_ObjectHideFlags: 0
