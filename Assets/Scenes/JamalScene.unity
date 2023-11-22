@@ -2257,7 +2257,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawningWaves: 0
   waves:
-  - {fileID: 11400000, guid: c9b472867d14c8d428225dc7319762f1, type: 2}
+  - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
   upgradesInterval: 2
   enemiesOnScreen: []
   currentWave: {fileID: 0}
