@@ -115,7 +115,6 @@ namespace Ekkam {
             playerCanvasRC.AddSource(new ConstraintSource { sourceTransform = mainCamera.transform, weight = 1 });
 
             if (playerInput == null) crosshair.SetActive(true);
-
         }
 
         void Update()
@@ -596,6 +595,7 @@ namespace Ekkam {
                 default:
                     break;
             }
+            if (inDuoMode && playerDuo != null) playerDuo.CombineUpgrades();
         }
 
         private void OnTriggerEnter(Collider other) {
@@ -604,6 +604,47 @@ namespace Ekkam {
                 print("Player collided with enemy");
                 TakeDamage(other.GetComponent<Enemy>().damageOnImpact);
             }
+        }
+
+        public void CombineUpgrades()
+        {
+            if (playerInput != null) return;
+
+            health = 0;
+            maxHealth = 0;
+
+            shootingManager.projectileSpeed = 0;
+            shootingManager.projectileDamage = 0;
+            shootingManager.projectileSize = 0;
+            shootingManager.multishotCount = 0;
+            shootingManager.burstFireCount = 0;
+
+            shootingManager.shootProjectile = false;
+            shootingManager.shootBackShots = false;
+            shootingManager.shootLightning = false;
+
+            foreach (PlayerInput playerInput in PlayerInput.all)
+            {
+                Player player = playerInput.GetComponent<Player>();
+                ShootingManager playerShootingManager = player.GetComponent<ShootingManager>();
+
+                health += player.health;
+                maxHealth += player.maxHealth;
+
+                shootingManager.projectileSpeed += playerShootingManager.projectileSpeed / 2;
+                shootingManager.projectileDamage += playerShootingManager.projectileDamage / 2;
+                shootingManager.projectileSize += playerShootingManager.projectileSize / 2;
+                shootingManager.multishotCount += playerShootingManager.multishotCount;
+                shootingManager.burstFireCount += playerShootingManager.burstFireCount;
+
+                if (shootingManager.shootProjectile == false) shootingManager.shootProjectile = playerShootingManager.shootProjectile;
+                if (shootingManager.shootBackShots == false) shootingManager.shootBackShots = playerShootingManager.shootBackShots;
+                if (shootingManager.shootLightning == false) shootingManager.shootLightning = playerShootingManager.shootLightning;
+            }
+
+            healthBar.maxValue = maxHealth;
+            healthBar.value = health;
+            print("Combined upgrades");
         }
 
         void ShowPlayer()

@@ -93,18 +93,12 @@ namespace Ekkam {
                 GameObject playerDuoGameObject = Instantiate(playerDuoPrefab, PlayerInput.all[0].transform.position, Quaternion.identity);
                 playerDuoGameObject.name = "PlayerDuo";
                 Player playerDuo = playerDuoGameObject.GetComponent<Player>();  
-
-                playerDuo.health = 0f;
-                playerDuo.maxHealth = 0f;
                 foreach (PlayerInput playerInput in PlayerInput.all)
                 {
                     Player player = playerInput.GetComponent<Player>();
                     player.playerDuo = playerDuo;
-                    playerDuo.health += player.health;
-                    playerDuo.maxHealth += player.maxHealth;
                 }
-                playerDuo.healthBar.maxValue = playerDuo.maxHealth;
-                playerDuo.healthBar.value = playerDuo.health;
+                playerDuo.CombineUpgrades();
             }
         }
 
