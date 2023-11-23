@@ -17,6 +17,7 @@ namespace Ekkam {
         MeshRenderer meshRenderer;
 
         float shootTimer = 0f;
+        float waitTimer = 0f;
         float OnMoveTimer;
 
         [HideInInspector]
@@ -37,6 +38,8 @@ namespace Ekkam {
         [Tooltip("The cooldown time before the enemy can shoot again")] public float attackSpeed = 2f;
         [Tooltip("The damage dealt to a player when they collide with the enemy")] public float damageOnImpact = 1f;
 
+        public float waitWaypointDuration = 1f;
+
         void Awake()
         {
             waveSpawner = FindObjectOfType<WaveSpawner>();
@@ -54,6 +57,8 @@ namespace Ekkam {
         void Update()
         {       
             shootTimer += Time.deltaTime;
+            waitTimer += Time.deltaTime;
+
             if (shootTimer >= attackSpeed)
             {
                 if (shootTowardsInitialPlayerPos)
@@ -67,7 +72,10 @@ namespace Ekkam {
                 shootTimer = 0f;
             }
 
-            FollowPath();
+            if (waitTimer >= waitWaypointDuration)
+            {
+                FollowPath();
+            }
         }
 
         void FollowPath()
@@ -81,6 +89,10 @@ namespace Ekkam {
 
                 if (transform.position == targetPosition)
                 {
+                    if (waypoints[waypointIndex].gameObject.tag == "WaitWaypoint")
+                    {
+                        waitTimer = 0f;
+                    }
                     waypointIndex++;
                     OnMoveTimer = 0f;
                 }

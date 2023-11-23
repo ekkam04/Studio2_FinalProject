@@ -1836,12 +1836,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawningWaves: 0
   waves:
+  - {fileID: 11400000, guid: c9b472867d14c8d428225dc7319762f1, type: 2}
+  - {fileID: 11400000, guid: 167bb10eb8265c9439ea0a8c52c175b0, type: 2}
   - {fileID: 11400000, guid: 0e095f1628739c14c9186fa4e098e4d2, type: 2}
-  - {fileID: 11400000, guid: 0e095f1628739c14c9186fa4e098e4d2, type: 2}
+  - {fileID: 11400000, guid: 167bb10eb8265c9439ea0a8c52c175b0, type: 2}
   - {fileID: 11400000, guid: 0e095f1628739c14c9186fa4e098e4d2, type: 2}
   - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
   - {fileID: 11400000, guid: 0e095f1628739c14c9186fa4e098e4d2, type: 2}
-  - {fileID: 11400000, guid: d89281ed295f5ca45863fa9c1715e35c, type: 2}
   upgradesInterval: 2
   enemiesOnScreen: []
   currentWave: {fileID: 0}

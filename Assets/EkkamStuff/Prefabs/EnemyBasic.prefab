@@ -155,6 +155,7 @@ MonoBehaviour:
   moveSpeed: 80
   attackSpeed: 2
   damageOnImpact: 2
+  waitWaypointDuration: 1
 --- !u!114 &1899445987849418053
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,6 +178,7 @@ MonoBehaviour:
   multishotCount: 1
   multishotGapX: 3
   multishotArcAngle: 0
+  skipMiddleProjectile: 0
   burstFireCount: 1
   burstFireDelay: 0.08
   shootLightning: 0

@@ -155,6 +155,7 @@ MonoBehaviour:
   moveSpeed: 120
   attackSpeed: 2
   damageOnImpact: 1
+  waitWaypointDuration: 1
 --- !u!114 &1899445987849418053
 MonoBehaviour:
   m_ObjectHideFlags: 0

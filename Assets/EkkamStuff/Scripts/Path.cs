@@ -21,6 +21,7 @@ namespace Ekkam {
             {
                 if (i == 0) Gizmos.color = Color.green;
                 else if (i == waypoints.Length - 1) Gizmos.color = Color.red;
+                else if (waypoints[i].gameObject.tag == "WaitWaypoint") Gizmos.color = Color.cyan;
                 else Gizmos.color = Color.yellow;
 
                 Gizmos.DrawSphere(waypoints[i].position, 2f);
