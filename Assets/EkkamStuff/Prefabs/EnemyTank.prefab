@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6605887546655481270}
   - component: {fileID: 1899445987849418053}
   m_Layer: 6
-  m_Name: EnemyBasic
+  m_Name: EnemyTank
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,7 +47,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1180025729877882771}
-  m_Mesh: {fileID: 9000081312944733210, guid: c5e12de1cf6ea5549bcffefa8f7e4f27, type: 3}
+  m_Mesh: {fileID: -3046620498331176644, guid: 708f25a6f752ea04eb8ead8d475335f7, type: 3}
 --- !u!23 &5308894119029747119
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -127,7 +127,7 @@ MonoBehaviour:
   waypoints: []
   pathPrefab: {fileID: 0}
   shootTowardsInitialPlayerPos: 1
-  health: 2
+  health: 6
   speedCurve:
     serializedVersion: 2
     m_Curve:
@@ -152,9 +152,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  moveSpeed: 80
+  moveSpeed: 120
   attackSpeed: 2
-  damageOnImpact: 2
+  damageOnImpact: 1
 --- !u!114 &1899445987849418053
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,9 +174,10 @@ MonoBehaviour:
   projectileSpeed: 90
   projectileDamage: 1
   projectileSize: 0.75
-  multishotCount: 1
+  multishotCount: 4
   multishotGapX: 3
-  multishotArcAngle: 0
+  multishotArcAngle: 15
+  skipMiddleProjectile: 0
   burstFireCount: 1
   burstFireDelay: 0.08
   shootLightning: 0

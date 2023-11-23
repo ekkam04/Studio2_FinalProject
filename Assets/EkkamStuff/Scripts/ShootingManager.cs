@@ -11,7 +11,7 @@ namespace Ekkam {
         [SerializeField] GameObject projectilePrefab;
         [SerializeField] List<GameObject> projectilePool;
         int projectilePoolSize = 3;
-        float projectileLifetime = 10f;
+        float projectileLifetime = 15f;
         Vector3 originalProjectileScale;
         GameObject projectilePoolHolder;
 
@@ -33,6 +33,9 @@ namespace Ekkam {
 
         [Tooltip("The amount of projectiles fired side by side")] public int multishotCount = 1;
         [Tooltip("The gap between projectiles when multishot is more than 1")] public float multishotGapX = 0.5f;
+        public float multishotArcAngle = 45f;
+        public bool skipMiddleProjectile = false;
+
 
         [Tooltip("The amount of projectiles fired per shot")] public int burstFireCount = 1;
         [Tooltip("The delay between each bullet being fired in burst")] public float burstFireDelay = 0.1f;
@@ -112,8 +115,16 @@ namespace Ekkam {
                 {
                     bulletGapX = -(multishotGapX * (multishotCount - 1) / 2);
                 }
+                int halfwayPoint = (int)(multishotCount / 2);
+
                 for (int j = 0; j < multishotCount; j++)
                 {
+                    if (j == halfwayPoint && skipMiddleProjectile)
+                    {
+                        continue;
+                    }
+                    float angleOffset = CalculateAngleOffset(j, multishotCount, multishotArcAngle);
+                    Vector3 adjustedDirection = Quaternion.Euler(0f, angleOffset, 0f) * direction;
                     // Find an inactive projectile in the pool
                     bool foundInactiveProjectile = false;
                     for (int k = 0; k < projectilePool.Count; k++)
@@ -123,11 +134,12 @@ namespace Ekkam {
                             print("Reusing projectile from pool");
                             projectilePool[k].tag = tagToApply;
                             projectilePool[k].GetComponent<Projectile>().projectileDamage = projectileDamage;
-                            projectilePool[k].transform.rotation = GetProjectileRotation();
+                            projectilePool[k].transform.rotation = Quaternion.LookRotation(adjustedDirection);
+                            projectilePool[k].transform.eulerAngles = new Vector3(90, projectilePool[k].transform.eulerAngles.y, projectilePool[k].transform.eulerAngles.z);
                             projectilePool[k].transform.position = transform.position + (projectilePool[k].transform.right * bulletGapX);
                             projectilePool[k].transform.localScale = originalProjectileScale * projectileSize;
                             projectilePool[k].SetActive(true);
-                            projectilePool[k].GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
+                            projectilePool[k].GetComponent<Rigidbody>().velocity = adjustedDirection * projectileSpeed;
                             StartCoroutine(DeactivateProjectile(projectilePool[k]));
                             foundInactiveProjectile = true;
                             break;
@@ -141,10 +153,11 @@ namespace Ekkam {
                         projectilePool.Add(newProjectile);
                         newProjectile.tag = tagToApply;
                         newProjectile.GetComponent<Projectile>().projectileDamage = projectileDamage;
-                        newProjectile.transform.rotation = GetProjectileRotation();
+                        newProjectile.transform.rotation = Quaternion.LookRotation(adjustedDirection);
+                        newProjectile.transform.eulerAngles = new Vector3(90, newProjectile.transform.eulerAngles.y, newProjectile.transform.eulerAngles.z);
                         newProjectile.transform.position = transform.position + (newProjectile.transform.right * bulletGapX);
                         newProjectile.transform.localScale = originalProjectileScale * projectileSize;
-                        newProjectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
+                        newProjectile.GetComponent<Rigidbody>().velocity = adjustedDirection * projectileSpeed;
                         StartCoroutine(DeactivateProjectile(newProjectile));
                     }
                     bulletGapX += multishotGapX;
@@ -176,6 +189,15 @@ namespace Ekkam {
             {
                 return Quaternion.Euler(90, 0, 0);
             }
+        }
+
+        private float CalculateAngleOffset(int index, int totalShots, float arcAngle)
+        {
+            float totalAngle = (totalShots - 1) * arcAngle;
+            float halfTotalAngle = totalAngle / 2f;
+
+            float currentAngle = -halfTotalAngle + index * arcAngle;
+            return currentAngle;
         }
 
         IEnumerator DeactivateProjectile(GameObject projectile)

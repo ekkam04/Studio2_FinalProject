@@ -22,6 +22,8 @@ namespace Ekkam {
         [HideInInspector]
         public Transform pathPrefab;
 
+        public bool shootTowardsInitialPlayerPos = false;
+
         [Header("----- Enemy Stats -----")]
 
         [Tooltip("The total health")] public float health = 5f;
@@ -54,7 +56,14 @@ namespace Ekkam {
             shootTimer += Time.deltaTime;
             if (shootTimer >= attackSpeed)
             {
-                shootingManager.Shoot("EnemyProjectile", this.gameObject);
+                if (shootTowardsInitialPlayerPos)
+                {
+                    shootingManager.Shoot("EnemyProjectile", this.gameObject, FindClosestPlayer().transform);
+                }
+                else
+                {
+                    shootingManager.Shoot("EnemyProjectile", this.gameObject);
+                }
                 shootTimer = 0f;
             }
 

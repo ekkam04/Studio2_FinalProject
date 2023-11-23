@@ -18,7 +18,7 @@ namespace Ekkam {
 
         Enemy enemyPrefab;
         Enemy previewEnemy;
-        AnimationCurve speedCurve;
+        AnimationCurve speedCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
         float moveSpeed;
 
         void OnEnable()
