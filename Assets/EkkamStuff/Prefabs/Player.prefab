@@ -800,6 +800,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 568a98971bae255419faa35fa3fa1210, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  healthBar: {fileID: 4881066733859490969}
+  health: 10
+  maxHealth: 0
+  meshRenderer: {fileID: 0}
   playerNumber: 0
   playerMaterials:
   - {fileID: 2100000, guid: 316dc25e2b60cf84e84e83a0a0995b59, type: 2}
@@ -817,15 +821,14 @@ MonoBehaviour:
   playerCanvas: {fileID: 1891858151252943537}
   playerCards: {fileID: 3683245239006980493, guid: 0ff80f775c881d94084551214ae3860c, type: 3}
   crosshair: {fileID: 0}
-  healthBar: {fileID: 4881066733859490969}
   playerDuo: {fileID: 0}
   allowMovement: 1
   allowDodging: 1
   allowShooting: 1
   inDuoMode: 0
   cardPicked: 0
-  maxHealth: 0
-  health: 10
+  dashDirection: 0
+  lastDashDirection: 0
   speedCurve:
     serializedVersion: 2
     m_Curve:
@@ -850,9 +853,43 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  dashCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.004173279
+      value: 0.9976425
+      inSlope: -0.011098849
+      outSlope: -0.011098849
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.20816348
+    - serializedVersion: 3
+      time: 0.44653475
+      value: 0.2584167
+      inSlope: -1.359513
+      outSlope: -1.359513
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.08562121
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.0166626
+      value: -0.009433746
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   moveSpeed: 30
   maxSpeed: 35
   dodgeSpeed: 2
+  dashSpeed: 100
   attackSpeed: 0.2
   dodgeCooldown: 0.1
 --- !u!114 &500853067486141094

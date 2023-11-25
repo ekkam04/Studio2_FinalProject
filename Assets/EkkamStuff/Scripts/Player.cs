@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -33,6 +34,7 @@ namespace Ekkam {
         Vector3 viewportPosition;
         Vector3 repellingForceDirection;
         Vector3 lastRepellingForceDirection;
+        Vector3 lastMovementInputBeforeDash;
         float rightTriggerAxis;
 
         public bool allowMovement = true;
@@ -40,6 +42,7 @@ namespace Ekkam {
         public bool allowShooting = true;
         public bool inDuoMode = false;
         bool isDodging = false;
+        bool isDashing = false;
         float dodgeDirection = 0f;
         public bool cardPicked = false;
 
@@ -50,6 +53,7 @@ namespace Ekkam {
 
         float shootTimer = 0f;
         float onMoveTimer = 0f;
+        float onDashTimer = 0f;
         float lockMovementTimer = 0f;
 
         public enum DashDirection
@@ -64,12 +68,15 @@ namespace Ekkam {
             TopLeft
         }
         public DashDirection dashDirection;
+        public DashDirection lastDashDirection;
 
         [Header("----- Player Stats -----")]
         public AnimationCurve speedCurve;
+        public AnimationCurve dashCurve;
         public float moveSpeed = 20f;
         public float maxSpeed = 25f;
         public float dodgeSpeed = 1f;
+        public float dashSpeed = 2f;
         [Tooltip("The cooldown time before the player can shoot again")] public float attackSpeed = 0.05f;
         [Tooltip("The cooldown time before the player can dodge again")] public float dodgeCooldown = 0.1f;
 
@@ -150,6 +157,7 @@ namespace Ekkam {
             }
 
             TiltOnMovement();
+            TiltOnDash();
 
             if (rightTriggerAxis > 0.5f && allowShooting)
             {
@@ -179,10 +187,22 @@ namespace Ekkam {
                 rb.AddForce(lastRepellingForceDirection * 1000);
             }
 
-            if (isDodging)
+            if (isDashing)
             {
-                rb.AddForce(new Vector3(dodgeDirection * dodgeSpeed, 0, 0) * 1000);
+                onDashTimer += Time.deltaTime;
+                Vector3 dashDirectionVector = new Vector3(lastMovementInputBeforeDash.x, 0, lastMovementInputBeforeDash.y);
+                dashDirectionVector = dashDirectionVector == Vector3.zero ? Vector3.forward : dashDirectionVector;
+                rb.AddForce(dashDirectionVector.normalized * dashSpeed * 100 * dashCurve.Evaluate(onDashTimer));
             }
+            else
+            {
+                onDashTimer = 0f;
+            }
+
+            // if (isDodging)
+            // {
+            //     rb.AddForce(new Vector3(dodgeDirection * dodgeSpeed, 0, 0) * 1000);
+            // }
         }
 
         void Move()
@@ -269,7 +289,7 @@ namespace Ekkam {
             }
             else
             {
-                if (movementInput.y < -0.5f)
+                if (movementInput.y < 0f)
                 {
                     dashDirection = DashDirection.Bottom;
                 }
@@ -373,6 +393,26 @@ namespace Ekkam {
             }
         }
 
+        void TiltOnDash()
+        {
+            // tilt the player forward or backward while dashing depending on the dash curve
+            if (isDashing)
+            {
+                if (lastDashDirection == DashDirection.Top)
+                {
+                    transform.eulerAngles = new Vector3(Mathf.Lerp(0, 45, dashCurve.Evaluate(onDashTimer)), transform.eulerAngles.y, transform.eulerAngles.z);
+                }
+                else if (lastDashDirection == DashDirection.Bottom)
+                {
+                    transform.eulerAngles = new Vector3(Mathf.Lerp(0, -45, dashCurve.Evaluate(onDashTimer)), transform.eulerAngles.y, transform.eulerAngles.z);
+                }
+            }
+            else
+            {
+                transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, transform.eulerAngles.z);
+            }
+        }
+
         Vector3 GetRepellingDirection()
         {
             if (viewportPosition.x < 0f)
@@ -411,7 +451,6 @@ namespace Ekkam {
 
         public void OnDodge(InputAction.CallbackContext context)
         {
-            // read 1D input, roll left if < 0, right if > 0
             if (context.performed)
             {
                 if (!allowDodging) return;
@@ -419,14 +458,15 @@ namespace Ekkam {
                 {
                     if (playerNumber == 1)
                     {
-                        playerDuo.dodgeDirection = context.ReadValue<float>();
+                        // playerDuo.dodgeDirection = context.ReadValue<float>();
                         playerDuo.OnDodge(context);
                     }
                 }
                 else
                 {
-                    if (playerInput != null) dodgeDirection = context.ReadValue<float>();
-                    StartCoroutine(Dodge());
+                    // if (playerInput != null) dodgeDirection = context.ReadValue<float>();
+                    // StartCoroutine(Dodge());
+                    StartCoroutine(Dash());
                 }
             }
         }
@@ -468,7 +508,56 @@ namespace Ekkam {
             HidePlayer();
         }
 
-        IEnumerator Dodge()
+        // IEnumerator Dodge()
+        // {
+        //     col.enabled = false;
+        //     allowMovement = false;
+        //     allowDodging = false;
+        //     allowShooting = false;
+        //     if (playerInput == null) DisableShootingForAllPlayers();
+        //     if (crosshair != null) crosshair.SetActive(false);
+        //     // spin the player 360 degrees according to the direction
+        //     float startingRotationZ = transform.rotation.eulerAngles.z;
+        //     float targetRotationZ = startingRotationZ + (-dodgeDirection * 360);
+        //     float rotationTimer = 0f;
+        //     float rotationDuration = 0.5f;
+        //     while (rotationTimer < rotationDuration)
+        //     {
+        //         rotationTimer += Time.deltaTime;
+        //         float rotationZ = Mathf.Lerp(startingRotationZ, targetRotationZ, rotationTimer / rotationDuration) % 360;
+        //         transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, rotationZ);
+        //         // add a force to the player to move them left or right
+        //         if (
+        //             (lockMovementTimer > 0.75f || (lastRepellingForceDirection != Vector3.left && dodgeDirection > 0))
+        //             || (lockMovementTimer > 0.75f || (lastRepellingForceDirection != Vector3.right && dodgeDirection < 0))
+        //         )
+        //         {
+        //             isDodging = true;
+        //         }
+        //         else
+        //         {
+        //             isDodging = false;
+        //         }
+        //         yield return null;
+        //     }
+        //     isDodging = false;
+        //     transform.rotation = Quaternion.identity;
+            
+        //     allowMovement = true;
+        //     col.enabled = true;
+        //     yield return new WaitForSeconds(dodgeCooldown);
+
+        //     if (dodgeDirection > 0) lockLeftMovement = false;
+        //     else if (dodgeDirection < 0) lockRightMovement = false;
+
+        //     transform.rotation = Quaternion.identity;
+        //     allowShooting = true;
+        //     if (playerInput == null) EnableShootingForAllPlayers();
+        //     if (crosshair != null) crosshair.SetActive(true);
+        //     allowDodging = true;
+        // }
+
+        IEnumerator Dash()
         {
             col.enabled = false;
             allowMovement = false;
@@ -476,39 +565,75 @@ namespace Ekkam {
             allowShooting = false;
             if (playerInput == null) DisableShootingForAllPlayers();
             if (crosshair != null) crosshair.SetActive(false);
+
             // spin the player 360 degrees according to the direction
+            lastDashDirection = dashDirection;
+            lastMovementInputBeforeDash = movementInput;
+
             float startingRotationZ = transform.rotation.eulerAngles.z;
-            float targetRotationZ = startingRotationZ + (-dodgeDirection * 360);
+
+            float targetRotationZ;
+            if (lastDashDirection == DashDirection.TopRight || lastDashDirection == DashDirection.Right || lastDashDirection == DashDirection.BottomRight)
+            {
+                targetRotationZ = startingRotationZ - 360;
+            }
+            else if (lastDashDirection == DashDirection.BottomLeft || lastDashDirection == DashDirection.Left || lastDashDirection == DashDirection.TopLeft)
+            {
+                targetRotationZ = startingRotationZ + 360;
+            }
+            else
+            {
+                targetRotationZ = startingRotationZ;
+            }
+            
             float rotationTimer = 0f;
             float rotationDuration = 0.5f;
-            while (rotationTimer < rotationDuration)
+            isDashing = true;
+            if (lastDashDirection != DashDirection.Top && lastDashDirection != DashDirection.Bottom)
             {
-                rotationTimer += Time.deltaTime;
-                float rotationZ = Mathf.Lerp(startingRotationZ, targetRotationZ, rotationTimer / rotationDuration) % 360;
-                transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, rotationZ);
-                // add a force to the player to move them left or right
-                if (
-                    (lockMovementTimer > 0.75f || (lastRepellingForceDirection != Vector3.left && dodgeDirection > 0))
-                    || (lockMovementTimer > 0.75f || (lastRepellingForceDirection != Vector3.right && dodgeDirection < 0))
-                )
+                while (rotationTimer < rotationDuration)
                 {
-                    isDodging = true;
+                    rotationTimer += Time.deltaTime;
+                    float rotationZ = Mathf.Lerp(startingRotationZ, targetRotationZ, rotationTimer / rotationDuration) % 360;
+                    transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, rotationZ);
+                    yield return null;
                 }
-                else
-                {
-                    isDodging = false;
-                }
-                yield return null;
             }
-            isDodging = false;
+            else
+            {
+                float dashDuration = 0.5f;
+                float dashTimer = 0f;
+                while (dashTimer < dashDuration)
+                {
+                    dashTimer += Time.deltaTime;
+                    // if (lastDashDirection == DashDirection.Top)
+                    // {
+                    //     transform.eulerAngles = new Vector3(Mathf.Lerp(0, 45, dashTimer / dashDuration), transform.eulerAngles.y, transform.eulerAngles.z);
+                    // }
+                    // else if (lastDashDirection == DashDirection.Bottom)
+                    // {
+                    //     transform.eulerAngles = new Vector3(Mathf.Lerp(0, -45, dashTimer / dashDuration), transform.eulerAngles.y, transform.eulerAngles.z);
+                    // }
+                    yield return null;
+                }
+                // float tiltBackDuration = 0.1f;
+                // float tiltBackTimer = 0f;
+                // while (tiltBackTimer < tiltBackDuration)
+                // {
+                //     tiltBackTimer += Time.deltaTime;
+                //     transform.eulerAngles = new Vector3(Mathf.Lerp(45, 0, tiltBackTimer / tiltBackDuration), transform.eulerAngles.y, transform.eulerAngles.z);
+                //     yield return null;
+                // }
+            }
+            isDashing = false;
             transform.rotation = Quaternion.identity;
             
             allowMovement = true;
             col.enabled = true;
             yield return new WaitForSeconds(dodgeCooldown);
 
-            if (dodgeDirection > 0) lockLeftMovement = false;
-            else if (dodgeDirection < 0) lockRightMovement = false;
+            if (lastDashDirection == DashDirection.Right) lockLeftMovement = false;
+            else if (lastDashDirection == DashDirection.Left) lockRightMovement = false;
 
             transform.rotation = Quaternion.identity;
             allowShooting = true;

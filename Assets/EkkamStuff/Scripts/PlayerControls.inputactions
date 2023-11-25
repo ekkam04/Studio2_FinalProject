@@ -150,37 +150,15 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "DodgeDirection",
-                    "id": "f5646c69-cc6e-45ba-890b-2adcb30d7147",
-                    "path": "1DAxis",
+                    "name": "",
+                    "id": "e0b174e0-5ecf-4bac-8829-98d93dd94459",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Dodge",
-                    "isComposite": true,
+                    "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "negative",
-                    "id": "8c43462c-4480-4266-8dd4-4e65a56c993e",
-                    "path": "<Gamepad>/leftShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Dodge",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "positive",
-                    "id": "5826ab1d-a8b4-4504-9658-67c3e7dc2929",
-                    "path": "<Gamepad>/rightShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Dodge",
-                    "isComposite": false,
-                    "isPartOfComposite": true
                 },
                 {
                     "name": "",
