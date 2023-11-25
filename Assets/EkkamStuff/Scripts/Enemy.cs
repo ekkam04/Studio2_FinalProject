@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System;
 
 namespace Ekkam {
-    public class Enemy : MonoBehaviour
+    public class Enemy : DamagableEntity
     {
         WaveSpawner waveSpawner;
 
@@ -14,7 +14,6 @@ namespace Ekkam {
         int waypointIndex = 0;
 
         ShootingManager shootingManager;
-        MeshRenderer meshRenderer;
 
         float shootTimer = 0f;
         float waitTimer = 0f;
@@ -26,8 +25,6 @@ namespace Ekkam {
         public bool shootTowardsInitialPlayerPos = false;
 
         [Header("----- Enemy Stats -----")]
-
-        [Tooltip("The total health")] public float health = 5f;
 
         [HideInInspector]
         public AnimationCurve speedCurve; // This is now controlled by the WaveConfigSO
@@ -45,6 +42,7 @@ namespace Ekkam {
             waveSpawner = FindObjectOfType<WaveSpawner>();
             shootingManager = GetComponent<ShootingManager>();
             meshRenderer = GetComponent<MeshRenderer>();
+            InitializeHealth();
         }
 
         void Start()
@@ -135,75 +133,9 @@ namespace Ekkam {
             return waypoints;
         }
 
-        public void TakeDamage(float damage)
-        {
-            health -= damage;
-            if (health <= 0)
-            {
-                Destroy(gameObject);
-            }
-            else
-            {
-                StartCoroutine(FlashColor(Color.red, 0.1f));
-            }
-        }
-
         private void OnDestroy() {
             waveSpawner.enemiesOnScreen.Remove(this);
             Destroy(pathPrefab.gameObject);
-        }
-
-        public Enemy FindClosestEnemy()
-        {
-            Enemy closestEnemy = null;
-            float closestDistance = Mathf.Infinity;
-            foreach (Enemy enemy in FindObjectsOfType<Enemy>())
-            {
-                float distance = Vector3.Distance(transform.position, enemy.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestEnemy = enemy;
-                }
-            }
-            return closestEnemy;
-        }
-
-        public Player FindClosestPlayer()
-        {
-            Player closestPlayer = null;
-            float closestDistance = Mathf.Infinity;
-            foreach (Player player in FindObjectsOfType<Player>())
-            {
-                if (player == this) continue;
-                float distance = Vector3.Distance(transform.position, player.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestPlayer = player;
-                }
-            }
-            return closestPlayer;
-        }
-
-        IEnumerator FlashColor(Color color, float duration)
-        {
-            // flash smoothly between the current color and the new color
-            float timer = 0f;
-            while (timer < duration)
-            {
-                meshRenderer.material.color = Color.Lerp(meshRenderer.material.color, color, timer / duration);
-                timer += Time.deltaTime;
-                yield return null;
-            }
-            // flash smoothly back to the original color
-            timer = 0f;
-            while (timer < duration * 2)
-            {
-                meshRenderer.material.color = Color.Lerp(meshRenderer.material.color, Color.white, timer / duration);
-                timer += Time.deltaTime;
-                yield return null;
-            }
         }
     }
 }

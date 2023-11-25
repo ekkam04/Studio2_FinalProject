@@ -876,6 +876,8 @@ MonoBehaviour:
   projectileSize: 1
   multishotCount: 1
   multishotGapX: 3
+  multishotArcAngle: 0
+  skipMiddleProjectile: 0
   burstFireCount: 1
   burstFireDelay: 0.08
   shootLightning: 0

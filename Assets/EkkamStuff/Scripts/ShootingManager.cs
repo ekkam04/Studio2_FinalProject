@@ -53,12 +53,11 @@ namespace Ekkam {
 
         private void OnEnable()
         {
+            // Create a pool of projectiles
             projectilePoolHolder = new GameObject(gameObject.name + "_ProjectilePool");
+            projectilePoolHolder.AddComponent<ProjectilePool>();
 
-            // Add projectile prefabs to the pool
             projectilePool = new List<GameObject>();
-
-            // This formula comes pretty close to the actual amount of projectiles needed in the pool
             projectilePoolSize = burstFireCount * multishotCount * ((int)projectileSpeed / 10) * (int)projectileLifetime;
 
             for (int i = 0; i < projectilePoolSize; i++)
@@ -71,7 +70,7 @@ namespace Ekkam {
 
         private void OnDisable()
         {
-            Destroy(projectilePoolHolder);
+            if (projectilePoolHolder != null) projectilePoolHolder.GetComponent<ProjectilePool>().destroyWhenAllInactive = true;
         }
 
         private void Awake()
@@ -125,6 +124,9 @@ namespace Ekkam {
                     }
                     float angleOffset = CalculateAngleOffset(j, multishotCount, multishotArcAngle);
                     Vector3 adjustedDirection = Quaternion.Euler(0f, angleOffset, 0f) * direction;
+                    
+                    GameObject projectile = null;
+
                     // Find an inactive projectile in the pool
                     bool foundInactiveProjectile = false;
                     for (int k = 0; k < projectilePool.Count; k++)
@@ -132,15 +134,7 @@ namespace Ekkam {
                         if (!projectilePool[k].activeInHierarchy)
                         {
                             print("Reusing projectile from pool");
-                            projectilePool[k].tag = tagToApply;
-                            projectilePool[k].GetComponent<Projectile>().projectileDamage = projectileDamage;
-                            projectilePool[k].transform.rotation = Quaternion.LookRotation(adjustedDirection);
-                            projectilePool[k].transform.eulerAngles = new Vector3(90, projectilePool[k].transform.eulerAngles.y, projectilePool[k].transform.eulerAngles.z);
-                            projectilePool[k].transform.position = transform.position + (projectilePool[k].transform.right * bulletGapX);
-                            projectilePool[k].transform.localScale = originalProjectileScale * projectileSize;
-                            projectilePool[k].SetActive(true);
-                            projectilePool[k].GetComponent<Rigidbody>().velocity = adjustedDirection * projectileSpeed;
-                            StartCoroutine(DeactivateProjectile(projectilePool[k]));
+                            projectile = projectilePool[k];
                             foundInactiveProjectile = true;
                             break;
                         }
@@ -149,17 +143,19 @@ namespace Ekkam {
                     if (!foundInactiveProjectile)
                     {
                         print("Adding new projectile to pool");
-                        GameObject newProjectile = SpawnProjectile();
-                        projectilePool.Add(newProjectile);
-                        newProjectile.tag = tagToApply;
-                        newProjectile.GetComponent<Projectile>().projectileDamage = projectileDamage;
-                        newProjectile.transform.rotation = Quaternion.LookRotation(adjustedDirection);
-                        newProjectile.transform.eulerAngles = new Vector3(90, newProjectile.transform.eulerAngles.y, newProjectile.transform.eulerAngles.z);
-                        newProjectile.transform.position = transform.position + (newProjectile.transform.right * bulletGapX);
-                        newProjectile.transform.localScale = originalProjectileScale * projectileSize;
-                        newProjectile.GetComponent<Rigidbody>().velocity = adjustedDirection * projectileSpeed;
-                        StartCoroutine(DeactivateProjectile(newProjectile));
+                        projectile = SpawnProjectile();
+                        projectilePool.Add(projectile);
                     }
+
+                    projectile.tag = tagToApply;
+                    projectile.GetComponent<Projectile>().projectileDamage = projectileDamage;
+                    projectile.transform.rotation = Quaternion.LookRotation(adjustedDirection);
+                    projectile.transform.eulerAngles = new Vector3(90, projectile.transform.eulerAngles.y, projectile.transform.eulerAngles.z);
+                    projectile.transform.position = transform.position + (projectile.transform.right * bulletGapX) + (direction * 10f);
+                    projectile.transform.localScale = originalProjectileScale * projectileSize;
+                    projectile.SetActive(true);
+                    projectile.GetComponent<Rigidbody>().velocity = adjustedDirection * projectileSpeed;
+
                     bulletGapX += multishotGapX;
                 }
                 int loopDelay = (int)(burstFireDelay * 1000);
@@ -198,13 +194,6 @@ namespace Ekkam {
 
             float currentAngle = -halfTotalAngle + index * arcAngle;
             return currentAngle;
-        }
-
-        IEnumerator DeactivateProjectile(GameObject projectile)
-        {
-            yield return new WaitForSeconds(projectileLifetime);
-            projectile.SetActive(false);
-            print("Projectile deactivated");
         }
 
         async void ShootLightning(string tagToApply, GameObject transmitter, GameObject reciever)

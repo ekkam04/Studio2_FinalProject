@@ -9,7 +9,7 @@ using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 namespace Ekkam {
-    public class Player : MonoBehaviour
+    public class Player : DamagableEntity
     {
         public int playerNumber;
 
@@ -18,13 +18,11 @@ namespace Ekkam {
         [SerializeField] GameObject playerCanvas;
         [SerializeField] GameObject playerCards;
         public GameObject crosshair;
-        public Slider healthBar;
 
         public Player playerDuo;
 
         Rigidbody rb;
         Collider col;
-        MeshRenderer meshRenderer;
         PlayerInput playerInput;
         ShootingManager shootingManager;
         UpgradeManager upgradeManager;
@@ -54,11 +52,20 @@ namespace Ekkam {
         float onMoveTimer = 0f;
         float lockMovementTimer = 0f;
 
-        [HideInInspector]
-        public float maxHealth;
+        public enum DashDirection
+        {
+            Top,
+            TopRight,
+            Right,
+            BottomRight,
+            Bottom,
+            BottomLeft,
+            Left,
+            TopLeft
+        }
+        public DashDirection dashDirection;
 
         [Header("----- Player Stats -----")]
-        [Tooltip("The total health")] public float health = 5f;
         public AnimationCurve speedCurve;
         public float moveSpeed = 20f;
         public float maxSpeed = 25f;
@@ -77,9 +84,7 @@ namespace Ekkam {
             uiManager = FindObjectOfType<UIManager>();
             eventSystem = GetComponentInChildren<MultiplayerEventSystem>();
             eventSystem.SetSelectedGameObject(null);
-            maxHealth = health;
-            healthBar.maxValue = maxHealth;
-            healthBar.value = health;
+            InitializeHealth();
         }
 
         void OnDestroy()
@@ -129,6 +134,8 @@ namespace Ekkam {
             ControlSpeed();
             Aim();
 
+            UpdateDashDirection();
+
             if (inDuoMode && playerDuo != null)
             {
                 transform.position = playerDuo.transform.position;
@@ -141,6 +148,8 @@ namespace Ekkam {
                     playerDuo.aimInput = aimInput;
                 }   
             }
+
+            TiltOnMovement();
 
             if (rightTriggerAxis > 0.5f && allowShooting)
             {
@@ -225,6 +234,52 @@ namespace Ekkam {
             }
         }
 
+        void UpdateDashDirection()
+        {
+            // update the dash direction depending on the movement input and keep top as the default direction if no input. snap to the closest direction from the 8 directions
+            if (movementInput.x > 0.5f)
+            {
+                if (movementInput.y > 0.5f)
+                {
+                    dashDirection = DashDirection.TopRight;
+                }
+                else if (movementInput.y < -0.5f)
+                {
+                    dashDirection = DashDirection.BottomRight;
+                }
+                else
+                {
+                    dashDirection = DashDirection.Right;
+                }
+            }
+            else if (movementInput.x < -0.5f)
+            {
+                if (movementInput.y > 0.5f)
+                {
+                    dashDirection = DashDirection.TopLeft;
+                }
+                else if (movementInput.y < -0.5f)
+                {
+                    dashDirection = DashDirection.BottomLeft;
+                }
+                else
+                {
+                    dashDirection = DashDirection.Left;
+                }
+            }
+            else
+            {
+                if (movementInput.y < -0.5f)
+                {
+                    dashDirection = DashDirection.Bottom;
+                }
+                else
+                {
+                    dashDirection = DashDirection.Top;
+                }
+            }
+        }
+
         void ConstraintMovement()
         {
             // prevent the player from moving the direction they were moving before they got repelled but allow them to move in other directions
@@ -298,6 +353,23 @@ namespace Ekkam {
             if (viewportPosition.y < 0.88f)
             {
                 lockUpMovement = false;
+            }
+        }
+
+        void TiltOnMovement()
+        {
+            // tilt the player depending on the movement input
+            if (movementInput.x > 0.1f)
+            {
+                transform.eulerAngles = new Vector3(transform.eulerAngles.x, 0, -movementInput.x * 10);
+            }
+            else if (movementInput.x < -0.1f)
+            {
+                transform.eulerAngles = new Vector3(transform.eulerAngles.x, 0, -movementInput.x * 10);
+            }
+            else
+            {
+                transform.eulerAngles = new Vector3(transform.eulerAngles.x, 0, 0);
             }
         }
 
@@ -487,20 +559,6 @@ namespace Ekkam {
             }
         }
 
-        public void TakeDamage(float damage)
-        {
-            health -= damage;
-            healthBar.value = health;
-            if (health <= 0)
-            {
-                Destroy(gameObject);
-            }
-            else
-            {
-                StartCoroutine(FlashColor(Color.red, 0.1f));
-            }
-        }
-
         public void ApplySeparationForce()
         {
             rb = GetComponent<Rigidbody>(); // This is needed because the rb is not assigned yet in the Awake() function
@@ -662,59 +720,6 @@ namespace Ekkam {
             foreach (GameObject playerPart in playerParts)
             {
                 playerPart.SetActive(false);
-            }
-        }
-
-        public Enemy FindClosestEnemy()
-        {
-            Enemy closestEnemy = null;
-            float closestDistance = Mathf.Infinity;
-            foreach (Enemy enemy in FindObjectsOfType<Enemy>())
-            {
-                float distance = Vector3.Distance(transform.position, enemy.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestEnemy = enemy;
-                }
-            }
-            return closestEnemy;
-        }
-
-        public Player FindClosestPlayer()
-        {
-            Player closestPlayer = null;
-            float closestDistance = Mathf.Infinity;
-            foreach (Player player in FindObjectsOfType<Player>())
-            {
-                if (player == this) continue;
-                float distance = Vector3.Distance(transform.position, player.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestPlayer = player;
-                }
-            }
-            return closestPlayer;
-        }
-
-        IEnumerator FlashColor(Color color, float duration)
-        {
-            // flash smoothly between the current color and the new color
-            float timer = 0f;
-            while (timer < duration)
-            {
-                meshRenderer.material.color = Color.Lerp(meshRenderer.material.color, color, timer / duration);
-                timer += Time.deltaTime;
-                yield return null;
-            }
-            // flash smoothly back to the original color
-            timer = 0f;
-            while (timer < duration * 2)
-            {
-                meshRenderer.material.color = Color.Lerp(meshRenderer.material.color, Color.white, timer / duration);
-                timer += Time.deltaTime;
-                yield return null;
             }
         }
     }
