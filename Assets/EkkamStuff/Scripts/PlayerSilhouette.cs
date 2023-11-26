@@ -8,7 +8,7 @@ namespace Ekkam {
 
         public Color silhouetteColor;
         float disappearTimer;
-        List<Material> materials = new List<Material>();
+        public List<Material> materials = new List<Material>();
 
         void Awake()
         {
