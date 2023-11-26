@@ -8,21 +8,15 @@ namespace Ekkam {
     {
         public bool waitingForUpgrade = false;
         public GameObject upgradeMenu;
-        UIManager uiManager;
+        UIStateMachine uiStateMachine;
         public List<Card> player1Cards;
         public List<Card> player2Cards;
 
         public List<Upgrade> upgrades;
 
-        // [HideInInspector]
-        // public List<string> upgradeNames; // upgrades[i].upgradeName
-
-        // [HideInInspector]
-        // public List<string> upgradeDescriptions; // upgrades[i].upgradeDescription
-
         void Start()
         {
-            uiManager = FindObjectOfType<UIManager>();
+            uiStateMachine = FindObjectOfType<UIStateMachine>();
             HideUpgrades();
         }
 
@@ -66,12 +60,12 @@ namespace Ekkam {
             Time.timeScale = 0;
             AssignRandomUpgrades(player1Cards);
             AssignRandomUpgrades(player2Cards);
-            uiManager.OpenUpgradeMenu();
+            uiStateMachine.OpenUpgradeMenu();
         }
 
         async public void HideUpgrades()
         {
-            uiManager.CloseUpgradeMenu();
+            uiStateMachine.CloseUpgradeMenu();
             await Task.Delay(500);
             foreach (Player player in FindObjectsOfType<Player>())
             {

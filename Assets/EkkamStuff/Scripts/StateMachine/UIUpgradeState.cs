@@ -4,19 +4,25 @@ using UnityEngine;
 
 public class UIUpgradeState : BaseState<UIStateMachine.UIState>
 {
-    public UIUpgradeState(UIStateMachine.UIState key) : base(key)
-    {
+    private RectTransform upgradeMenu;
 
+    public UIUpgradeState(UIStateMachine.UIState key, RectTransform upgradeMenu) : base(key)
+    {
+        this.upgradeMenu = upgradeMenu;
     }
 
     public override void EnterState()
     {
         Debug.Log("UI Entered Upgrade State");
+        upgradeMenu.anchoredPosition = new Vector2(upgradeMenu.anchoredPosition.x, -Screen.height);
+        upgradeMenu.gameObject.SetActive(true);
+        LeanTween.moveY(upgradeMenu, 0, 0.5f).setEaseOutCubic().setIgnoreTimeScale(true);
     }
 
     public override void ExitState()
     {
         Debug.Log("UI Exited Upgrade State");
+        upgradeMenu.gameObject.SetActive(false);
     }
 
     public override UIStateMachine.UIState GetNextState()

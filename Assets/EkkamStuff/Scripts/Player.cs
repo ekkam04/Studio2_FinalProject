@@ -29,7 +29,6 @@ namespace Ekkam {
         PlayerInput playerInput;
         ShootingManager shootingManager;
         UpgradeManager upgradeManager;
-        UIManager uiManager;
         MultiplayerEventSystem eventSystem;
         Vector2 movementInput;
         Vector2 aimInput;
@@ -80,6 +79,7 @@ namespace Ekkam {
         public float dashSpeed = 2f;
         [Tooltip("The cooldown time before the player can shoot again")] public float attackSpeed = 0.05f;
         [Tooltip("The cooldown time before the player can dodge again")] public float dodgeCooldown = 0.1f;
+        public float xpMultiplier = 1f;
 
         void Awake()
         {
@@ -89,7 +89,6 @@ namespace Ekkam {
             playerInput = GetComponent<PlayerInput>();
             shootingManager = GetComponent<ShootingManager>();
             upgradeManager = FindObjectOfType<UpgradeManager>();
-            uiManager = FindObjectOfType<UIManager>();
             eventSystem = GetComponentInChildren<MultiplayerEventSystem>();
             eventSystem.SetSelectedGameObject(null);
             InitializeHealth();
@@ -698,31 +697,6 @@ namespace Ekkam {
                     upgradeManager.player2Cards.Add(card);
                 }
             }
-            // for (int i = 0; i < newPlayerCards.transform.childCount; i++)
-            // {
-            //     // Card card = newPlayerCards.GetComponentInChildren<Card>();
-            //     foreach (Card card in newPlayerCards.GetComponentsInChildren<Card>())
-            //     {
-            //         if (card.gameObject.name == "Card1")
-            //         {
-            //             break;
-            //         }
-            //     }
-            //     if (i == 0) {
-            //         eventSystem.firstSelectedGameObject = card.gameObject;
-            //         eventSystem.SetSelectedGameObject(card.gameObject);
-            //         card.gameObject.GetComponent<Button>().OnSelect(null);
-            //     }
-            //     card.ownerPlayer = this;
-            //     if (playerNumber == 1)
-            //     {
-            //         upgradeManager.player1Cards.Add(card);
-            //     }
-            //     else if (playerNumber == 2)
-            //     {
-            //         upgradeManager.player2Cards.Add(card);
-            //     }
-            // }
         }
 
         public void Upgrade(string upgradeName)
@@ -812,6 +786,11 @@ namespace Ekkam {
             healthBar.maxValue = maxHealth;
             healthBar.value = health;
             print("Combined upgrades");
+        }
+
+        void GainXP(float xp)
+        {
+            
         }
 
         void ShowPlayer()

@@ -3297,6 +3297,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gamePaused: 0
   playerDuoPrefab: {fileID: 7823480186774308539, guid: 2198d5bf95bf58b47b844d6b895b12fd, type: 3}
+  playersXP: 0
 --- !u!1 &1974691232
 GameObject:
   m_ObjectHideFlags: 0
@@ -3886,29 +3887,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2081984486}
-  - component: {fileID: 2081984485}
   - component: {fileID: 2081984487}
   m_Layer: 0
-  m_Name: UIManager
+  m_Name: UIStateMachine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2081984485
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2081984484}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4003628651f90794e8716f156f31df07, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainCanvas: {fileID: 43283244}
-  upgradeMenu: {fileID: 245892115}
 --- !u!4 &2081984486
 Transform:
   m_ObjectHideFlags: 0
@@ -3936,6 +3922,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e80ba62589f8784db650747a658291f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCanvas: {fileID: 43283244}
+  upgradeMenu: {fileID: 245892115}
 --- !u!1 &2100328469
 GameObject:
   m_ObjectHideFlags: 0

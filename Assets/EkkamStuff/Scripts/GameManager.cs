@@ -16,8 +16,7 @@ namespace Ekkam {
 
         [SerializeField] GameObject playerDuoPrefab;
 
-        // [SerializeField] GameObject gameVCam;
-        // [SerializeField] GameObject combinedVCam;
+        public float playersXP = 0f;
 
         WaveSpawner waveSpawner;
         UpgradeManager upgradeManager;

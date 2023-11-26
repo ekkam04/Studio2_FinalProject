@@ -14,10 +14,13 @@ public class UIStateMachine : StateManager<UIStateMachine.UIState>
         GameOver
     }
 
+    public GameObject mainCanvas;
+    [SerializeField] RectTransform upgradeMenu;
+
     void Awake()
     {
         States.Add(UIState.Main, new UIMainState(UIState.Main));
-        States.Add(UIState.Upgrade, new UIUpgradeState(UIState.Upgrade));
+        States.Add(UIState.Upgrade, new UIUpgradeState(UIState.Upgrade, upgradeMenu));
         CurrentState = States[UIState.Main];
     }
 
