@@ -124,10 +124,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffe661b23f8bd1d43ab3f6567f88fd4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damagePopupPrefab: {fileID: 5141910325531400217, guid: 7c0aa93ce91594f4ab533b21d895ccd8, type: 3}
+  healthBar: {fileID: 0}
+  health: 2
+  maxHealth: 0
+  meshRenderer: {fileID: 0}
   waypoints: []
   pathPrefab: {fileID: 0}
   shootTowardsInitialPlayerPos: 1
-  health: 2
   speedCurve:
     serializedVersion: 2
     m_Curve:

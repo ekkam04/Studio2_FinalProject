@@ -29,6 +29,8 @@ namespace Ekkam {
 
         [Tooltip("The speed of the projectile")] public float projectileSpeed = 90f;
         [Tooltip("The damage of the projectile")] public float projectileDamage = 1f;
+        [Range(1, 100)] public float projectileCritChance = 10f;
+        public float projectileCritMultiplier = 2f;
         [Tooltip("The size of the projectile")] public float projectileSize = 1f;
 
         [Tooltip("The amount of projectiles fired side by side")] public int multishotCount = 1;
@@ -148,7 +150,7 @@ namespace Ekkam {
                     }
 
                     projectile.tag = tagToApply;
-                    projectile.GetComponent<Projectile>().projectileDamage = projectileDamage;
+                    projectile.GetComponent<Projectile>().SetDamageWithCritChance(projectileDamage, projectileCritChance, projectileCritMultiplier);
                     projectile.transform.rotation = Quaternion.LookRotation(adjustedDirection);
                     projectile.transform.eulerAngles = new Vector3(90, projectile.transform.eulerAngles.y, projectile.transform.eulerAngles.z);
                     projectile.transform.position = transform.position + (projectile.transform.right * bulletGapX) + (direction * 10f);
@@ -198,7 +200,8 @@ namespace Ekkam {
 
         async void ShootLightning(string tagToApply, GameObject transmitter, GameObject reciever)
         {
-            // Goal: spawn a lightning between the transmitter and the reciever
+            if (GetComponent<Player>() == null) return;
+            // spawn a lightning between the transmitter and the reciever
             if (lightningActive) return;
             if (reciever != null)
             {
@@ -210,7 +213,7 @@ namespace Ekkam {
                 await Task.Delay(100);
                 Destroy(lightningLineRenderer.gameObject);
                 if (reciever == null) return;
-                reciever.GetComponent<Enemy>().TakeDamage(lightningDamage);
+                reciever.GetComponent<Enemy>().TakeDamage(lightningDamage, false);
 
                 // If the lightning is a chain lightning, chain it to other enemies
                 if (chainLightning)
@@ -240,7 +243,7 @@ namespace Ekkam {
                             newLightning.SetPosition(1, closestEnemy.transform.position);
                             await Task.Delay(100);
                             Destroy(newLightning.gameObject);
-                            closestEnemy.TakeDamage(lightningDamage);
+                            closestEnemy.TakeDamage(lightningDamage, false);
                             if (enemiesHit.Count == chainLightingAtOnce) break;
                         }
                     }

@@ -15,9 +15,11 @@ namespace Ekkam {
         public int playerNumber;
 
         [SerializeField] Material[] playerMaterials;
+        [SerializeField] Color32[] playerSilhouetteColors;
         [SerializeField] GameObject[] playerParts;
         [SerializeField] GameObject playerCanvas;
         [SerializeField] GameObject playerCards;
+        [SerializeField] GameObject playerSilhouette;
         public GameObject crosshair;
 
         public Player playerDuo;
@@ -41,9 +43,7 @@ namespace Ekkam {
         public bool allowDodging = true;
         public bool allowShooting = true;
         public bool inDuoMode = false;
-        bool isDodging = false;
         bool isDashing = false;
-        float dodgeDirection = 0f;
         public bool cardPicked = false;
 
         bool lockLeftMovement = false;
@@ -52,6 +52,7 @@ namespace Ekkam {
         bool lockDownMovement = false;
 
         float shootTimer = 0f;
+        float silhouetteTimer = 0f;
         float onMoveTimer = 0f;
         float onDashTimer = 0f;
         float lockMovementTimer = 0f;
@@ -136,6 +137,7 @@ namespace Ekkam {
 
             lockMovementTimer += Time.deltaTime; 
             shootTimer += Time.deltaTime;
+            silhouetteTimer += Time.deltaTime;
 
             ConstraintMovement();
             ControlSpeed();
@@ -167,6 +169,15 @@ namespace Ekkam {
             if (movementInput == Vector2.zero)
             {
                 onMoveTimer = 0f;
+            }
+
+            if (isDashing)
+            {
+                if (silhouetteTimer > 0.1f)
+                {
+                    SpawnPlayerSilhouette();
+                    silhouetteTimer = 0f;
+                }
             }
         }
 
@@ -449,7 +460,7 @@ namespace Ekkam {
             rightTriggerAxis = context.ReadValue<float>();
         }
 
-        public void OnDodge(InputAction.CallbackContext context)
+        public void OnDash(InputAction.CallbackContext context)
         {
             if (context.performed)
             {
@@ -458,14 +469,11 @@ namespace Ekkam {
                 {
                     if (playerNumber == 1)
                     {
-                        // playerDuo.dodgeDirection = context.ReadValue<float>();
-                        playerDuo.OnDodge(context);
+                        playerDuo.OnDash(context);
                     }
                 }
                 else
                 {
-                    // if (playerInput != null) dodgeDirection = context.ReadValue<float>();
-                    // StartCoroutine(Dodge());
                     StartCoroutine(Dash());
                 }
             }
@@ -507,55 +515,6 @@ namespace Ekkam {
             allowDodging = true;
             HidePlayer();
         }
-
-        // IEnumerator Dodge()
-        // {
-        //     col.enabled = false;
-        //     allowMovement = false;
-        //     allowDodging = false;
-        //     allowShooting = false;
-        //     if (playerInput == null) DisableShootingForAllPlayers();
-        //     if (crosshair != null) crosshair.SetActive(false);
-        //     // spin the player 360 degrees according to the direction
-        //     float startingRotationZ = transform.rotation.eulerAngles.z;
-        //     float targetRotationZ = startingRotationZ + (-dodgeDirection * 360);
-        //     float rotationTimer = 0f;
-        //     float rotationDuration = 0.5f;
-        //     while (rotationTimer < rotationDuration)
-        //     {
-        //         rotationTimer += Time.deltaTime;
-        //         float rotationZ = Mathf.Lerp(startingRotationZ, targetRotationZ, rotationTimer / rotationDuration) % 360;
-        //         transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, rotationZ);
-        //         // add a force to the player to move them left or right
-        //         if (
-        //             (lockMovementTimer > 0.75f || (lastRepellingForceDirection != Vector3.left && dodgeDirection > 0))
-        //             || (lockMovementTimer > 0.75f || (lastRepellingForceDirection != Vector3.right && dodgeDirection < 0))
-        //         )
-        //         {
-        //             isDodging = true;
-        //         }
-        //         else
-        //         {
-        //             isDodging = false;
-        //         }
-        //         yield return null;
-        //     }
-        //     isDodging = false;
-        //     transform.rotation = Quaternion.identity;
-            
-        //     allowMovement = true;
-        //     col.enabled = true;
-        //     yield return new WaitForSeconds(dodgeCooldown);
-
-        //     if (dodgeDirection > 0) lockLeftMovement = false;
-        //     else if (dodgeDirection < 0) lockRightMovement = false;
-
-        //     transform.rotation = Quaternion.identity;
-        //     allowShooting = true;
-        //     if (playerInput == null) EnableShootingForAllPlayers();
-        //     if (crosshair != null) crosshair.SetActive(true);
-        //     allowDodging = true;
-        // }
 
         IEnumerator Dash()
         {
@@ -606,24 +565,8 @@ namespace Ekkam {
                 while (dashTimer < dashDuration)
                 {
                     dashTimer += Time.deltaTime;
-                    // if (lastDashDirection == DashDirection.Top)
-                    // {
-                    //     transform.eulerAngles = new Vector3(Mathf.Lerp(0, 45, dashTimer / dashDuration), transform.eulerAngles.y, transform.eulerAngles.z);
-                    // }
-                    // else if (lastDashDirection == DashDirection.Bottom)
-                    // {
-                    //     transform.eulerAngles = new Vector3(Mathf.Lerp(0, -45, dashTimer / dashDuration), transform.eulerAngles.y, transform.eulerAngles.z);
-                    // }
                     yield return null;
                 }
-                // float tiltBackDuration = 0.1f;
-                // float tiltBackTimer = 0f;
-                // while (tiltBackTimer < tiltBackDuration)
-                // {
-                //     tiltBackTimer += Time.deltaTime;
-                //     transform.eulerAngles = new Vector3(Mathf.Lerp(45, 0, tiltBackTimer / tiltBackDuration), transform.eulerAngles.y, transform.eulerAngles.z);
-                //     yield return null;
-                // }
             }
             isDashing = false;
             transform.rotation = Quaternion.identity;
@@ -681,6 +624,23 @@ namespace Ekkam {
             {
                 if (playerPart.name.Contains("Glass")) continue;
                 playerPart.GetComponent<MeshRenderer>().material = playerMaterials[playerNumber - 1];
+            }
+        }
+
+        void SpawnPlayerSilhouette()
+        {
+            GameObject newPlayerSilhouette = Instantiate(playerSilhouette, transform.position, transform.rotation);
+            if (playerNumber == 1)
+            {
+                newPlayerSilhouette.GetComponent<PlayerSilhouette>().silhouetteColor = playerSilhouetteColors[0];
+            }
+            else if (playerNumber == 2)
+            {
+                newPlayerSilhouette.GetComponent<PlayerSilhouette>().silhouetteColor = playerSilhouetteColors[1];
+            }
+            else
+            {
+                newPlayerSilhouette.GetComponent<PlayerSilhouette>().silhouetteColor = Color.white;
             }
         }
 
@@ -785,7 +745,7 @@ namespace Ekkam {
             if (other.CompareTag("Enemy"))
             {
                 print("Player collided with enemy");
-                TakeDamage(other.GetComponent<Enemy>().damageOnImpact);
+                TakeDamage(other.GetComponent<Enemy>().damageOnImpact, false);
             }
         }
 

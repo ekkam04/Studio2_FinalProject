@@ -6,6 +6,7 @@ using UnityEngine.UI;
 namespace Ekkam {
     public class DamagableEntity : MonoBehaviour
     {
+        public GameObject damagePopupPrefab;
         public Slider healthBar;
         [Tooltip("The total health")] public float health;
 
@@ -30,9 +31,10 @@ namespace Ekkam {
             }
         }
 
-        public void TakeDamage(float damage)
+        public void TakeDamage(float damage, bool isCriticalHit)
         {
             health -= damage;
+            ShowDamagePopup(damage, isCriticalHit);
             if (healthBar != null) healthBar.value = health;
             if (health <= 0)
             {
@@ -62,6 +64,13 @@ namespace Ekkam {
                 timer += Time.deltaTime;
                 yield return null;
             }
+        }
+
+        void ShowDamagePopup(float damage, bool isCriticalHit)
+        {
+            if (damagePopupPrefab == null) return;
+            GameObject damagePopup = Instantiate(damagePopupPrefab, transform.position + Vector3.up * 2f, Quaternion.identity);
+            damagePopup.GetComponent<DamagePopup>().SetDamageText(damage, isCriticalHit);
         }
 
         public Enemy FindClosestEnemy()
