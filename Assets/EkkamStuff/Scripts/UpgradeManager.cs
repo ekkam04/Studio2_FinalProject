@@ -12,11 +12,13 @@ namespace Ekkam {
         public List<Card> player1Cards;
         public List<Card> player2Cards;
 
-        [HideInInspector]
-        public List<string> upgradeNames;
+        public List<Upgrade> upgrades;
 
-        [HideInInspector]
-        public List<string> upgradeDescriptions;
+        // [HideInInspector]
+        // public List<string> upgradeNames; // upgrades[i].upgradeName
+
+        // [HideInInspector]
+        // public List<string> upgradeDescriptions; // upgrades[i].upgradeDescription
 
         void Start()
         {
@@ -30,14 +32,15 @@ namespace Ekkam {
             List<int> randomNumbers = new List<int>();
             for (int i = 0; i < cards.Count; i++)
             {
-                int randomNumber = Random.Range(0, upgradeNames.Count);
+                int randomNumber = Random.Range(0, upgrades.Count);
                 while (randomNumbers.Contains(randomNumber))
                 {
-                    randomNumber = Random.Range(0, upgradeNames.Count);
+                    randomNumber = Random.Range(0, upgrades.Count);
                 }
                 randomNumbers.Add(randomNumber);
-                cards[i].upgradeName.text = upgradeNames[randomNumber];
-                cards[i].upgradeDescription.text = upgradeDescriptions[randomNumber];
+                cards[i].upgradeName.text = upgrades[randomNumber].upgradeName;
+                cards[i].upgradeDescription.text = upgrades[randomNumber].upgradeDescription;
+                cards[i].SetCardColors(upgrades[randomNumber].upgradeBGColor, upgrades[randomNumber].upgradeBorderColor);
             }
         }
 
@@ -94,14 +97,14 @@ namespace Ekkam {
             {
                 foreach (Card playerCard in player1Cards)
                 {
-                    Destroy(playerCard.gameObject);
+                    Destroy(playerCard.gameObject.transform.parent.gameObject);
                 }
             }
             else
             {
                 foreach (Card playerCard in player2Cards)
                 {
-                    Destroy(playerCard.gameObject);
+                    Destroy(playerCard.gameObject.transform.parent.gameObject);
                 }
             }
             player.Upgrade(card.upgradeName.text);

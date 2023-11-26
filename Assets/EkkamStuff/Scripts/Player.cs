@@ -680,16 +680,15 @@ namespace Ekkam {
                 }
             }
             eventSystem.playerRoot = newPlayerCards;
-            for (int i = 0; i < newPlayerCards.transform.childCount; i++)
+            foreach (Card card in newPlayerCards.GetComponentsInChildren<Card>())
             {
-                if (newPlayerCards.transform.GetChild(i).GetComponent<Card>() == null) continue;
-                Card card = newPlayerCards.transform.GetChild(i).GetComponent<Card>();
-                if (i == 0) {
+                card.ownerPlayer = this;
+                if (card.gameObject.name == "Card1")
+                {
                     eventSystem.firstSelectedGameObject = card.gameObject;
                     eventSystem.SetSelectedGameObject(card.gameObject);
                     card.gameObject.GetComponent<Button>().OnSelect(null);
                 }
-                card.ownerPlayer = this;
                 if (playerNumber == 1)
                 {
                     upgradeManager.player1Cards.Add(card);
@@ -699,6 +698,31 @@ namespace Ekkam {
                     upgradeManager.player2Cards.Add(card);
                 }
             }
+            // for (int i = 0; i < newPlayerCards.transform.childCount; i++)
+            // {
+            //     // Card card = newPlayerCards.GetComponentInChildren<Card>();
+            //     foreach (Card card in newPlayerCards.GetComponentsInChildren<Card>())
+            //     {
+            //         if (card.gameObject.name == "Card1")
+            //         {
+            //             break;
+            //         }
+            //     }
+            //     if (i == 0) {
+            //         eventSystem.firstSelectedGameObject = card.gameObject;
+            //         eventSystem.SetSelectedGameObject(card.gameObject);
+            //         card.gameObject.GetComponent<Button>().OnSelect(null);
+            //     }
+            //     card.ownerPlayer = this;
+            //     if (playerNumber == 1)
+            //     {
+            //         upgradeManager.player1Cards.Add(card);
+            //     }
+            //     else if (playerNumber == 2)
+            //     {
+            //         upgradeManager.player2Cards.Add(card);
+            //     }
+            // }
         }
 
         public void Upgrade(string upgradeName)

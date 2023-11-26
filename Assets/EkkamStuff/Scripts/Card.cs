@@ -14,11 +14,13 @@ namespace Ekkam {
         public TMP_Text upgradeDescription;
         public Button upgradeButton;
 
+        public Image[] CardBGs;
+        public Image CardBorder;
+
         UpgradeManager upgradeManager;
 
         void Awake()
         {
-            upgradeButton = GetComponent<Button>();
             upgradeManager = FindObjectOfType<UpgradeManager>();
         }
 
@@ -38,6 +40,19 @@ namespace Ekkam {
             waitingText.gameObject.SetActive(true);
             
             upgradeManager.UpgradePlayer(ownerPlayer, this);
+        }
+
+        public void SetCardColors(Color bgColor, Color borderColor)
+        {
+            foreach (Image bg in CardBGs)
+            {
+                bg.color = bgColor;
+            }
+            CardBorder.color = borderColor;
+            // set upgradebutton's normal color to the border color
+            ColorBlock cb = upgradeButton.colors;
+            cb.normalColor = borderColor;
+            upgradeButton.colors = cb;
         }
     }
 }
