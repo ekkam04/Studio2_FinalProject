@@ -126,12 +126,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damagePopupPrefab: {fileID: 5141910325531400217, guid: 7c0aa93ce91594f4ab533b21d895ccd8, type: 3}
   healthBar: {fileID: 0}
-  health: 6
+  health: 3
   maxHealth: 0
   meshRenderer: {fileID: 0}
+  killer: {fileID: 0}
   waypoints: []
   pathPrefab: {fileID: 0}
-  shootTowardsInitialPlayerPos: 1
+  shootTowardsInitialPlayerPos: 0
   speedCurve:
     serializedVersion: 2
     m_Curve:
@@ -157,7 +158,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   moveSpeed: 120
-  attackSpeed: 2
+  attackSpeed: 2.5
   damageOnImpact: 1
   waitWaypointDuration: 1
 --- !u!114 &1899445987849418053

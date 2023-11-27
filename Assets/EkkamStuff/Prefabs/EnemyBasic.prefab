@@ -125,9 +125,9 @@ MonoBehaviour:
   health: 2
   maxHealth: 0
   meshRenderer: {fileID: 0}
+  killer: {fileID: 0}
   waypoints: []
   pathPrefab: {fileID: 0}
-  xpParticles: {fileID: 0}
   shootTowardsInitialPlayerPos: 1
   speedCurve:
     serializedVersion: 2

@@ -129,6 +129,7 @@ MonoBehaviour:
   health: 6
   maxHealth: 0
   meshRenderer: {fileID: 0}
+  killer: {fileID: 0}
   waypoints: []
   pathPrefab: {fileID: 0}
   shootTowardsInitialPlayerPos: 1
@@ -156,10 +157,10 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  moveSpeed: 120
-  attackSpeed: 2
+  moveSpeed: 40
+  attackSpeed: 3
   damageOnImpact: 1
-  waitWaypointDuration: 1
+  waitWaypointDuration: 3
 --- !u!114 &1899445987849418053
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -181,7 +182,7 @@ MonoBehaviour:
   projectileCritChance: 10
   projectileCritMultiplier: 2
   projectileSize: 0.75
-  multishotCount: 4
+  multishotCount: 5
   multishotGapX: 3
   multishotArcAngle: 15
   skipMiddleProjectile: 0

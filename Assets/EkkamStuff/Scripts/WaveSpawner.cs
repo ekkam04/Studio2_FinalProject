@@ -26,7 +26,7 @@ namespace Ekkam {
 
         void Start()
         {
-            // StartSpawningWaves();
+             StartSpawningWaves();
         }
 
         public void StartSpawningWaves()
