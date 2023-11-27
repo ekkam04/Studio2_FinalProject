@@ -14,6 +14,7 @@ namespace Ekkam {
         int waypointIndex = 0;
 
         ShootingManager shootingManager;
+        GameManager gameManager;
 
         float shootTimer = 0f;
         float waitTimer = 0f;
@@ -41,6 +42,7 @@ namespace Ekkam {
         {
             waveSpawner = FindObjectOfType<WaveSpawner>();
             shootingManager = GetComponent<ShootingManager>();
+            gameManager = FindObjectOfType<GameManager>();
             meshRenderer = GetComponent<MeshRenderer>();
             InitializeHealth();
         }
@@ -134,6 +136,7 @@ namespace Ekkam {
         }
 
         private void OnDestroy() {
+            if (killer != null) gameManager.SpawnXP(transform.position, 5, killer);
             waveSpawner.enemiesOnScreen.Remove(this);
             Destroy(pathPrefab.gameObject);
         }

@@ -7,7 +7,7 @@ namespace Ekkam {
     {
         public bool spawningWaves = false;
         [SerializeField] WaveConfigSO[] waves;
-        [SerializeField] int upgradesInterval = 3;
+        // [SerializeField] int upgradesInterval = 3;
 
         [HideInInspector]
         public List<Enemy> enemiesOnScreen = new List<Enemy>();
@@ -76,11 +76,11 @@ namespace Ekkam {
                     yield return new WaitForSeconds(currentWave.waitTimeBeforeNextWave);
                 }
 
-                if (currentWaveNumber % upgradesInterval == 0 && currentWaveNumber != 0)
-                {
-                    upgradeManager.ShowUpgrades();
-                    yield return new WaitUntil(() => !upgradeManager.waitingForUpgrade);
-                }
+                // if (currentWaveNumber % upgradesInterval == 0 && currentWaveNumber != 0)
+                // {
+                //     upgradeManager.ShowUpgrades();
+                //     yield return new WaitUntil(() => !upgradeManager.waitingForUpgrade);
+                // }
 
                 print("Spawning next wave");
             }

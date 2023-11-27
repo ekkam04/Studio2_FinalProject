@@ -9,6 +9,7 @@ public class Projectile : MonoBehaviour
         public float projectileDamage;
         public bool isCriticalHit = false;
         Vector3 viewportPosition;
+        public DamagableEntity projectileOwner; // Since only damagable entities can shoot projectiles, this will always be a damagable entity
 
         void Update()
         {
@@ -22,12 +23,12 @@ public class Projectile : MonoBehaviour
         private void OnTriggerEnter(Collider other) {
             if (other.CompareTag("Enemy") && this.gameObject.CompareTag("PlayerProjectile")) {
                 print("Enemy hit");
-                other.GetComponent<Enemy>().TakeDamage(projectileDamage, isCriticalHit);
+                other.GetComponent<Enemy>().TakeDamage(projectileDamage, isCriticalHit, projectileOwner);
                 gameObject.SetActive(false);
             }
             else if ((other.CompareTag("Player") || other.CompareTag("PlayerDuo")) && this.gameObject.CompareTag("EnemyProjectile")) {
                 print("Player hit");
-                other.GetComponent<Player>().TakeDamage(projectileDamage, isCriticalHit);
+                other.GetComponent<Player>().TakeDamage(projectileDamage, isCriticalHit, projectileOwner);
                 gameObject.SetActive(false); 
             }
         }
@@ -45,7 +46,6 @@ public class Projectile : MonoBehaviour
             {
                 isCriticalHit = false;
             }
-        
         }
     }
 }

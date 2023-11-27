@@ -15,8 +15,11 @@ namespace Ekkam {
         public static event PlayerEvent OnSeperatePlayers;
 
         [SerializeField] GameObject playerDuoPrefab;
+        [SerializeField] ParticleSystem xpParticles;
 
         public float playersXP = 0f;
+        public float playersTotalXP = 0f;
+        public float playersXPToNextLevel = 20f;
 
         WaveSpawner waveSpawner;
         UpgradeManager upgradeManager;
@@ -66,6 +69,14 @@ namespace Ekkam {
             {
                 waveSpawner.StartSpawningWaves();
             }
+
+            // check if players have enough XP to level up
+            if (playersXP >= playersXPToNextLevel)
+            {
+                playersXP = 0;
+                playersXPToNextLevel *= 1.5f;
+                upgradeManager.ShowUpgrades();
+            }
         }
 
         public void AddPlayer(PlayerInput playerInput)
@@ -86,8 +97,6 @@ namespace Ekkam {
             if (OnCombinePlayers != null)
             {
                 OnCombinePlayers();
-                // combinedVCam.SetActive(true);
-                // gameVCam.SetActive(false);
                 yield return new WaitUntil(() => AllPlayersInDuoMode());
                 GameObject playerDuoGameObject = Instantiate(playerDuoPrefab, PlayerInput.all[0].transform.position, Quaternion.identity);
                 playerDuoGameObject.name = "PlayerDuo";
@@ -106,8 +115,6 @@ namespace Ekkam {
             if (OnSeperatePlayers != null)
             {
                 OnSeperatePlayers();
-                // gameVCam.SetActive(true);
-                // combinedVCam.SetActive(false);
                 yield return new WaitUntil(() => !AllPlayersInDuoMode());
                 foreach (PlayerInput playerInput in PlayerInput.all)
                 {
@@ -139,6 +146,28 @@ namespace Ekkam {
         public void QuitGameButtonPressed()
         {
             Application.Quit();
+        }
+
+        public void SpawnXP(Vector3 position, int amount, DamagableEntity killer)
+        {
+            // print(killer.name + " killed an enemy and gained " + amount + " XP");
+            ParticleSystem xpParticle = Instantiate(xpParticles, position, Quaternion.identity);
+
+            // check if the killer is a player or a player duo
+            if (killer != null && killer.GetComponent<Player>() != null)
+            {
+                Player killerPlayer = killer.GetComponent<Player>();
+
+                // add the killerplayer to the list of Triggers in the particle system
+                ParticleSystem.TriggerModule triggerModule = xpParticle.trigger;
+                triggerModule.SetCollider(0, killerPlayer.GetComponent<Collider>());
+
+                // and the killerplayer's particcle system force field to the list of Influences in the particle system external forces
+                ParticleSystem.ExternalForcesModule externalForcesModule = xpParticle.externalForces;
+                externalForcesModule.AddInfluence(killerPlayer.GetComponent<ParticleSystemForceField>());
+            }
+
+            xpParticle.Emit(amount);
         }
     }
 }

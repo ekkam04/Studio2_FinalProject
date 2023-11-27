@@ -388,6 +388,7 @@ namespace Ekkam {
 
         void TiltOnMovement()
         {
+            if (Time.timeScale == 0) return;
             // tilt the player depending on the movement input
             if (movementInput.x > 0.1f)
             {
@@ -743,7 +744,8 @@ namespace Ekkam {
             if (other.CompareTag("Enemy"))
             {
                 print("Player collided with enemy");
-                TakeDamage(other.GetComponent<Enemy>().damageOnImpact, false);
+                Enemy collidedEnemy = other.GetComponent<Enemy>();
+                TakeDamage(other.GetComponent<Enemy>().damageOnImpact, false, collidedEnemy);
             }
         }
 

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIStateMachine : StateManager<UIStateMachine.UIState>
 {
@@ -16,10 +17,11 @@ public class UIStateMachine : StateManager<UIStateMachine.UIState>
 
     public GameObject mainCanvas;
     [SerializeField] RectTransform upgradeMenu;
+    [SerializeField] Slider xpSlider;
 
     void Awake()
     {
-        States.Add(UIState.Main, new UIMainState(UIState.Main));
+        States.Add(UIState.Main, new UIMainState(UIState.Main, xpSlider));
         States.Add(UIState.Upgrade, new UIUpgradeState(UIState.Upgrade, upgradeMenu));
         CurrentState = States[UIState.Main];
     }

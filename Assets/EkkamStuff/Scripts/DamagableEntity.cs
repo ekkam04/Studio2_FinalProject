@@ -16,6 +16,9 @@ namespace Ekkam {
         [HideInInspector]
         public MeshRenderer meshRenderer;
 
+        [HideInInspector]
+        public DamagableEntity killer;
+
         public void InitializeHealth()
         {
             maxHealth = health;
@@ -31,13 +34,14 @@ namespace Ekkam {
             }
         }
 
-        public void TakeDamage(float damage, bool isCriticalHit)
+        public void TakeDamage(float damage, bool isCriticalHit, DamagableEntity attacker)
         {
             health -= damage;
             ShowDamagePopup(damage, isCriticalHit);
             if (healthBar != null) healthBar.value = health;
             if (health <= 0)
             {
+                killer = attacker;
                 Destroy(gameObject);
             }
             else

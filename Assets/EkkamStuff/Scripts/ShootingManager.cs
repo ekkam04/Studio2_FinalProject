@@ -14,6 +14,7 @@ namespace Ekkam {
         float projectileLifetime = 15f;
         Vector3 originalProjectileScale;
         GameObject projectilePoolHolder;
+        DamagableEntity damagableEntity;
 
         bool lightningActive = false;
         bool playerInDuoMode = false;
@@ -77,6 +78,7 @@ namespace Ekkam {
 
         private void Awake()
         {
+            damagableEntity = GetComponent<DamagableEntity>();
             originalProjectileScale = projectilePrefab.transform.localScale;
             if (GetComponent<Player>() != null && GetComponent<PlayerInput>() == null)
             {
@@ -151,6 +153,7 @@ namespace Ekkam {
 
                     projectile.tag = tagToApply;
                     projectile.GetComponent<Projectile>().SetDamageWithCritChance(projectileDamage, projectileCritChance, projectileCritMultiplier);
+                    projectile.GetComponent<Projectile>().projectileOwner = damagableEntity;
                     projectile.transform.rotation = Quaternion.LookRotation(adjustedDirection);
                     projectile.transform.eulerAngles = new Vector3(90, projectile.transform.eulerAngles.y, projectile.transform.eulerAngles.z);
                     projectile.transform.position = transform.position + (projectile.transform.right * bulletGapX) + (direction * 10f);
@@ -213,7 +216,7 @@ namespace Ekkam {
                 await Task.Delay(100);
                 Destroy(lightningLineRenderer.gameObject);
                 if (reciever == null) return;
-                reciever.GetComponent<Enemy>().TakeDamage(lightningDamage, false);
+                reciever.GetComponent<Enemy>().TakeDamage(lightningDamage, false, damagableEntity);
 
                 // If the lightning is a chain lightning, chain it to other enemies
                 if (chainLightning)
@@ -243,7 +246,7 @@ namespace Ekkam {
                             newLightning.SetPosition(1, closestEnemy.transform.position);
                             await Task.Delay(100);
                             Destroy(newLightning.gameObject);
-                            closestEnemy.TakeDamage(lightningDamage, false);
+                            closestEnemy.TakeDamage(lightningDamage, false, damagableEntity);
                             if (enemiesHit.Count == chainLightingAtOnce) break;
                         }
                     }
