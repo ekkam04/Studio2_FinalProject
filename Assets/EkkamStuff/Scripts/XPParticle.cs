@@ -9,6 +9,8 @@ namespace Ekkam {
         List<ParticleSystem.Particle> particles = new List<ParticleSystem.Particle>();
         bool started = false;
 
+        public float xpAmount = 1f;
+
         private void OnParticleTrigger()
         {
             int triggeredParticles = xpParticles.GetTriggerParticles(ParticleSystemTriggerEventType.Enter, particles);
@@ -19,8 +21,8 @@ namespace Ekkam {
                 p.remainingLifetime = 0;
                 particles[i] = p;
                 print("Got a particle!");
-                GameManager.instance.playersXP += 1;
-                GameManager.instance.playersTotalXP += 1;
+                GameManager.instance.playersXP += xpAmount;
+                GameManager.instance.playersTotalXP += xpAmount;
             }
             xpParticles.SetTriggerParticles(ParticleSystemTriggerEventType.Enter, particles);
         }

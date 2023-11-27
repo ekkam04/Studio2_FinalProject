@@ -153,18 +153,18 @@ namespace Ekkam {
             // print(killer.name + " killed an enemy and gained " + amount + " XP");
             ParticleSystem xpParticle = Instantiate(xpParticles, position, Quaternion.identity);
 
-            // check if the killer is a player or a player duo
+            // check if the killer is a player and if so, add the player's collider and forcefield to the particle system
             if (killer != null && killer.GetComponent<Player>() != null)
             {
                 Player killerPlayer = killer.GetComponent<Player>();
 
-                // add the killerplayer to the list of Triggers in the particle system
                 ParticleSystem.TriggerModule triggerModule = xpParticle.trigger;
                 triggerModule.SetCollider(0, killerPlayer.GetComponent<Collider>());
 
-                // and the killerplayer's particcle system force field to the list of Influences in the particle system external forces
                 ParticleSystem.ExternalForcesModule externalForcesModule = xpParticle.externalForces;
                 externalForcesModule.AddInfluence(killerPlayer.GetComponent<ParticleSystemForceField>());
+
+                xpParticle.GetComponent<XPParticle>().xpAmount *= killerPlayer.xpMultiplier;
             }
 
             xpParticle.Emit(amount);
