@@ -10,6 +10,9 @@ namespace Ekkam {
         public Slider healthBar;
         [Tooltip("The total health")] public float health;
 
+        public AudioManager audioManager;
+        public AudioSource weaponAudioSource;
+
         [HideInInspector]
         public float maxHealth;
 
@@ -19,7 +22,7 @@ namespace Ekkam {
         [HideInInspector]
         public DamagableEntity killer;
 
-        public void InitializeHealth()
+        public void InitializeDamagableEntity()
         {
             maxHealth = health;
             if (healthBar != null)
@@ -32,6 +35,7 @@ namespace Ekkam {
             {
                 print("health bar not found");
             }
+            audioManager = FindObjectOfType<AudioManager>();
         }
 
         public void TakeDamage(float damage, bool isCriticalHit, DamagableEntity attacker)

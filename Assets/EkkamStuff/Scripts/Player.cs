@@ -20,6 +20,7 @@ namespace Ekkam {
         [SerializeField] GameObject playerCanvas;
         [SerializeField] GameObject playerCards;
         [SerializeField] GameObject playerSilhouette;
+        [SerializeField] AudioSource playerAudioSource;
         public GameObject crosshair;
 
         public Player playerDuo;
@@ -91,7 +92,7 @@ namespace Ekkam {
             upgradeManager = FindObjectOfType<UpgradeManager>();
             eventSystem = GetComponentInChildren<MultiplayerEventSystem>();
             eventSystem.SetSelectedGameObject(null);
-            InitializeHealth();
+            InitializeDamagableEntity();
         }
 
         void OnDestroy()
@@ -159,6 +160,9 @@ namespace Ekkam {
 
             TiltOnMovement();
             TiltOnDash();
+
+            // set y to 0 to prevent the player from moving up and down
+            // transform.position = new Vector3(transform.position.x, 0, transform.position.z);
 
             if (rightTriggerAxis > 0.5f && allowShooting)
             {
@@ -553,6 +557,9 @@ namespace Ekkam {
             float rotationTimer = 0f;
             float rotationDuration = 0.5f;
             isDashing = true;
+
+            audioManager.PlayDashSound(playerAudioSource);
+
             if (lastDashDirection != DashDirection.Top && lastDashDirection != DashDirection.Bottom)
             {
                 while (rotationTimer < rotationDuration)
