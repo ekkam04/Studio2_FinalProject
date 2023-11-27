@@ -165,6 +165,11 @@ namespace Ekkam {
                 Shoot();
             }
 
+            if (Input.GetKey(KeyCode.Space) && allowShooting)
+            {
+                Shoot();
+            }
+
             if (movementInput == Vector2.zero)
             {
                 onMoveTimer = 0f;
