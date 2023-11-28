@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Ekkam {
     public class WaveSpawner : MonoBehaviour
@@ -92,7 +93,7 @@ namespace Ekkam {
                     yield return new WaitUntil(() => !gameManager.AllPlayersInDuoMode());
                 }
 
-                if (currentWaveNumber % combineInterval == 0 && currentWaveNumber != 0)
+                if (currentWaveNumber % combineInterval == 0 && currentWaveNumber != 0 && PlayerInput.all.Count > 1)
                 {
                     gameManager.StartCoroutine("CombinePlayers");
                     yield return new WaitUntil(() => gameManager.AllPlayersInDuoMode());

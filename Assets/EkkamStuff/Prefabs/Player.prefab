@@ -808,7 +808,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damagePopupPrefab: {fileID: 0}
   healthBar: {fileID: 4881066733859490969}
-  health: 10
+  health: 12
   audioManager: {fileID: 0}
   weaponAudioSource: {fileID: 1205753599434976350}
   maxHealth: 0
@@ -908,7 +908,7 @@ MonoBehaviour:
   dodgeSpeed: 2
   dashSpeed: 100
   attackSpeed: 0.2
-  dodgeCooldown: 0
+  dodgeCooldown: 1.5
   xpMultiplier: 1
 --- !u!114 &500853067486141094
 MonoBehaviour:

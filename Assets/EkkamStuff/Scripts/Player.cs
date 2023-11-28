@@ -584,6 +584,7 @@ namespace Ekkam {
             transform.rotation = Quaternion.identity;
             
             allowMovement = true;
+            allowShooting = true;
             col.enabled = true;
             yield return new WaitForSeconds(dodgeCooldown);
 
@@ -591,7 +592,6 @@ namespace Ekkam {
             else if (lastDashDirection == DashDirection.Left) lockRightMovement = false;
 
             transform.rotation = Quaternion.identity;
-            allowShooting = true;
             if (playerInput == null) EnableShootingForAllPlayers();
             if (crosshair != null) crosshair.SetActive(true);
             allowDodging = true;
