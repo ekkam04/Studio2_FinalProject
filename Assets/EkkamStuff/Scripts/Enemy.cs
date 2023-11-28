@@ -44,7 +44,7 @@ namespace Ekkam {
             shootingManager = GetComponent<ShootingManager>();
             gameManager = FindObjectOfType<GameManager>();
             meshRenderer = GetComponent<MeshRenderer>();
-            InitializeHealth();
+            InitializeDamagableEntity();
         }
 
         void Start()

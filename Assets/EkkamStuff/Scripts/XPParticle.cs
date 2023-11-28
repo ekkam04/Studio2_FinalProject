@@ -21,8 +21,7 @@ namespace Ekkam {
                 p.remainingLifetime = 0;
                 particles[i] = p;
                 print("Got a particle!");
-                GameManager.instance.playersXP += xpAmount;
-                GameManager.instance.playersTotalXP += xpAmount;
+                GameManager.instance.CollectXP(xpAmount);
             }
             xpParticles.SetTriggerParticles(ParticleSystemTriggerEventType.Enter, particles);
         }

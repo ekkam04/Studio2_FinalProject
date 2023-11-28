@@ -22,6 +22,7 @@ namespace Ekkam {
         int projectileCountBeforeLightning = 0;
 
         GameObject crosshair;
+        AudioSource weaponAudioSource;
 
         [Header("----- Projectile Stats -----")]
 
@@ -79,6 +80,7 @@ namespace Ekkam {
         private void Awake()
         {
             damagableEntity = GetComponent<DamagableEntity>();
+            weaponAudioSource = damagableEntity.weaponAudioSource;
             originalProjectileScale = projectilePrefab.transform.localScale;
             if (GetComponent<Player>() != null && GetComponent<PlayerInput>() == null)
             {
@@ -162,6 +164,11 @@ namespace Ekkam {
                     projectile.GetComponent<Rigidbody>().velocity = adjustedDirection * projectileSpeed;
 
                     bulletGapX += multishotGapX;
+
+                    if (weaponAudioSource != null)
+                    {
+                        damagableEntity.audioManager.PlayPulseShotSound(weaponAudioSource);
+                    }
                 }
                 int loopDelay = (int)(burstFireDelay * 1000);
                 await Task.Delay(loopDelay);

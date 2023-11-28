@@ -1,13 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Ekkam {
     public class WaveSpawner : MonoBehaviour
     {
         public bool spawningWaves = false;
+        public bool spawnOnGameStart = false;
         [SerializeField] WaveConfigSO[] waves;
         // [SerializeField] int upgradesInterval = 3;
+        [SerializeField] int combineInterval = 4;
 
         [HideInInspector]
         public List<Enemy> enemiesOnScreen = new List<Enemy>();
@@ -16,17 +19,19 @@ namespace Ekkam {
         public int currentWaveNumber = 0;
         public bool waitForAllEnemiesToDieBeforeSpawningNextWave = true;
         UpgradeManager upgradeManager;
+        GameManager gameManager;
 
         [SerializeField] float enemyRotationY = 180f;
 
         void Awake()
         {
             upgradeManager = FindObjectOfType<UpgradeManager>();
+            gameManager = FindObjectOfType<GameManager>();
         }
 
         void Start()
         {
-             StartSpawningWaves();
+            if (spawnOnGameStart == true) StartSpawningWaves();
         }
 
         public void StartSpawningWaves()
@@ -81,6 +86,18 @@ namespace Ekkam {
                 //     upgradeManager.ShowUpgrades();
                 //     yield return new WaitUntil(() => !upgradeManager.waitingForUpgrade);
                 // }
+
+                if (gameManager.AllPlayersInDuoMode())
+                {
+                    gameManager.StartCoroutine("SeperatePlayers");
+                    yield return new WaitUntil(() => !gameManager.AllPlayersInDuoMode());
+                }
+
+                if (currentWaveNumber % combineInterval == 0 && currentWaveNumber != 0 && PlayerInput.all.Count > 1)
+                {
+                    gameManager.StartCoroutine("CombinePlayers");
+                    yield return new WaitUntil(() => gameManager.AllPlayersInDuoMode());
+                }
 
                 print("Spawning next wave");
             }

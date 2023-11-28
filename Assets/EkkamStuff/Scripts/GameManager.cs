@@ -17,17 +17,22 @@ namespace Ekkam {
         [SerializeField] GameObject playerDuoPrefab;
         [SerializeField] ParticleSystem xpParticles;
 
+        [SerializeField] AudioSource xpAudioSource;
+        [SerializeField] AudioSource gameAudioSource;
+
         public float playersXP = 0f;
         public float playersTotalXP = 0f;
         public float playersXPToNextLevel = 20f;
 
         WaveSpawner waveSpawner;
         UpgradeManager upgradeManager;
+        AudioManager audioManager;
 
         void Awake()
         {
             waveSpawner = FindObjectOfType<WaveSpawner>();
             upgradeManager = FindObjectOfType<UpgradeManager>();
+            audioManager = FindObjectOfType<AudioManager>();
             if (instance == null)
             {
                 instance = this;
@@ -76,6 +81,7 @@ namespace Ekkam {
                 playersXP = 0;
                 playersXPToNextLevel *= 1.5f;
                 upgradeManager.ShowUpgrades();
+                audioManager.PlayLevelUpSound(gameAudioSource);
             }
         }
 
@@ -124,7 +130,7 @@ namespace Ekkam {
             }
         }
 
-        bool AllPlayersInDuoMode()
+        public bool AllPlayersInDuoMode()
         {
             foreach (PlayerInput playerInput in PlayerInput.all)
             {
@@ -168,6 +174,13 @@ namespace Ekkam {
             }
 
             xpParticle.Emit(amount);
+        }
+
+        public void CollectXP(float amount)
+        {
+            playersXP += amount;
+            playersTotalXP += amount;
+            audioManager.PlayXPSound(xpAudioSource);
         }
     }
 }
