@@ -24,6 +24,8 @@ namespace Ekkam {
         public Transform pathPrefab;
 
         public bool shootTowardsInitialPlayerPos = false;
+        public bool dieOnEndOfPath = true;
+        public bool lookAtPlayer = false;
 
         [Header("----- Enemy Stats -----")]
 
@@ -76,6 +78,11 @@ namespace Ekkam {
             {
                 FollowPath();
             }
+
+            if (lookAtPlayer == true)
+            {
+                LookAtPlayer();
+            }
         }
 
         void FollowPath()
@@ -97,10 +104,21 @@ namespace Ekkam {
                     OnMoveTimer = 0f;
                 }
             }
-            else
+            else if (dieOnEndOfPath == true)
             {
                 waveSpawner.enemiesOnScreen.Remove(this);
                 Destroy(gameObject);
+            }
+        }
+
+        void LookAtPlayer()
+        {
+            if (FindClosestPlayer() != null)
+            {
+                Vector3 lookPos = FindClosestPlayer().transform.position - transform.position;
+                lookPos.y = 0;
+                Quaternion rotation = Quaternion.LookRotation(lookPos);
+                transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 5f);
             }
         }
 

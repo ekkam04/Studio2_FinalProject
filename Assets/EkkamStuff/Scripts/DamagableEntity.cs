@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using UnityEngine.Animations;
 
 namespace Ekkam {
     public class DamagableEntity : MonoBehaviour
     {
         public GameObject damagePopupPrefab;
         public Slider healthBar;
+        public GameObject entityCanvas;
         [Tooltip("The total health")] public float health;
 
         public AudioManager audioManager;
@@ -31,6 +33,10 @@ namespace Ekkam {
                 print("health bar found");
                 healthBar.maxValue = maxHealth;
                 healthBar.value = health;
+
+                Camera mainCamera = Camera.main;
+                RotationConstraint canvasRC = entityCanvas.GetComponent<RotationConstraint>();
+                canvasRC.AddSource(new ConstraintSource { sourceTransform = mainCamera.transform, weight = 1 });
             }
             else
             {

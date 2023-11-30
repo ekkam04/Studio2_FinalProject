@@ -18,7 +18,7 @@ namespace Ekkam {
         [SerializeField] Color32[] playerSilhouetteColors;
         [SerializeField] GameObject[] playerParts;
         [SerializeField] GameObject[] playerGlassParts;
-        [SerializeField] GameObject playerCanvas;
+        // [SerializeField] GameObject playerCanvas;
         [SerializeField] GameObject playerCards;
         [SerializeField] GameObject playerSilhouette;
         [SerializeField] AudioSource playerAudioSource;
@@ -124,9 +124,9 @@ namespace Ekkam {
 
         void Start()
         {
-            Camera mainCamera = Camera.main;
-            RotationConstraint playerCanvasRC = playerCanvas.GetComponent<RotationConstraint>();
-            playerCanvasRC.AddSource(new ConstraintSource { sourceTransform = mainCamera.transform, weight = 1 });
+            // Camera mainCamera = Camera.main;
+            // RotationConstraint playerCanvasRC = playerCanvas.GetComponent<RotationConstraint>();
+            // playerCanvasRC.AddSource(new ConstraintSource { sourceTransform = mainCamera.transform, weight = 1 });
 
             if (playerInput == null) crosshair.SetActive(true);
         }
@@ -493,7 +493,7 @@ namespace Ekkam {
         {
             allowMovement = false;
             allowDashing = false;
-            playerCanvas.SetActive(false);
+            entityCanvas.SetActive(false);
             rb.velocity = Vector3.zero;
             col.enabled = false;
             StartCoroutine(FlyTowardsTheOtherPlayer());
@@ -605,7 +605,7 @@ namespace Ekkam {
             inDuoMode = false;
             allowMovement = true;
             allowDashing = true;
-            playerCanvas.SetActive(true);
+            entityCanvas.SetActive(true);
 
             print("Duo mode disabled for player " + playerNumber);
             ShowPlayer();
