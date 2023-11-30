@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 namespace Ekkam {
     public class GameManager : MonoBehaviour
@@ -73,6 +74,8 @@ namespace Ekkam {
             if (PlayerInput.all.Count == 2 && !waveSpawner.spawningWaves)
             {
                 waveSpawner.StartSpawningWaves();
+                // disable players joining
+                GetComponent<PlayerInputManager>().DisableJoining();
             }
 
             // check if players have enough XP to level up
@@ -137,6 +140,13 @@ namespace Ekkam {
                 if (playerInput.GetComponent<Player>().inDuoMode == false) return false;
             }
             return true;
+        }
+
+        public void EndGame()
+        {
+            print("Game Over");
+            // reload current scene
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
         public void CombinePlayersButtonPressed()

@@ -17,6 +17,7 @@ namespace Ekkam {
         [SerializeField] Material[] playerMaterials;
         [SerializeField] Color32[] playerSilhouetteColors;
         [SerializeField] GameObject[] playerParts;
+        [SerializeField] GameObject[] playerGlassParts;
         [SerializeField] GameObject playerCanvas;
         [SerializeField] GameObject playerCards;
         [SerializeField] GameObject playerSilhouette;
@@ -40,7 +41,7 @@ namespace Ekkam {
         float rightTriggerAxis;
 
         public bool allowMovement = true;
-        public bool allowDodging = true;
+        public bool allowDashing = true;
         public bool allowShooting = true;
         public bool inDuoMode = false;
         bool isDashing = false;
@@ -79,7 +80,7 @@ namespace Ekkam {
         public float dodgeSpeed = 1f;
         public float dashSpeed = 2f;
         [Tooltip("The cooldown time before the player can shoot again")] public float attackSpeed = 0.05f;
-        [Tooltip("The cooldown time before the player can dodge again")] public float dodgeCooldown = 0.1f;
+        [Tooltip("The cooldown time before the player can dodge again")] public float dashCooldown = 0.1f;
         public float xpMultiplier = 1f;
 
         void Awake()
@@ -473,7 +474,7 @@ namespace Ekkam {
         {
             if (context.performed)
             {
-                if (!allowDodging) return;
+                if (!allowDashing) return;
                 if (inDuoMode && playerDuo != null)
                 {
                     if (playerNumber == 1)
@@ -491,7 +492,7 @@ namespace Ekkam {
         public void EnableDuoMode()
         {
             allowMovement = false;
-            allowDodging = false;
+            allowDashing = false;
             playerCanvas.SetActive(false);
             rb.velocity = Vector3.zero;
             col.enabled = false;
@@ -521,7 +522,7 @@ namespace Ekkam {
 
             print("Duo mode enabled for player " + playerNumber);
             inDuoMode = true;
-            allowDodging = true;
+            allowDashing = true;
             HidePlayer();
         }
 
@@ -529,10 +530,12 @@ namespace Ekkam {
         {
             col.enabled = false;
             allowMovement = false;
-            allowDodging = false;
+            allowDashing = false;
             allowShooting = false;
             if (playerInput == null) DisableShootingForAllPlayers();
             if (crosshair != null) crosshair.SetActive(false);
+
+            StartCoroutine(DashCooldownVisual());
 
             // spin the player 360 degrees according to the direction
             lastDashDirection = dashDirection;
@@ -586,7 +589,7 @@ namespace Ekkam {
             allowMovement = true;
             allowShooting = true;
             col.enabled = true;
-            yield return new WaitForSeconds(dodgeCooldown);
+            yield return new WaitForSeconds(dashCooldown);
 
             if (lastDashDirection == DashDirection.Right) lockLeftMovement = false;
             else if (lastDashDirection == DashDirection.Left) lockRightMovement = false;
@@ -594,14 +597,14 @@ namespace Ekkam {
             transform.rotation = Quaternion.identity;
             if (playerInput == null) EnableShootingForAllPlayers();
             if (crosshair != null) crosshair.SetActive(true);
-            allowDodging = true;
+            allowDashing = true;
         }
 
         public void DisableDuoMode()
         {
             inDuoMode = false;
             allowMovement = true;
-            allowDodging = true;
+            allowDashing = true;
             playerCanvas.SetActive(true);
 
             print("Duo mode disabled for player " + playerNumber);
@@ -805,6 +808,24 @@ namespace Ekkam {
         void GainXP(float xp)
         {
             
+        }
+
+        IEnumerator DashCooldownVisual()
+        {
+            foreach (GameObject playerGlassPart in playerGlassParts)
+            {
+                Color initialColor = playerGlassPart.GetComponent<MeshRenderer>().material.color;
+                Color targetColor = Color.white;
+                float pulseTimer = 0f;
+                float pulseDuration = 0.2f;
+                while (!allowDashing)
+                {
+                    pulseTimer += Time.deltaTime;
+                    playerGlassPart.GetComponent<MeshRenderer>().material.color = Color.Lerp(initialColor, targetColor, pulseTimer / pulseDuration);
+                    yield return null;
+                }
+                playerGlassPart.GetComponent<MeshRenderer>().material.color = initialColor;
+            }
         }
 
         void ShowPlayer()

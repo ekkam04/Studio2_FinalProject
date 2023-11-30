@@ -833,6 +833,10 @@ MonoBehaviour:
   - {fileID: 8993889454838377215}
   - {fileID: 2291717429840176095}
   - {fileID: 2244138992648289904}
+  playerGlassParts:
+  - {fileID: 6370031895869388217}
+  - {fileID: 1385040682485985259}
+  - {fileID: 2836134448384735410}
   playerCanvas: {fileID: 1891858151252943537}
   playerCards: {fileID: 3683245239006980493, guid: 0ff80f775c881d94084551214ae3860c, type: 3}
   playerSilhouette: {fileID: 2354661645630340860, guid: 7dd03e1ee18737045a27ce8df97cebbe, type: 3}
@@ -840,7 +844,7 @@ MonoBehaviour:
   crosshair: {fileID: 0}
   playerDuo: {fileID: 0}
   allowMovement: 1
-  allowDodging: 1
+  allowDashing: 1
   allowShooting: 1
   inDuoMode: 0
   cardPicked: 0
@@ -908,7 +912,7 @@ MonoBehaviour:
   dodgeSpeed: 2
   dashSpeed: 100
   attackSpeed: 0.2
-  dodgeCooldown: 1.5
+  dashCooldown: 1.5
   xpMultiplier: 1
 --- !u!114 &500853067486141094
 MonoBehaviour:

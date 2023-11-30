@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 namespace Ekkam {
     public class DamagableEntity : MonoBehaviour
@@ -46,6 +47,26 @@ namespace Ekkam {
             if (health <= 0)
             {
                 killer = attacker;
+
+                if (GetComponent<Player>() != null)
+                {
+                    if (GetComponent<PlayerInput>() == null)
+                    {
+                        GameManager.instance.EndGame();
+                        foreach (Player player in FindObjectsOfType<Player>())
+                        {
+                            if (player != this)
+                            {
+                                Destroy(player.gameObject);
+                            }
+                        }
+                    }
+                    else if (PlayerInput.all.Count < 2)
+                    {
+                        GameManager.instance.EndGame();
+                    }
+                }
+
                 Destroy(gameObject);
             }
             else
