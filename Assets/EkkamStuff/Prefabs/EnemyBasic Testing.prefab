@@ -174,7 +174,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4570564c4c9d44741b2738df37de894c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectilePrefab: {fileID: 1891902229039176, guid: 729d7034287088541ab70fedc81a5f1a, type: 3}
+  projectilePrefab: {fileID: 1891902229039176, guid: 2f9a57b6caddd6b4f8014e16b281fa07, type: 3}
   projectilePool: []
   projectileHeightOffset: 2
   shootProjectile: 1

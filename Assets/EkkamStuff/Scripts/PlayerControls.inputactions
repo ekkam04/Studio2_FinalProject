@@ -33,6 +33,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "Utility",
+                    "type": "Value",
+                    "id": "3c242c07-276b-4679-9cda-4e19a98f1e71",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "Join",
                     "type": "Button",
                     "id": "e43b0fb3-6700-4a9a-af60-c5f499119099",
@@ -256,6 +265,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Aim",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "75e2283c-f14f-4492-9a37-c8588b2838f3",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Utility",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -16,6 +16,8 @@ namespace Ekkam {
         public AudioManager audioManager;
         public AudioSource weaponAudioSource;
 
+        public AudioClip hitSound;
+
         [HideInInspector]
         public float maxHealth;
 
@@ -49,6 +51,7 @@ namespace Ekkam {
         {
             health -= damage;
             ShowDamagePopup(damage, isCriticalHit);
+            audioManager.PlayHitSound();
             if (healthBar != null) healthBar.value = health;
             if (health <= 0)
             {

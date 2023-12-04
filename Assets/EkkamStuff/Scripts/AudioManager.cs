@@ -6,6 +6,7 @@ namespace Ekkam {
     public class AudioManager : MonoBehaviour
     {
         public static AudioManager instance;
+        [SerializeField] AudioSource audioSource;
 
         [Header("Audio Clips")]
         [SerializeField] AudioClip dashSound;
@@ -19,6 +20,7 @@ namespace Ekkam {
 
         [Header("Game Sounds")]
         [SerializeField] AudioClip xpSound;
+        [SerializeField] AudioClip hitSound;
         [SerializeField] AudioClip levelUpSound;
 
         void Awake()
@@ -72,6 +74,11 @@ namespace Ekkam {
         {
             source.pitch = Random.Range(0.9f, 1.1f);
             source.PlayOneShot(xpSound);
+        }
+
+        public void PlayHitSound()
+        {
+            audioSource.PlayOneShot(hitSound);
         }
     }
 }

@@ -17,7 +17,6 @@ namespace Ekkam {
         void Start()
         {
             uiStateMachine = FindObjectOfType<UIStateMachine>();
-            HideUpgrades();
         }
 
         // Assign non repeating random upgrades to cards

@@ -52,6 +52,7 @@ public class Projectile : MonoBehaviour
 
         private void OnParticleCollision(GameObject other) {
             print("Particle collision");
+            print(other.tag);
             if (other.CompareTag("Enemy") && this.gameObject.CompareTag("PlayerProjectile")) {
                 print("Enemy hit");
                 other.GetComponent<Enemy>().TakeDamage(projectileDamage, isCriticalHit, projectileOwner);

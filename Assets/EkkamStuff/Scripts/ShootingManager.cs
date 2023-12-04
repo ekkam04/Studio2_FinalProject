@@ -173,12 +173,10 @@ namespace Ekkam {
                     projectile.GetComponent<ParticleSystem>().Play();
 
                     bulletGapX += multishotGapX;
-
-                    if (weaponAudioSource != null)
-                    {
-                        damagableEntity.audioManager.PlayPulseShotSound(weaponAudioSource);
-                    }
                 }
+
+                if (weaponAudioSource != null) damagableEntity.audioManager.PlayPulseShotSound(weaponAudioSource);
+                
                 int loopDelay = (int)(burstFireDelay * 1000);
                 await Task.Delay(loopDelay);
             }

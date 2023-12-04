@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 100}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 9014343654409554815}
@@ -180,7 +180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4570564c4c9d44741b2738df37de894c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectilePrefab: {fileID: 1891902229039176, guid: 729d7034287088541ab70fedc81a5f1a, type: 3}
+  projectilePrefab: {fileID: 1891902229039176, guid: 2f9a57b6caddd6b4f8014e16b281fa07, type: 3}
   projectilePool: []
   projectileHeightOffset: 2
   shootProjectile: 1
@@ -791,7 +791,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7428391816522946299
 Transform:
   m_ObjectHideFlags: 0
