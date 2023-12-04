@@ -135,6 +135,7 @@ namespace Ekkam {
 
         public bool AllPlayersInDuoMode()
         {
+            if (PlayerInput.all.Count < 2) return false;
             foreach (PlayerInput playerInput in PlayerInput.all)
             {
                 if (playerInput.GetComponent<Player>().inDuoMode == false) return false;

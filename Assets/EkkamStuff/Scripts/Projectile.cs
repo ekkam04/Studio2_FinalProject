@@ -8,19 +8,50 @@ public class Projectile : MonoBehaviour
         [SerializeField] Collider projectileCollider;
         public float projectileDamage;
         public bool isCriticalHit = false;
+
         Vector3 viewportPosition;
+        [SerializeField] ParticleSystem projectileParticleSystem;
+        [SerializeField] ParticleSystem[] projectileSubEmitters;
+
         public DamagableEntity projectileOwner; // Since only damagable entities can shoot projectiles, this will always be a damagable entity
 
         void Update()
         {
-            viewportPosition = Camera.main.WorldToViewportPoint(transform.position);
-            if (viewportPosition.x > 1 || viewportPosition.x < 0 || viewportPosition.y > 1 || viewportPosition.y < 0)
+            if (projectileParticleSystem.particleCount > 0)
+            {
+                ParticleSystem.Particle[] particles = new ParticleSystem.Particle[projectileParticleSystem.particleCount];
+                projectileParticleSystem.GetParticles(particles);
+                for (int i = 0; i < particles.Length; i++)
+                {
+                    viewportPosition = Camera.main.WorldToViewportPoint(particles[i].position);
+                    if (viewportPosition.x > 1 || viewportPosition.x < 0 || viewportPosition.y > 1 || viewportPosition.y < 0)
+                    {
+                        particles[i].remainingLifetime = 0.1f;
+                    }
+                }
+            }
+            else
             {
                 gameObject.SetActive(false);
             }
+
         }
 
         private void OnTriggerEnter(Collider other) {
+            if (other.CompareTag("Enemy") && this.gameObject.CompareTag("PlayerProjectile")) {
+                print("Enemy hit");
+                other.GetComponent<Enemy>().TakeDamage(projectileDamage, isCriticalHit, projectileOwner);
+                gameObject.SetActive(false);
+            }
+            else if ((other.CompareTag("Player") || other.CompareTag("PlayerDuo")) && this.gameObject.CompareTag("EnemyProjectile")) {
+                print("Player hit");
+                other.GetComponent<Player>().TakeDamage(projectileDamage, isCriticalHit, projectileOwner);
+                gameObject.SetActive(false); 
+            }
+        }
+
+        private void OnParticleCollision(GameObject other) {
+            print("Particle collision");
             if (other.CompareTag("Enemy") && this.gameObject.CompareTag("PlayerProjectile")) {
                 print("Enemy hit");
                 other.GetComponent<Enemy>().TakeDamage(projectileDamage, isCriticalHit, projectileOwner);
@@ -45,6 +76,15 @@ public class Projectile : MonoBehaviour
             else
             {
                 isCriticalHit = false;
+            }
+        }
+
+        public void UpdateSubEmitterSpeed(float speed)
+        {
+            for (int i = 0; i < projectileSubEmitters.Length; i++)
+            {
+                ParticleSystem.MainModule mainModule = projectileSubEmitters[i].main;
+                mainModule.startSpeed = speed;
             }
         }
     }

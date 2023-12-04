@@ -8,8 +8,8 @@ namespace Ekkam {
     {
         public bool spawningWaves = false;
         public bool spawnOnGameStart = false;
-        [SerializeField] WaveConfigSO[] waves;
-        // [SerializeField] int upgradesInterval = 3;
+        [SerializeField] List<WaveConfigSO> waves = new List<WaveConfigSO>();
+
         [SerializeField] int combineInterval = 4;
 
         [HideInInspector]
@@ -18,15 +18,21 @@ namespace Ekkam {
         public WaveConfigSO currentWave;
         public int currentWaveNumber = 0;
         public bool waitForAllEnemiesToDieBeforeSpawningNextWave = true;
-        UpgradeManager upgradeManager;
         GameManager gameManager;
+        ProceduralWaveGenerator proceduralWaveGenerator;
 
         [SerializeField] float enemyRotationY = 180f;
 
+        [Header("Procedural Wave Generation")]
+        [SerializeField] bool useProceduralWaveGeneration = false;
+        [SerializeField] bool onlyUseProceduralAfterPredefined = false;
+        [SerializeField] int numberOfProceduralWavesToGenerate = 10;
+        [SerializeField] List<WaveConfigSO> proceduralWaves = new List<WaveConfigSO>();
+
         void Awake()
         {
-            upgradeManager = FindObjectOfType<UpgradeManager>();
             gameManager = FindObjectOfType<GameManager>();
+            proceduralWaveGenerator = GetComponent<ProceduralWaveGenerator>();
         }
 
         void Start()
@@ -37,19 +43,58 @@ namespace Ekkam {
         public void StartSpawningWaves()
         {
             spawningWaves = true;
-            StartCoroutine(SpawnWaves());
+
+            if (useProceduralWaveGeneration == true && onlyUseProceduralAfterPredefined == false)
+            {
+                StartCoroutine(SpawnProceduralWaves());
+            }
+            else
+            {
+                StartCoroutine(SpawnPredefinedWaves());
+            }
         }
 
         public void StopSpawningWaves()
         {
             spawningWaves = false;
-            StopCoroutine(SpawnWaves());
         }
 
-        IEnumerator SpawnWaves()
+        IEnumerator SpawnProceduralWaves()
+        {
+            for (int i = 0; i < numberOfProceduralWavesToGenerate; i++)
+            {
+                WaveConfigSO proceduralWave = proceduralWaveGenerator.GenerateWave();
+                proceduralWaves.Add(proceduralWave);
+                yield return StartCoroutine(SpawnWave(proceduralWave));
+            }
+
+            currentWave = null;
+
+            print("All waves spawned");
+        }
+
+        IEnumerator SpawnPredefinedWaves()
         {
             foreach (WaveConfigSO wave in waves)
             {
+                yield return StartCoroutine(SpawnWave(wave));
+            }
+
+            currentWave = null;
+
+            print("All waves spawned");
+
+            if (useProceduralWaveGeneration == true && onlyUseProceduralAfterPredefined == true)
+            {
+                print("Spawning procedural waves");
+                StartCoroutine(SpawnProceduralWaves());
+            }
+        }
+
+        IEnumerator SpawnWave(WaveConfigSO wave)
+        {
+            print("Spawning wave " + currentWaveNumber);
+                // if (spawningWaves == false) yield break;
                 currentWave = wave;
                 currentWaveNumber++;
                 for (int i = 0; i < wave.waveEnemies.Count; i++)
@@ -81,12 +126,6 @@ namespace Ekkam {
                     yield return new WaitForSeconds(currentWave.waitTimeBeforeNextWave);
                 }
 
-                // if (currentWaveNumber % upgradesInterval == 0 && currentWaveNumber != 0)
-                // {
-                //     upgradeManager.ShowUpgrades();
-                //     yield return new WaitUntil(() => !upgradeManager.waitingForUpgrade);
-                // }
-
                 if (gameManager.AllPlayersInDuoMode())
                 {
                     gameManager.StartCoroutine("SeperatePlayers");
@@ -98,12 +137,6 @@ namespace Ekkam {
                     gameManager.StartCoroutine("CombinePlayers");
                     yield return new WaitUntil(() => gameManager.AllPlayersInDuoMode());
                 }
-
-                print("Spawning next wave");
-            }
-
-            currentWave = null;
-            print("All waves spawned");
         }
     }
 }
