@@ -926,15 +926,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4570564c4c9d44741b2738df37de894c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectilePrefab: {fileID: 1915812027166286, guid: 1693f773cc5a23d4e970f4b88f4cacf4, type: 3}
+  projectilePrefab: {fileID: 1891902229039176, guid: 729d7034287088541ab70fedc81a5f1a, type: 3}
   projectilePool: []
+  projectileHeightOffset: 0.25
   shootProjectile: 1
   shootBackShots: 0
-  projectileSpeed: 120
+  projectileSpeed: 15
   projectileDamage: 1
   projectileCritChance: 10
   projectileCritMultiplier: 2
-  projectileSize: 1.5
+  projectileSize: 3
   multishotCount: 1
   multishotGapX: 3
   multishotArcAngle: 0
