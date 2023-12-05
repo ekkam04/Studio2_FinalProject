@@ -508,6 +508,7 @@ namespace Ekkam {
                 }
                 else
                 {
+                    RumbleManager.instance.RumblePulse(playerInput.devices[0] as Gamepad, 0.5f, 0.5f, 0.3f);
                     StartCoroutine(Dash());
                 }
             }
@@ -753,8 +754,8 @@ namespace Ekkam {
                     shootingManager.projectileSpeed += 10f;
                     break;
                 case "Health":
-                    maxHealth += 3;
-                    health += 3;
+                    maxHealth += 8;
+                    health += 8;
                     healthBar.maxValue = maxHealth;
                     healthBar.value = health;
                     break;

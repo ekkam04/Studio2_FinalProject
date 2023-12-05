@@ -355,5 +355,13 @@ namespace Ekkam {
             playersTotalXP += amount;
             audioManager.PlayXPSound(xpAudioSource);
         }
+
+        void OnDisable()
+        {
+            foreach (PlayerInput playerInput in PlayerInput.all)
+            {
+                RumbleManager.instance.StopContinuousRumble(playerInput.devices[0] as Gamepad);
+            }
+        }
     }
 }

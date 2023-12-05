@@ -176,6 +176,7 @@ namespace Ekkam {
                 }
 
                 if (weaponAudioSource != null) damagableEntity.audioManager.PlayPulseShotSound(weaponAudioSource);
+                // RumbleManager.instance.RumblePulse(GetComponent<PlayerInput>().devices[0] as Gamepad, 0.5f, 0.5f, 0.01f);
                 
                 int loopDelay = (int)(burstFireDelay * 1000);
                 await Task.Delay(loopDelay);

@@ -848,9 +848,9 @@ MonoBehaviour:
   crosshair: {fileID: 0}
   playerDuo: {fileID: 0}
   rb: {fileID: 692145711449980683}
-  allowMovement: 0
-  allowDashing: 0
-  allowShooting: 0
+  allowMovement: 1
+  allowDashing: 1
+  allowShooting: 1
   inDuoMode: 0
   cardPicked: 0
   dashDirection: 0
