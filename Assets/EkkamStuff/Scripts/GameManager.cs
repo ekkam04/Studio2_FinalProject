@@ -287,6 +287,11 @@ namespace Ekkam {
             }
         }
 
+        IEnumerator StartTutorialSequence()
+        {
+            yield return new WaitForSeconds(2f);
+        }
+
         public bool AllPlayersInDuoMode()
         {
             if (PlayerInput.all.Count < 2) return false;
