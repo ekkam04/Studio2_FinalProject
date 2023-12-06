@@ -6,23 +6,28 @@ using UnityEngine.UI;
 
 public class UIMainState : BaseState<UIStateMachine.UIState>
 {
-    private Slider xpSlider;
-    GameManager gameManager;
 
-    public UIMainState(UIStateMachine.UIState key, Slider xpSlider) : base(key)
+    private RectTransform mainMenu;
+    private Button startButton;
+
+    public UIMainState(UIStateMachine.UIState key, RectTransform mainMenu, Button startButton) : base(key)
     {
-        this.xpSlider = xpSlider;
-        gameManager = GameManager.instance;
+        this.mainMenu = mainMenu; 
+        this.startButton = startButton;
     }
 
     public override void EnterState()
     {
         Debug.Log("UI Entered Main State");
+        mainMenu.gameObject.SetActive(true);
+
+        startButton.Select();
     }
 
     public override void ExitState()
     {
         Debug.Log("UI Exited Main State");
+        mainMenu.gameObject.SetActive(false);
     }
 
     public override UIStateMachine.UIState GetNextState()
@@ -47,7 +52,6 @@ public class UIMainState : BaseState<UIStateMachine.UIState>
 
     public override void UpdateState()
     {
-        xpSlider.value = gameManager.playersXP;
-        xpSlider.maxValue = gameManager.playersXPToNextLevel;
+
     }
 }

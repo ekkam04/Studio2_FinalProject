@@ -22,11 +22,13 @@ namespace Ekkam {
         [SerializeField] GameObject playerCards;
         [SerializeField] GameObject playerSilhouette;
         [SerializeField] AudioSource playerAudioSource;
+        [SerializeField] GameObject shield;
+        [SerializeField] ParticleSystem shieldParticles;
         public GameObject crosshair;
 
         public Player playerDuo;
 
-        Rigidbody rb;
+        public Rigidbody rb;
         Collider col;
         PlayerInput playerInput;
         ShootingManager shootingManager;
@@ -39,6 +41,7 @@ namespace Ekkam {
         Vector3 lastRepellingForceDirection;
         Vector3 lastMovementInputBeforeDash;
         float rightTriggerAxis;
+        float leftTriggerAxis;
 
         public bool allowMovement = true;
         public bool allowDashing = true;
@@ -82,6 +85,8 @@ namespace Ekkam {
         [Tooltip("The cooldown time before the player can shoot again")] public float attackSpeed = 0.05f;
         [Tooltip("The cooldown time before the player can dodge again")] public float dashCooldown = 0.1f;
         public float xpMultiplier = 1f;
+
+        public bool hasShield = false;
 
         void Awake()
         {
@@ -168,6 +173,15 @@ namespace Ekkam {
             if (rightTriggerAxis > 0.5f && allowShooting)
             {
                 Shoot();
+            }
+
+            if (leftTriggerAxis > 0.5f && hasShield)
+            {
+                shield.SetActive(true);
+            }
+            else
+            {
+                shield.SetActive(false);
             }
 
             if (Input.GetKey(KeyCode.Space) && allowShooting)
@@ -261,6 +275,11 @@ namespace Ekkam {
             {
                 shootingManager.Shoot("PlayerProjectile", this.gameObject);
             }
+        }
+
+        void UseUtility()
+        {
+            // To be implemented
         }
 
         void ControlSpeed()
@@ -470,6 +489,11 @@ namespace Ekkam {
             rightTriggerAxis = context.ReadValue<float>();
         }
 
+        public void OnUtility(InputAction.CallbackContext context)
+        {
+            leftTriggerAxis = context.ReadValue<float>();
+        }
+
         public void OnDash(InputAction.CallbackContext context)
         {
             if (context.performed)
@@ -484,6 +508,7 @@ namespace Ekkam {
                 }
                 else
                 {
+                    RumbleManager.instance.RumblePulse(playerInput.devices[0] as Gamepad, 0.5f, 0.5f, 0.3f);
                     StartCoroutine(Dash());
                 }
             }
@@ -612,7 +637,7 @@ namespace Ekkam {
             col.enabled = true;
 
             // Add a force to the player to separate them, player 1 to the left, player 2 to the right
-            ApplySeparationForce();
+            ApplySeparationForce(7000);
         }
 
         void DisableShootingForAllPlayers()
@@ -659,7 +684,7 @@ namespace Ekkam {
             }
         }
 
-        public void ApplySeparationForce()
+        public void ApplySeparationForce(float force)
         {
             rb = GetComponent<Rigidbody>(); // This is needed because the rb is not assigned yet in the Awake() function
             Vector3 forceDirection = Vector3.zero;
@@ -671,7 +696,7 @@ namespace Ekkam {
             {
                 forceDirection = Vector3.right;
             }
-            rb.AddForce(forceDirection * 7000);
+            rb.AddForce(forceDirection * force);
         }
 
         public void AddCardsToUpgradeMenu()
@@ -729,8 +754,8 @@ namespace Ekkam {
                     shootingManager.projectileSpeed += 10f;
                     break;
                 case "Health":
-                    maxHealth += 3;
-                    health += 3;
+                    maxHealth += 8;
+                    health += 8;
                     healthBar.maxValue = maxHealth;
                     healthBar.value = health;
                     break;
