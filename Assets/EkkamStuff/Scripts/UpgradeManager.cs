@@ -11,6 +11,8 @@ namespace Ekkam {
         UIStateMachine uiStateMachine;
         public List<Card> player1Cards;
         public List<Card> player2Cards;
+        
+        [SerializeField] ParticleSystem upgradeParticles;
 
         public List<Upgrade> upgrades;
 
@@ -39,6 +41,7 @@ namespace Ekkam {
 
         async public void ShowUpgrades()
         {
+            upgradeParticles.Play();
             upgradeMenu.SetActive(false);
             if (player1Cards.Count == 0 || player2Cards.Count == 0)
             {
@@ -64,6 +67,7 @@ namespace Ekkam {
 
         async public void HideUpgrades()
         {
+            upgradeParticles.Stop();
             uiStateMachine.CloseUpgradeMenu();
             await Task.Delay(500);
             foreach (Player player in FindObjectsOfType<Player>())

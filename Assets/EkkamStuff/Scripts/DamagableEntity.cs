@@ -68,6 +68,7 @@ namespace Ekkam {
                             if (player != this)
                             {
                                 Destroy(player.gameObject);
+                                // Revive implementation goes here
                             }
                         }
                     }
@@ -78,6 +79,7 @@ namespace Ekkam {
                 }
 
                 Destroy(gameObject);
+                // Revive implementation goes here
             }
             else
             {

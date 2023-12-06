@@ -27,6 +27,7 @@ namespace Ekkam {
         [Header("----- Projectile Stats -----")]
 
         public float projectileHeightOffset = 0f;
+        public float projectileForwardOffset = 10f;
 
         public bool shootProjectile = true;
         public bool shootBackShots = false;
@@ -162,7 +163,7 @@ namespace Ekkam {
                     projectileScript.projectileOwner = damagableEntity;
                     projectile.transform.rotation = Quaternion.LookRotation(adjustedDirection);
                     projectile.transform.eulerAngles = new Vector3(0, projectile.transform.eulerAngles.y, projectile.transform.eulerAngles.z);
-                    projectile.transform.position = transform.position + (projectile.transform.right * bulletGapX) + (direction * 10f) + (Vector3.up * projectileHeightOffset);
+                    projectile.transform.position = transform.position + (projectile.transform.right * bulletGapX) + (direction * projectileForwardOffset) + (Vector3.up * projectileHeightOffset);
                     projectile.transform.localScale = originalProjectileScale * projectileSize;
                     projectile.SetActive(true);
                     // projectile.GetComponent<Rigidbody>().velocity = adjustedDirection * projectileSpeed;

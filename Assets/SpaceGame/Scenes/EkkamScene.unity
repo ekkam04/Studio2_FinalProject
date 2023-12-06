@@ -1119,7 +1119,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &245892115
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1781,8 +1781,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawningWaves: 0
-  spawnOnGameStart: 0
+  spawnOnGameStart: 1
   waves:
+  - {fileID: 11400000, guid: 85d30fa128b554d4e8bb7e4e8b135834, type: 2}
   - {fileID: 11400000, guid: c9b472867d14c8d428225dc7319762f1, type: 2}
   - {fileID: 11400000, guid: 167bb10eb8265c9439ea0a8c52c175b0, type: 2}
   - {fileID: 11400000, guid: 0e095f1628739c14c9186fa4e098e4d2, type: 2}
@@ -1792,7 +1793,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c9b472867d14c8d428225dc7319762f1, type: 2}
   - {fileID: 11400000, guid: 0e095f1628739c14c9186fa4e098e4d2, type: 2}
   - {fileID: 11400000, guid: d26895907d09c8b46b3d653590141b8c, type: 2}
-  - {fileID: 11400000, guid: 85d30fa128b554d4e8bb7e4e8b135834, type: 2}
   combineInterval: 4
   enemiesOnScreen: []
   currentWave: {fileID: 0}
@@ -2076,50 +2076,60 @@ MonoBehaviour:
   upgradeMenu: {fileID: 245892114}
   player1Cards: []
   player2Cards: []
+  upgradeParticles: {fileID: 5915638477163546118}
   upgrades:
   - upgradeName: Damage
     upgradeDescription: Increases your projectile damage
     timesUpgraded: 0
+    upgradeIcon: {fileID: 0}
     upgradeBorderColor: {r: 1, g: 0.2971698, b: 0.2971698, a: 1}
     upgradeBGColor: {r: 0.254717, g: 0, b: 0, a: 1}
   - upgradeName: Projectile Size
     upgradeDescription: Increases your projectile size
     timesUpgraded: 0
+    upgradeIcon: {fileID: 0}
     upgradeBorderColor: {r: 0.3254902, g: 0.6431373, b: 1, a: 1}
     upgradeBGColor: {r: 0, g: 0.1882353, b: 0.39607844, a: 1}
   - upgradeName: Projectile Speed
     upgradeDescription: Increases your projectile speed
     timesUpgraded: 0
+    upgradeIcon: {fileID: 0}
     upgradeBorderColor: {r: 0.3254902, g: 0.6431373, b: 1, a: 1}
     upgradeBGColor: {r: 0, g: 0.1882353, b: 0.39607844, a: 1}
   - upgradeName: Health
     upgradeDescription: Increases and grants health
     timesUpgraded: 0
+    upgradeIcon: {fileID: 0}
     upgradeBorderColor: {r: 0.46823213, g: 1, b: 0.3915094, a: 1}
     upgradeBGColor: {r: 0.024779284, g: 0.23584908, b: 0, a: 1}
   - upgradeName: Lightning
     upgradeDescription: Adds another weapon to your ship
     timesUpgraded: 0
+    upgradeIcon: {fileID: 0}
     upgradeBorderColor: {r: 0.57457054, g: 0.32549024, b: 1, a: 1}
     upgradeBGColor: {r: 0.19306722, g: 0, b: 0.5188679, a: 1}
   - upgradeName: Backshots
     upgradeDescription: Shoot another projectile backwards
     timesUpgraded: 0
+    upgradeIcon: {fileID: 0}
     upgradeBorderColor: {r: 0.3254902, g: 0.6431373, b: 1, a: 1}
     upgradeBGColor: {r: 0, g: 0.18659504, b: 0.3962264, a: 1}
   - upgradeName: Multishot
     upgradeDescription: "Shoot another\_projectile side by side"
     timesUpgraded: 0
+    upgradeIcon: {fileID: 0}
     upgradeBorderColor: {r: 0.3254902, g: 0.6431373, b: 1, a: 1}
     upgradeBGColor: {r: 0, g: 0.1882353, b: 0.39607844, a: 1}
   - upgradeName: Burst
     upgradeDescription: Shoot another projectile at once
     timesUpgraded: 0
+    upgradeIcon: {fileID: 0}
     upgradeBorderColor: {r: 0.3254902, g: 0.6431373, b: 1, a: 1}
     upgradeBGColor: {r: 0, g: 0.1882353, b: 0.39607844, a: 1}
   - upgradeName: Fire Rate
     upgradeDescription: Increases your fire rate
     timesUpgraded: 0
+    upgradeIcon: {fileID: 0}
     upgradeBorderColor: {r: 1, g: 0.29803923, b: 0.29803923, a: 1}
     upgradeBGColor: {r: 0.25490198, g: 0, b: 0, a: 1}
 --- !u!4 &512968010
@@ -5323,7 +5333,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &987047871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5377,6 +5387,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 525616442}
+  - {fileID: 5825165624479669082}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 65, y: 0, z: 0}
 --- !u!1 &998873601
@@ -9785,7 +9796,7 @@ Camera:
   far clip plane: 1000
   field of view: 60.000004
   orthographic: 1
-  orthographic size: 49.8
+  orthographic size: 100
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -9809,8 +9820,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1750661781}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.07299218, y: 0.7033294, z: -0.07299218, w: 0.7033294}
-  m_LocalPosition: {x: -125.58431, y: -178.27916, z: 144.16714}
+  m_LocalRotation: {x: 0.53729963, y: 0, z: 0, w: 0.8433915}
+  m_LocalPosition: {x: 0, y: 144, z: 26}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -10766,6 +10777,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gamePaused: 0
+  skipIntro: 1
   playerPrefab: {fileID: 2354661645630340860, guid: 296b24d54fc532e40b86949cfa6d75d8, type: 3}
   playerDuoPrefab: {fileID: 7823480186774308539, guid: 2198d5bf95bf58b47b844d6b895b12fd, type: 3}
   xpParticles: {fileID: 5791013062372633269, guid: 921ffb2a7510dbb4c9bc7112f617a971, type: 3}
@@ -12199,6 +12211,101 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ee91cc29fac8a2248ba4b4134b951d00, type: 3}
+--- !u!4 &5825165624479669082 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4312921616593897791, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+  m_PrefabInstance: {fileID: 6293024114734202655}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &5915638477163546118 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 7915404851025786958, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+  m_PrefabInstance: {fileID: 6293024114734202655}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6293024114734202655
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 987047872}
+    m_Modifications:
+    - target: {fileID: 3432701987474567570, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3432701987474567570, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: useUnscaledTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894966136544562820, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4302980221633782874, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4312921616593897791, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4312921616593897791, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -8.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4312921616593897791, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 228.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4312921616593897791, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.8433915
+      objectReference: {fileID: 0}
+    - target: {fileID: 4312921616593897791, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.53729963
+      objectReference: {fileID: 0}
+    - target: {fileID: 4312921616593897791, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4312921616593897791, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4312921616593897791, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 65
+      objectReference: {fileID: 0}
+    - target: {fileID: 4312921616593897791, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4312921616593897791, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4610274933882398333, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: m_Name
+      value: Buff 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4610274933882398333, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7915404851025786958, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7915404851025786958, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+      propertyPath: useUnscaledTime
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
