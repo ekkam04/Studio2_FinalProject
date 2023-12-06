@@ -26,6 +26,8 @@ namespace Ekkam {
 
         [Header("----- Projectile Stats -----")]
 
+        public float projectileHeightOffset = 0f;
+
         public bool shootProjectile = true;
         public bool shootBackShots = false;
 
@@ -153,23 +155,29 @@ namespace Ekkam {
                         projectilePool.Add(projectile);
                     }
 
+                    Projectile projectileScript = projectile.GetComponent<Projectile>();
+
                     projectile.tag = tagToApply;
-                    projectile.GetComponent<Projectile>().SetDamageWithCritChance(projectileDamage, projectileCritChance, projectileCritMultiplier);
-                    projectile.GetComponent<Projectile>().projectileOwner = damagableEntity;
+                    projectileScript.SetDamageWithCritChance(projectileDamage, projectileCritChance, projectileCritMultiplier);
+                    projectileScript.projectileOwner = damagableEntity;
                     projectile.transform.rotation = Quaternion.LookRotation(adjustedDirection);
-                    projectile.transform.eulerAngles = new Vector3(90, projectile.transform.eulerAngles.y, projectile.transform.eulerAngles.z);
-                    projectile.transform.position = transform.position + (projectile.transform.right * bulletGapX) + (direction * 10f);
+                    projectile.transform.eulerAngles = new Vector3(0, projectile.transform.eulerAngles.y, projectile.transform.eulerAngles.z);
+                    projectile.transform.position = transform.position + (projectile.transform.right * bulletGapX) + (direction * 10f) + (Vector3.up * projectileHeightOffset);
                     projectile.transform.localScale = originalProjectileScale * projectileSize;
                     projectile.SetActive(true);
-                    projectile.GetComponent<Rigidbody>().velocity = adjustedDirection * projectileSpeed;
+                    // projectile.GetComponent<Rigidbody>().velocity = adjustedDirection * projectileSpeed;
+
+                    var projectileParticle = projectile.GetComponent<ParticleSystem>().main;
+                    projectileParticle.startSpeed = projectileSpeed;
+                    projectileScript.UpdateSubEmitterSpeed(projectileSpeed);
+                    projectile.GetComponent<ParticleSystem>().Play();
 
                     bulletGapX += multishotGapX;
-
-                    if (weaponAudioSource != null)
-                    {
-                        damagableEntity.audioManager.PlayPulseShotSound(weaponAudioSource);
-                    }
                 }
+
+                if (weaponAudioSource != null) damagableEntity.audioManager.PlayPulseShotSound(weaponAudioSource);
+                // RumbleManager.instance.RumblePulse(GetComponent<PlayerInput>().devices[0] as Gamepad, 0.5f, 0.5f, 0.01f);
+                
                 int loopDelay = (int)(burstFireDelay * 1000);
                 await Task.Delay(loopDelay);
             }

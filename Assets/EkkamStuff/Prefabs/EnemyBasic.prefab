@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 1180025729877882771}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: -1.5336, z: 100}
+  m_LocalPosition: {x: 0, y: 0, z: 100}
   m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -101,7 +101,7 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
@@ -122,13 +122,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damagePopupPrefab: {fileID: 5141910325531400217, guid: 7c0aa93ce91594f4ab533b21d895ccd8, type: 3}
   healthBar: {fileID: 0}
+  entityCanvas: {fileID: 0}
   health: 2
+  audioManager: {fileID: 0}
+  weaponAudioSource: {fileID: 0}
   maxHealth: 0
   meshRenderer: {fileID: 0}
   killer: {fileID: 0}
   waypoints: []
   pathPrefab: {fileID: 0}
   shootTowardsInitialPlayerPos: 1
+  dieOnEndOfPath: 1
+  lookAtPlayer: 0
   speedCurve:
     serializedVersion: 2
     m_Curve:
@@ -153,7 +158,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  moveSpeed: 80
+  moveSpeed: 60
   attackSpeed: 2
   damageOnImpact: 2
   waitWaypointDuration: 1
@@ -169,15 +174,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4570564c4c9d44741b2738df37de894c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectilePrefab: {fileID: 3479318975902545842, guid: 79f61d7ea2a7fac43b6e20323e287e96, type: 3}
+  projectilePrefab: {fileID: 1891902229039176, guid: 2f9a57b6caddd6b4f8014e16b281fa07, type: 3}
   projectilePool: []
+  projectileHeightOffset: 2
   shootProjectile: 1
   shootBackShots: 0
-  projectileSpeed: 90
+  projectileSpeed: 8
   projectileDamage: 1
   projectileCritChance: 10
   projectileCritMultiplier: 2
-  projectileSize: 0.75
+  projectileSize: 3
   multishotCount: 1
   multishotGapX: 3
   multishotArcAngle: 0

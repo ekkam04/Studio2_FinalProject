@@ -16,6 +16,8 @@ namespace Ekkam {
         public AudioManager audioManager;
         public AudioSource weaponAudioSource;
 
+        public AudioClip hitSound;
+
         [HideInInspector]
         public float maxHealth;
 
@@ -49,6 +51,8 @@ namespace Ekkam {
         {
             health -= damage;
             ShowDamagePopup(damage, isCriticalHit);
+            audioManager.PlayHitSound();
+            if (GetComponent<PlayerInput>() != null) RumbleManager.instance.RumblePulse(GetComponent<PlayerInput>().devices[0] as Gamepad, 0.5f, 0.5f, 0.1f);
             if (healthBar != null) healthBar.value = health;
             if (health <= 0)
             {

@@ -63,7 +63,7 @@ namespace Ekkam {
 
             if (shootTimer >= attackSpeed)
             {
-                if (shootTowardsInitialPlayerPos)
+                if (shootTowardsInitialPlayerPos == true && FindClosestPlayer() != null)
                 {
                     shootingManager.Shoot("EnemyProjectile", this.gameObject, FindClosestPlayer().transform);
                 }
