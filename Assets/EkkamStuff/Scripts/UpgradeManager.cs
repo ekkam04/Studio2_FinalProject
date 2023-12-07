@@ -2,15 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
+using UnityEditor.Animations;
+using UnityEngine.UI;
 
 namespace Ekkam {
     public class UpgradeManager : MonoBehaviour
     {
         public bool waitingForUpgrade = false;
         public GameObject upgradeMenu;
+        public AnimatorController cardAnimatorController;
         UIStateMachine uiStateMachine;
+
         public List<Card> player1Cards;
         public List<Card> player2Cards;
+
+        public GameObject player1Upgrades;
+        public GameObject player2Upgrades;
+        
+        [SerializeField] ParticleSystem upgradeParticles;
+        public Color dullingColor;
 
         public List<Upgrade> upgrades;
 
@@ -34,11 +44,13 @@ namespace Ekkam {
                 cards[i].upgradeName.text = upgrades[randomNumber].upgradeName;
                 cards[i].upgradeDescription.text = upgrades[randomNumber].upgradeDescription;
                 cards[i].SetCardColors(upgrades[randomNumber].upgradeBGColor, upgrades[randomNumber].upgradeBorderColor);
+                cards[i].SetUpgradeIcon(upgrades[randomNumber].upgradeIcon);
             }
         }
 
         async public void ShowUpgrades()
         {
+            upgradeParticles.Play();
             upgradeMenu.SetActive(false);
             if (player1Cards.Count == 0 || player2Cards.Count == 0)
             {
@@ -64,6 +76,7 @@ namespace Ekkam {
 
         async public void HideUpgrades()
         {
+            upgradeParticles.Stop();
             uiStateMachine.CloseUpgradeMenu();
             await Task.Delay(500);
             foreach (Player player in FindObjectsOfType<Player>())
@@ -84,12 +97,19 @@ namespace Ekkam {
             Time.timeScale = 1;
         }
 
-        public void UpgradePlayer(Player player, Card card)
+        public void UpgradePlayer(Player player, Card card, RawImage icon, Color iconColor)
         {
+            GameObject newIcon = new GameObject();
+            newIcon.AddComponent<RawImage>();
+            newIcon.GetComponent<RawImage>().texture = icon.texture;
+            newIcon.GetComponent<RawImage>().color = iconColor;
+            newIcon.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+
             if (player.playerNumber == 1)
             {
                 foreach (Card playerCard in player1Cards)
                 {
+                    newIcon.transform.SetParent(player1Upgrades.transform);
                     Destroy(playerCard.gameObject.transform.parent.gameObject);
                 }
             }
@@ -97,9 +117,12 @@ namespace Ekkam {
             {
                 foreach (Card playerCard in player2Cards)
                 {
+                    newIcon.transform.SetParent(player2Upgrades.transform);
                     Destroy(playerCard.gameObject.transform.parent.gameObject);
                 }
             }
+            
+            newIcon.GetComponent<RectTransform>().localScale = new Vector3(2, 2, 2);
             player.Upgrade(card.upgradeName.text);
 
             bool allPlayersPickedUpgrades = true;

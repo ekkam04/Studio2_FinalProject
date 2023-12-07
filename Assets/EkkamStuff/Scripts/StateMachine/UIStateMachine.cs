@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Ekkam;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,6 +26,8 @@ public class UIStateMachine : StateManager<UIStateMachine.UIState>
     [SerializeField] RectTransform joinMenu;
     [SerializeField] RectTransform gameplayUI;
     [SerializeField] Slider xpSlider;
+    [SerializeField] TMP_Text player1Kills;
+    [SerializeField] TMP_Text player2Kills;
 
     void Awake()
     {
@@ -57,5 +61,17 @@ public class UIStateMachine : StateManager<UIStateMachine.UIState>
     public void ShowGameplayUI()
     {
         TransitionToState(UIState.Gameplay);
+    }
+
+    public void UpdatePlayerKillCount(Player killer)
+    {
+        if (killer.playerNumber == 1)
+        {
+            player1Kills.text = killer.killCount.ToString();
+        }
+        else if (killer.playerNumber == 2)
+        {
+            player2Kills.text = killer.killCount.ToString();
+        }
     }
 }

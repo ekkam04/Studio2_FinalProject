@@ -10,6 +10,8 @@ namespace Ekkam {
         public static GameManager instance;
         public bool gamePaused = false;
 
+        public bool skipIntro = false;
+
         [SerializeField] GameObject playerPrefab;
 
         public delegate void PlayerEvent();
@@ -34,6 +36,8 @@ namespace Ekkam {
         [SerializeField] GameObject takeOffVCam;
         [SerializeField] GameObject gameVCam;
         [SerializeField] GameObject mainMenuVCam;
+
+        [SerializeField] 
 
         public float playersXP = 0f;
         public float playersTotalXP = 0f;
@@ -69,13 +73,25 @@ namespace Ekkam {
             Time.timeScale = 1;
             playerPrefab.GetComponent<Player>().transform.position = player1LandingPoint.position + new Vector3(0, landingPointHeightOffset, 0);
 
-            mainMenuVCam.SetActive(true);
-            gameVCam.SetActive(false);
-            player1VCam.SetActive(false);
-            player2VCam.SetActive(false);
-            takeOffVCam.SetActive(false);
-            
-            StartCoroutine(FadeBGPlaneTransparency(0f, 0.5f));
+            if (skipIntro == true)
+            {
+                gameVCam.SetActive(true);
+                takeOffVCam.SetActive(false);   
+                player1VCam.SetActive(false);
+                player2VCam.SetActive(false);
+                mainMenuVCam.SetActive(false);
+                uiStateMachine.ShowGameplayUI();
+                StartCoroutine(FadeBGPlaneTransparency(0.8f, 0.5f));
+            }
+            else
+            {
+                mainMenuVCam.SetActive(true);
+                gameVCam.SetActive(false);
+                player1VCam.SetActive(false);
+                player2VCam.SetActive(false);
+                takeOffVCam.SetActive(false);
+                StartCoroutine(FadeBGPlaneTransparency(0f, 0.5f));
+            }
         }
 
         void Update()
@@ -92,7 +108,7 @@ namespace Ekkam {
             {
                 upgradeManager.ShowUpgrades();
             }
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.R))
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
@@ -118,28 +134,40 @@ namespace Ekkam {
         public void AddPlayer(PlayerInput playerInput)
         {
             Player player = playerInput.GetComponent<Player>();
-            player.rb.isKinematic = true;
-            player.entityCanvas.gameObject.SetActive(false);
             
             player.playerNumber = PlayerInput.all.Count;
             playerInput.gameObject.name = "Player_" + player.playerNumber;
             print("Player " + player.playerNumber + " joined");
 
-            StartCoroutine(LandPlayer(player, player.playerNumber == 1 ? player1LandingPoint : player2LandingPoint));
-
             player.AssignMaterial();
 
-            if (player.playerNumber == 1)
+            if (skipIntro == true)
             {
-                playerPrefab.GetComponent<Player>().transform.position = player2LandingPoint.position + new Vector3(0, landingPointHeightOffset, 0);
-                Invoke("SwitchToNextPlayerCamera", 2f);
+                player.rb.position = new Vector3(0, 0, -40);
+                player.ApplySeparationForce(15000);
+                player.allowMovement = true;
+                player.allowDashing = true;
+                player.allowShooting = true;
             }
-            else if (player.playerNumber == 2)
+            else
             {
-                playerPrefab.GetComponent<Player>().transform.position = Vector3.zero;
-                playerInputManager.DisableJoining();
-                StartCoroutine(TeleportPlayersToPlayAreaAndStart());
+                player.rb.isKinematic = true;
+                player.entityCanvas.gameObject.SetActive(false);
+                StartCoroutine(LandPlayer(player, player.playerNumber == 1 ? player1LandingPoint : player2LandingPoint));
+
+                if (player.playerNumber == 1)
+                {
+                    playerPrefab.GetComponent<Player>().transform.position = player2LandingPoint.position + new Vector3(0, landingPointHeightOffset, 0);
+                    Invoke("SwitchToNextPlayerCamera", 2f);
+                }
+                else if (player.playerNumber == 2)
+                {
+                    playerPrefab.GetComponent<Player>().transform.position = Vector3.zero;
+                    playerInputManager.DisableJoining();
+                    StartCoroutine(TeleportPlayersToPlayAreaAndStart());
+                } 
             }
+
         }
 
         void SwitchToNextPlayerCamera()
@@ -261,6 +289,11 @@ namespace Ekkam {
             }
         }
 
+        IEnumerator StartTutorialSequence()
+        {
+            yield return new WaitForSeconds(2f);
+        }
+
         public bool AllPlayersInDuoMode()
         {
             if (PlayerInput.all.Count < 2) return false;
@@ -354,6 +387,13 @@ namespace Ekkam {
             playersXP += amount;
             playersTotalXP += amount;
             audioManager.PlayXPSound(xpAudioSource);
+        }
+
+        public void IncrementKillCount(Player killer)
+        {
+            killer.killCount++;
+            uiStateMachine.UpdatePlayerKillCount(killer);
+            
         }
 
         void OnDisable()

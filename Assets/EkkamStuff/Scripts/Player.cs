@@ -24,6 +24,7 @@ namespace Ekkam {
         [SerializeField] AudioSource playerAudioSource;
         [SerializeField] GameObject shield;
         [SerializeField] ParticleSystem shieldParticles;
+        [SerializeField] Slider shieldSlider;
         public GameObject crosshair;
 
         public Player playerDuo;
@@ -60,6 +61,7 @@ namespace Ekkam {
         float onMoveTimer = 0f;
         float onDashTimer = 0f;
         float lockMovementTimer = 0f;
+        float shieldTimer = 0f;
 
         public enum DashDirection
         {
@@ -75,6 +77,8 @@ namespace Ekkam {
         public DashDirection dashDirection;
         public DashDirection lastDashDirection;
 
+        public int killCount = 0;
+
         [Header("----- Player Stats -----")]
         public AnimationCurve speedCurve;
         public AnimationCurve dashCurve;
@@ -87,6 +91,12 @@ namespace Ekkam {
         public float xpMultiplier = 1f;
 
         public bool hasShield = false;
+        public float shieldDuration = 5f;
+        public float shieldCooldown = 2f;
+
+        bool isShieldActive = false;
+        float currentShieldDuration = 0f;
+        float shieldCooldownTimer = 0f;
 
         void Awake()
         {
@@ -129,10 +139,6 @@ namespace Ekkam {
 
         void Start()
         {
-            // Camera mainCamera = Camera.main;
-            // RotationConstraint playerCanvasRC = playerCanvas.GetComponent<RotationConstraint>();
-            // playerCanvasRC.AddSource(new ConstraintSource { sourceTransform = mainCamera.transform, weight = 1 });
-
             if (playerInput == null) crosshair.SetActive(true);
         }
 
@@ -144,12 +150,14 @@ namespace Ekkam {
             lockMovementTimer += Time.deltaTime; 
             shootTimer += Time.deltaTime;
             silhouetteTimer += Time.deltaTime;
+            shieldTimer += Time.deltaTime;
 
             ConstraintMovement();
             ControlSpeed();
             Aim();
 
             UpdateDashDirection();
+            RegenerateHealth();
 
             if (inDuoMode && playerDuo != null)
             {
@@ -167,9 +175,6 @@ namespace Ekkam {
             TiltOnMovement();
             TiltOnDash();
 
-            // set y to 0 to prevent the player from moving up and down
-            // transform.position = new Vector3(transform.position.x, 0, transform.position.z);
-
             if (rightTriggerAxis > 0.5f && allowShooting)
             {
                 Shoot();
@@ -177,12 +182,17 @@ namespace Ekkam {
 
             if (leftTriggerAxis > 0.5f && hasShield)
             {
-                shield.SetActive(true);
+                ActivateShield();
+                allowShooting = false;
             }
             else
             {
-                shield.SetActive(false);
+                DeactivateShield();
+                allowShooting = true;
             }
+
+            UpdateShieldUI();
+
 
             if (Input.GetKey(KeyCode.Space) && allowShooting)
             {
@@ -232,11 +242,6 @@ namespace Ekkam {
             {
                 onDashTimer = 0f;
             }
-
-            // if (isDodging)
-            // {
-            //     rb.AddForce(new Vector3(dodgeDirection * dodgeSpeed, 0, 0) * 1000);
-            // }
         }
 
         void Move()
@@ -277,9 +282,53 @@ namespace Ekkam {
             }
         }
 
-        void UseUtility()
+        void ActivateShield()
         {
-            // To be implemented
+            if (!isShieldActive && shieldCooldownTimer <= 0f)
+            {
+                isShieldActive = true;
+                shieldSlider.gameObject.SetActive(true);
+                currentShieldDuration = shieldDuration;
+                shield.SetActive(true);
+                shieldParticles.Play();
+            }
+        }
+
+        void DeactivateShield()
+        {
+            if (isShieldActive)
+            {
+                isShieldActive = false;
+                shield.SetActive(false);
+                shieldParticles.Stop();
+                shieldCooldownTimer = shieldCooldown;
+            }
+        }
+
+        void UpdateShieldUI()
+        {
+            if (isShieldActive)
+            {
+                // Update the shield slider based on the remaining duration.
+                currentShieldDuration -= Time.deltaTime;
+                shieldSlider.value = currentShieldDuration / shieldDuration;
+
+                if (currentShieldDuration <= 0f)
+                {
+                    DeactivateShield();
+                }
+            }
+            else if (shieldCooldownTimer > 0f)
+            {
+                // Update the shield slider during cooldown.
+                shieldSlider.gameObject.SetActive(true);
+                shieldCooldownTimer -= Time.deltaTime;
+                shieldSlider.value = 1 - (shieldCooldownTimer / shieldCooldown);
+            }
+            else
+            {
+                shieldSlider.gameObject.SetActive(false);
+            }
         }
 
         void ControlSpeed()
@@ -728,6 +777,7 @@ namespace Ekkam {
                     eventSystem.firstSelectedGameObject = card.gameObject;
                     eventSystem.SetSelectedGameObject(card.gameObject);
                     card.gameObject.GetComponent<Button>().OnSelect(null);
+                    card.startHighlighted = true;
                 }
                 if (playerNumber == 1)
                 {
@@ -774,6 +824,12 @@ namespace Ekkam {
                 case "Fire Rate":
                     attackSpeed -= 0.05f;
                     break;
+                case "Regeneration":
+                    hasRegen = true;
+                    break;
+                case "Shield":
+                    hasShield = true;
+                    break;
                 default:
                     break;
             }
@@ -795,6 +851,7 @@ namespace Ekkam {
 
             health = 0;
             maxHealth = 0;
+            hasRegen = false;
 
             shootingManager.projectileSpeed = 0;
             shootingManager.projectileDamage = 0;
@@ -813,6 +870,7 @@ namespace Ekkam {
 
                 health += player.health;
                 maxHealth += player.maxHealth;
+                if (player.hasRegen) hasRegen = true;
 
                 shootingManager.projectileSpeed += playerShootingManager.projectileSpeed / 2;
                 shootingManager.projectileDamage += playerShootingManager.projectileDamage / 2;

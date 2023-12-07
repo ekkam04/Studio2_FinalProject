@@ -154,7 +154,11 @@ namespace Ekkam {
         }
 
         private void OnDestroy() {
-            if (killer != null) gameManager.SpawnXP(transform.position, 5, killer);
+            if (killer != null)
+            {
+                gameManager.SpawnXP(transform.position, 5, killer);
+                if (killer.GetComponent<Player>() != null) gameManager.IncrementKillCount(killer.GetComponent<Player>());
+            }
             waveSpawner.enemiesOnScreen.Remove(this);
             Destroy(pathPrefab.gameObject);
         }
