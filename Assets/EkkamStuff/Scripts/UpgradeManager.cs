@@ -2,17 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
+using UnityEditor.Animations;
 
 namespace Ekkam {
     public class UpgradeManager : MonoBehaviour
     {
         public bool waitingForUpgrade = false;
         public GameObject upgradeMenu;
+        public AnimatorController cardAnimatorController;
         UIStateMachine uiStateMachine;
         public List<Card> player1Cards;
         public List<Card> player2Cards;
         
         [SerializeField] ParticleSystem upgradeParticles;
+        public Color dullingColor;
 
         public List<Upgrade> upgrades;
 
@@ -36,6 +39,7 @@ namespace Ekkam {
                 cards[i].upgradeName.text = upgrades[randomNumber].upgradeName;
                 cards[i].upgradeDescription.text = upgrades[randomNumber].upgradeDescription;
                 cards[i].SetCardColors(upgrades[randomNumber].upgradeBGColor, upgrades[randomNumber].upgradeBorderColor);
+                cards[i].SetUpgradeIcon(upgrades[randomNumber].upgradeIcon);
             }
         }
 

@@ -728,6 +728,7 @@ namespace Ekkam {
                     eventSystem.firstSelectedGameObject = card.gameObject;
                     eventSystem.SetSelectedGameObject(card.gameObject);
                     card.gameObject.GetComponent<Button>().OnSelect(null);
+                    card.startHighlighted = true;
                 }
                 if (playerNumber == 1)
                 {

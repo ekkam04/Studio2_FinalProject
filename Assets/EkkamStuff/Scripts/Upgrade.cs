@@ -9,7 +9,7 @@ namespace Ekkam {
         public string upgradeName;
         public string upgradeDescription;
         public int timesUpgraded;
-        public Image upgradeIcon;
+        public Texture2D upgradeIcon;
         public Color upgradeBorderColor;
         public Color upgradeBGColor;
     }

@@ -1828,7 +1828,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &245892115
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2950,7 +2950,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawningWaves: 0
-  spawnOnGameStart: 1
+  spawnOnGameStart: 0
   waves:
   - {fileID: 11400000, guid: 85d30fa128b554d4e8bb7e4e8b135834, type: 2}
   - {fileID: 11400000, guid: c9b472867d14c8d428225dc7319762f1, type: 2}
@@ -3421,110 +3421,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 494521246}
   m_CullTransparentMesh: 0
---- !u!1 &512968008
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 512968010}
-  - component: {fileID: 512968009}
-  m_Layer: 0
-  m_Name: UpgradeManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &512968009
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 512968008}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1c1583be197fde5499768bd039242e95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  waitingForUpgrade: 1
-  upgradeMenu: {fileID: 245892114}
-  player1Cards: []
-  player2Cards: []
-  upgradeParticles: {fileID: 5915638477163546118}
-  upgrades:
-  - upgradeName: Damage
-    upgradeDescription: Increases your projectile damage
-    timesUpgraded: 0
-    upgradeIcon: {fileID: 0}
-    upgradeBorderColor: {r: 1, g: 0.2971698, b: 0.2971698, a: 1}
-    upgradeBGColor: {r: 0.254717, g: 0, b: 0, a: 1}
-  - upgradeName: Projectile Size
-    upgradeDescription: Increases your projectile size
-    timesUpgraded: 0
-    upgradeIcon: {fileID: 0}
-    upgradeBorderColor: {r: 0.3254902, g: 0.6431373, b: 1, a: 1}
-    upgradeBGColor: {r: 0, g: 0.1882353, b: 0.39607844, a: 1}
-  - upgradeName: Projectile Speed
-    upgradeDescription: Increases your projectile speed
-    timesUpgraded: 0
-    upgradeIcon: {fileID: 0}
-    upgradeBorderColor: {r: 0.3254902, g: 0.6431373, b: 1, a: 1}
-    upgradeBGColor: {r: 0, g: 0.1882353, b: 0.39607844, a: 1}
-  - upgradeName: Health
-    upgradeDescription: Increases and grants health
-    timesUpgraded: 0
-    upgradeIcon: {fileID: 0}
-    upgradeBorderColor: {r: 0.46823213, g: 1, b: 0.3915094, a: 1}
-    upgradeBGColor: {r: 0.024779284, g: 0.23584908, b: 0, a: 1}
-  - upgradeName: Lightning
-    upgradeDescription: Adds another weapon to your ship
-    timesUpgraded: 0
-    upgradeIcon: {fileID: 0}
-    upgradeBorderColor: {r: 0.57457054, g: 0.32549024, b: 1, a: 1}
-    upgradeBGColor: {r: 0.19306722, g: 0, b: 0.5188679, a: 1}
-  - upgradeName: Backshots
-    upgradeDescription: Shoot another projectile backwards
-    timesUpgraded: 0
-    upgradeIcon: {fileID: 0}
-    upgradeBorderColor: {r: 0.3254902, g: 0.6431373, b: 1, a: 1}
-    upgradeBGColor: {r: 0, g: 0.18659504, b: 0.3962264, a: 1}
-  - upgradeName: Multishot
-    upgradeDescription: "Shoot another\_projectile side by side"
-    timesUpgraded: 0
-    upgradeIcon: {fileID: 0}
-    upgradeBorderColor: {r: 0.3254902, g: 0.6431373, b: 1, a: 1}
-    upgradeBGColor: {r: 0, g: 0.1882353, b: 0.39607844, a: 1}
-  - upgradeName: Burst
-    upgradeDescription: Shoot another projectile at once
-    timesUpgraded: 0
-    upgradeIcon: {fileID: 0}
-    upgradeBorderColor: {r: 0.3254902, g: 0.6431373, b: 1, a: 1}
-    upgradeBGColor: {r: 0, g: 0.1882353, b: 0.39607844, a: 1}
-  - upgradeName: Fire Rate
-    upgradeDescription: Increases your fire rate
-    timesUpgraded: 0
-    upgradeIcon: {fileID: 0}
-    upgradeBorderColor: {r: 1, g: 0.29803923, b: 0.29803923, a: 1}
-    upgradeBGColor: {r: 0.25490198, g: 0, b: 0, a: 1}
---- !u!4 &512968010
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 512968008}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &525616441
 GameObject:
   m_ObjectHideFlags: 3
@@ -3918,7 +3814,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 512968009}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: Ekkam.UpgradeManager, Assembly-CSharp
         m_MethodName: ShowUpgrades
         m_Mode: 1
@@ -16197,6 +16093,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2126645865}
   m_CullTransparentMesh: 0
+--- !u!1 &790739720202168432
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8922566987555985232}
+  - component: {fileID: 9082307323280214036}
+  m_Layer: 0
+  m_Name: UpgradeManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!33 &1087677191457279281
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -16645,6 +16558,95 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 829a2d7f03583434ca6d25cc1016df83, type: 3}
+--- !u!4 &8922566987555985232
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 790739720202168432}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9082307323280214036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 790739720202168432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c1583be197fde5499768bd039242e95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waitingForUpgrade: 1
+  upgradeMenu: {fileID: 245892114}
+  cardAnimatorController: {fileID: 9100000, guid: a0e35513d436f834aa896e2478ef2e11, type: 2}
+  player1Cards: []
+  player2Cards: []
+  upgradeParticles: {fileID: 5915638477163546118}
+  dullingColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
+  upgrades:
+  - upgradeName: Damage
+    upgradeDescription: Increases your projectile damage
+    timesUpgraded: 0
+    upgradeIcon: {fileID: 2800000, guid: e8cfafe9591c9b2409f3f71b63212f36, type: 3}
+    upgradeBorderColor: {r: 1, g: 0.2971698, b: 0.2971698, a: 1}
+    upgradeBGColor: {r: 0.254717, g: 0, b: 0, a: 1}
+  - upgradeName: Projectile Size
+    upgradeDescription: Increases your projectile size
+    timesUpgraded: 0
+    upgradeIcon: {fileID: 2800000, guid: 9e34d3eabdf58bc498232bc6a12cf1ce, type: 3}
+    upgradeBorderColor: {r: 0.94987625, g: 0.9622642, b: 0.32226774, a: 1}
+    upgradeBGColor: {r: 0.5097236, g: 0.5188679, b: 0.022027401, a: 1}
+  - upgradeName: Projectile Speed
+    upgradeDescription: Increases your projectile speed
+    timesUpgraded: 0
+    upgradeIcon: {fileID: 2800000, guid: dddf8957c8987c748aa70a0e2b78a3eb, type: 3}
+    upgradeBorderColor: {r: 0.990566, g: 0.5495441, b: 0.36912602, a: 1}
+    upgradeBGColor: {r: 0.4433962, g: 0.28358302, b: 0.18614274, a: 1}
+  - upgradeName: Max Health
+    upgradeDescription: Increases and grants health
+    timesUpgraded: 0
+    upgradeIcon: {fileID: 2800000, guid: ddbf64e52190a8e4cab2aa2cc6a69cb1, type: 3}
+    upgradeBorderColor: {r: 0.46823213, g: 1, b: 0.3915094, a: 1}
+    upgradeBGColor: {r: 0.024779284, g: 0.23584908, b: 0, a: 1}
+  - upgradeName: Lightning
+    upgradeDescription: Adds another weapon to your ship
+    timesUpgraded: 0
+    upgradeIcon: {fileID: 2800000, guid: 1ff5d6fba10b2b544ac75fe449d694cb, type: 3}
+    upgradeBorderColor: {r: 0.43867922, g: 0.8360422, b: 1, a: 1}
+    upgradeBGColor: {r: 0, g: 0.22699574, b: 0.3207547, a: 1}
+  - upgradeName: Backshots
+    upgradeDescription: Shoot another projectile backwards
+    timesUpgraded: 0
+    upgradeIcon: {fileID: 2800000, guid: 0172565170d0e4444ab4326afdfc3f8b, type: 3}
+    upgradeBorderColor: {r: 0.5764706, g: 0.3254902, b: 1, a: 1}
+    upgradeBGColor: {r: 0.19215687, g: 0, b: 0.5176471, a: 1}
+  - upgradeName: Multishot
+    upgradeDescription: "Shoot another\_projectile side by side"
+    timesUpgraded: 0
+    upgradeIcon: {fileID: 2800000, guid: 569ea5ffb8a24df42a469e1b09d65252, type: 3}
+    upgradeBorderColor: {r: 0.9622642, g: 0.41304737, b: 0.6220578, a: 1}
+    upgradeBGColor: {r: 0.5660378, g: 0, b: 0.218329, a: 1}
+  - upgradeName: Burst
+    upgradeDescription: Shoot another projectile at once
+    timesUpgraded: 0
+    upgradeIcon: {fileID: 2800000, guid: 0a68a618325bfac4f914433b14617fb4, type: 3}
+    upgradeBorderColor: {r: 1, g: 0.49587476, b: 0.4009434, a: 1}
+    upgradeBGColor: {r: 0.5188679, g: 0.107530184, b: 0.0465023, a: 1}
+  - upgradeName: Fire Rate
+    upgradeDescription: Increases your fire rate
+    timesUpgraded: 0
+    upgradeIcon: {fileID: 2800000, guid: 56aa9c7f839a91d4d8db30046bf13997, type: 3}
+    upgradeBorderColor: {r: 1, g: 0.5145788, b: 0.2980392, a: 1}
+    upgradeBGColor: {r: 0.4056604, g: 0.17573285, b: 0, a: 1}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -16654,8 +16656,8 @@ SceneRoots:
   - {fileID: 594358452}
   - {fileID: 1954750409}
   - {fileID: 565621488}
+  - {fileID: 8922566987555985232}
   - {fileID: 2081984486}
-  - {fileID: 512968010}
   - {fileID: 454294779}
   - {fileID: 43283248}
   - {fileID: 1066100251}
