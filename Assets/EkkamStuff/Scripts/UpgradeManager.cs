@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using UnityEditor.Animations;
+using UnityEngine.UI;
 
 namespace Ekkam {
     public class UpgradeManager : MonoBehaviour
@@ -11,8 +12,12 @@ namespace Ekkam {
         public GameObject upgradeMenu;
         public AnimatorController cardAnimatorController;
         UIStateMachine uiStateMachine;
+
         public List<Card> player1Cards;
         public List<Card> player2Cards;
+
+        public GameObject player1Upgrades;
+        public GameObject player2Upgrades;
         
         [SerializeField] ParticleSystem upgradeParticles;
         public Color dullingColor;
@@ -92,12 +97,19 @@ namespace Ekkam {
             Time.timeScale = 1;
         }
 
-        public void UpgradePlayer(Player player, Card card)
+        public void UpgradePlayer(Player player, Card card, RawImage icon, Color iconColor)
         {
+            GameObject newIcon = new GameObject();
+            newIcon.AddComponent<RawImage>();
+            newIcon.GetComponent<RawImage>().texture = icon.texture;
+            newIcon.GetComponent<RawImage>().color = iconColor;
+            newIcon.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+
             if (player.playerNumber == 1)
             {
                 foreach (Card playerCard in player1Cards)
                 {
+                    newIcon.transform.SetParent(player1Upgrades.transform);
                     Destroy(playerCard.gameObject.transform.parent.gameObject);
                 }
             }
@@ -105,9 +117,12 @@ namespace Ekkam {
             {
                 foreach (Card playerCard in player2Cards)
                 {
+                    newIcon.transform.SetParent(player2Upgrades.transform);
                     Destroy(playerCard.gameObject.transform.parent.gameObject);
                 }
             }
+            
+            newIcon.GetComponent<RectTransform>().localScale = new Vector3(2, 2, 2);
             player.Upgrade(card.upgradeName.text);
 
             bool allPlayersPickedUpgrades = true;

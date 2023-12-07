@@ -52,7 +52,9 @@ namespace Ekkam {
             }
             waitingText.gameObject.SetActive(true);
             
-            upgradeManager.UpgradePlayer(ownerPlayer, this);
+            Color iconColor = upgradeIcon.color;
+            iconColor.a = 0.5f;
+            upgradeManager.UpgradePlayer(ownerPlayer, this, upgradeIcon, iconColor);
         }
 
         public void SetCardColors(Color bgColor, Color borderColor)

@@ -37,6 +37,8 @@ namespace Ekkam {
         [SerializeField] GameObject gameVCam;
         [SerializeField] GameObject mainMenuVCam;
 
+        [SerializeField] 
+
         public float playersXP = 0f;
         public float playersTotalXP = 0f;
         public float playersXPToNextLevel = 20f;
@@ -385,6 +387,13 @@ namespace Ekkam {
             playersXP += amount;
             playersTotalXP += amount;
             audioManager.PlayXPSound(xpAudioSource);
+        }
+
+        public void IncrementKillCount(Player killer)
+        {
+            killer.killCount++;
+            uiStateMachine.UpdatePlayerKillCount(killer);
+            
         }
 
         void OnDisable()

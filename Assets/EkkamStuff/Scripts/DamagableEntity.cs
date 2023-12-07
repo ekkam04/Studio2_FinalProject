@@ -13,6 +13,11 @@ namespace Ekkam {
         public GameObject entityCanvas;
         [Tooltip("The total health")] public float health;
 
+        public bool hasRegen;
+        public float regenAmount;
+        public float regenRate;
+        float regenTimer;
+
         public AudioManager audioManager;
         public AudioSource weaponAudioSource;
 
@@ -68,7 +73,6 @@ namespace Ekkam {
                             if (player != this)
                             {
                                 Destroy(player.gameObject);
-                                // Revive implementation goes here
                             }
                         }
                     }
@@ -78,12 +82,26 @@ namespace Ekkam {
                     }
                 }
 
-                Destroy(gameObject);
-                // Revive implementation goes here
+                Destroy(gameObject); // Revive implementation goes here
             }
             else
             {
                 StartCoroutine(FlashColor(Color.red, 0.1f));
+            }
+        }
+
+        public void RegenerateHealth()
+        {
+            if (hasRegen)
+            {
+                regenTimer += Time.deltaTime;
+                if (regenTimer >= regenRate)
+                {
+                    regenTimer = 0f;
+                    health += regenAmount;
+                    if (health > maxHealth) health = maxHealth;
+                    if (healthBar != null) healthBar.value = health;
+                }
             }
         }
 

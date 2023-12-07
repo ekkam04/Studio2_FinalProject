@@ -59,6 +59,11 @@ namespace Ekkam {
             StopAllRumble();
         }
 
+        void OnDestroy()
+        {
+            StopAllRumble();
+        }
+
         public void StopAllRumble()
         {
             foreach (Gamepad pad in Gamepad.all)
