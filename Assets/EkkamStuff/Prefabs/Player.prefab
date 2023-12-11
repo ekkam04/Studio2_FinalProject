@@ -758,7 +758,7 @@ Transform:
   m_GameObject: {fileID: 2354661645630340860}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.22, y: -181.48, z: 248.4}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -888,7 +888,7 @@ MonoBehaviour:
   entityCanvas: {fileID: 1891858151252943537}
   health: 12
   hasRegen: 0
-  regenAmount: 0.05
+  regenAmount: 0.025
   regenRate: 0.1
   audioManager: {fileID: 0}
   weaponAudioSource: {fileID: 1205753599434976350}
@@ -998,7 +998,7 @@ MonoBehaviour:
   dodgeSpeed: 2
   dashSpeed: 100
   attackSpeed: 0.2
-  dashCooldown: 1.5
+  dashCooldown: 1
   xpMultiplier: 1
   hasShield: 0
   shieldDuration: 2

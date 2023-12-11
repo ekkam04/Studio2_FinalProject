@@ -41,8 +41,10 @@ namespace Ekkam {
         Vector3 repellingForceDirection;
         Vector3 lastRepellingForceDirection;
         Vector3 lastMovementInputBeforeDash;
+        Vector3 dualsenseGyroDirection;
         float rightTriggerAxis;
         float leftTriggerAxis;
+        bool hasDualsense = false;
 
         public bool allowMovement = true;
         public bool allowDashing = true;
@@ -139,7 +141,14 @@ namespace Ekkam {
 
         void Start()
         {
-            if (playerInput == null) crosshair.SetActive(true);
+            if (playerInput == null)
+            {
+                crosshair.SetActive(true);
+            }
+            else
+            {
+                hasDualsense = Dualsense.TryGettingDualsense(playerInput.devices[0] as Gamepad);
+            }
         }
 
         void Update()
@@ -152,12 +161,23 @@ namespace Ekkam {
             silhouetteTimer += Time.deltaTime;
             shieldTimer += Time.deltaTime;
 
+            if (hasDualsense == true) dualsenseGyroDirection = Dualsense.GetDirection(4000f * Time.deltaTime, playerInput.devices[0] as Gamepad).normalized;
+            // print("dualsense gyro direction: " + dualsenseGyroDirection);
+
             ConstraintMovement();
             ControlSpeed();
             Aim();
 
-            UpdateDashDirection();
             RegenerateHealth();
+            UpdateDashDirection(movementInput);
+
+            if (hasDualsense == true && Dualsense.GetDirection(1000f * Time.deltaTime, playerInput.devices[0] as Gamepad).magnitude > 1f)
+            {
+                if (allowDashing == true)
+                {
+                    StartCoroutine(Dash(true));
+                }
+            }
 
             if (inDuoMode && playerDuo != null)
             {
@@ -342,7 +362,7 @@ namespace Ekkam {
             }
         }
 
-        void UpdateDashDirection()
+        DashDirection UpdateDashDirection(Vector3 movementInput)
         {
             // update the dash direction depending on the movement input and keep top as the default direction if no input. snap to the closest direction from the 8 directions
             if (movementInput.x > 0.5f)
@@ -350,14 +370,17 @@ namespace Ekkam {
                 if (movementInput.y > 0.5f)
                 {
                     dashDirection = DashDirection.TopRight;
+                    return DashDirection.TopRight;
                 }
                 else if (movementInput.y < -0.5f)
                 {
                     dashDirection = DashDirection.BottomRight;
+                    return DashDirection.BottomRight;
                 }
                 else
                 {
                     dashDirection = DashDirection.Right;
+                    return DashDirection.Right;
                 }
             }
             else if (movementInput.x < -0.5f)
@@ -365,14 +388,17 @@ namespace Ekkam {
                 if (movementInput.y > 0.5f)
                 {
                     dashDirection = DashDirection.TopLeft;
+                    return DashDirection.TopLeft;
                 }
                 else if (movementInput.y < -0.5f)
                 {
                     dashDirection = DashDirection.BottomLeft;
+                    return DashDirection.BottomLeft;
                 }
                 else
                 {
                     dashDirection = DashDirection.Left;
+                    return DashDirection.Left;
                 }
             }
             else
@@ -380,10 +406,12 @@ namespace Ekkam {
                 if (movementInput.y < 0f)
                 {
                     dashDirection = DashDirection.Bottom;
+                    return DashDirection.Bottom;
                 }
                 else
                 {
                     dashDirection = DashDirection.Top;
+                    return DashDirection.Top;
                 }
             }
         }
@@ -557,7 +585,6 @@ namespace Ekkam {
                 }
                 else
                 {
-                    RumbleManager.instance.RumblePulse(playerInput.devices[0] as Gamepad, 0.5f, 0.5f, 0.3f);
                     StartCoroutine(Dash());
                 }
             }
@@ -600,7 +627,7 @@ namespace Ekkam {
             HidePlayer();
         }
 
-        IEnumerator Dash()
+        IEnumerator Dash(bool usingGyro = false)
         {
             col.enabled = false;
             allowMovement = false;
@@ -609,12 +636,22 @@ namespace Ekkam {
             if (playerInput == null) DisableShootingForAllPlayers();
             if (crosshair != null) crosshair.SetActive(false);
 
+            if (usingGyro == true)
+            {
+                print("Gyro dash!");
+                lastMovementInputBeforeDash = dualsenseGyroDirection; 
+                lastDashDirection = UpdateDashDirection(dualsenseGyroDirection);
+            }
+            else
+            {
+                lastMovementInputBeforeDash = movementInput;
+                lastDashDirection = dashDirection;
+            }
+
+            RumbleManager.instance.RumblePulse(playerInput.devices[0] as Gamepad, 0.5f, 0.5f, 0.3f);
             StartCoroutine(DashCooldownVisual());
 
             // spin the player 360 degrees according to the direction
-            lastDashDirection = dashDirection;
-            lastMovementInputBeforeDash = movementInput;
-
             float startingRotationZ = transform.rotation.eulerAngles.z;
 
             float targetRotationZ;

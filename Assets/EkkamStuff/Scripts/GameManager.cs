@@ -50,6 +50,9 @@ namespace Ekkam {
         PlayerInputManager playerInputManager;
         UIStateMachine uiStateMachine;
 
+        Gamepad controller;
+        [SerializeField] GameObject testCube;
+
         void Awake()
         {
             waveSpawner = FindObjectOfType<WaveSpawner>();
@@ -92,10 +95,25 @@ namespace Ekkam {
                 takeOffVCam.SetActive(false);
                 StartCoroutine(FadeBGPlaneTransparency(0f, 0.5f));
             }
+
+            // controller = Dualsense.GetController();
         }
 
         void Update()
         {
+            // testCube.transform.rotation *= Dualsense.GetRotation(4000f * Time.deltaTime);
+            // move test cube with gyro if tilted and stop moving if not tilted
+            // if (Dualsense.GetDirection(1000f * Time.deltaTime, controller).magnitude > 0.75f)
+            // {
+            //     print(Dualsense.GetDirection(1000f * Time.deltaTime, controller).magnitude);
+            //     testCube.transform.position += Dualsense.GetDirection(1000f * Time.deltaTime, controller);
+            // }
+            // else
+            // {
+            //     testCube.transform.position = testCube.transform.position;
+            // }
+
+
             if (Input.GetKeyDown(KeyCode.E))
             {
                 if (OnCombinePlayers != null) StartCoroutine(CombinePlayers());
