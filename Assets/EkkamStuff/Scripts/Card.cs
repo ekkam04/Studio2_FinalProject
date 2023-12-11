@@ -33,7 +33,6 @@ namespace Ekkam {
         {
             upgradeManager = FindObjectOfType<UpgradeManager>();
             dullingColor = upgradeManager.dullingColor;
-            cardAnimator.runtimeAnimatorController = upgradeManager.cardAnimatorController;
             cardAnimator.SetBool("Highlighted", startHighlighted);
         }
 

@@ -867,6 +867,9 @@ namespace Ekkam {
                 case "Shield":
                     hasShield = true;
                     break;
+                case "XP Multiplier":
+                    xpMultiplier += 0.1f;
+                    break;
                 default:
                     break;
             }

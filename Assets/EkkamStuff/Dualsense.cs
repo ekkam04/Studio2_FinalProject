@@ -25,7 +25,8 @@ public class Dualsense
         else
         {
             Debug.Log("Player has joined without DualSense controller");
-            return false;
+            // return false;
+            return true;
         }
     }
 

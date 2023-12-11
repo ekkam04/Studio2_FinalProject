@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
-using UnityEditor.Animations;
 using UnityEngine.UI;
 
 namespace Ekkam {
@@ -10,7 +9,6 @@ namespace Ekkam {
     {
         public bool waitingForUpgrade = false;
         public GameObject upgradeMenu;
-        public AnimatorController cardAnimatorController;
         UIStateMachine uiStateMachine;
 
         public List<Card> player1Cards;
