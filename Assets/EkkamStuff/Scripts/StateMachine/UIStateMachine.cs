@@ -4,6 +4,7 @@ using Ekkam;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class UIStateMachine : StateManager<UIStateMachine.UIState>
 {
@@ -25,6 +26,8 @@ public class UIStateMachine : StateManager<UIStateMachine.UIState>
     [SerializeField] RectTransform mainMenu;
     [SerializeField] RectTransform joinMenu;
     [SerializeField] RectTransform gameplayUI;
+    [SerializeField] RectTransform pauseMenu;
+    [SerializeField] Button resumeButton;
     [SerializeField] Slider xpSlider;
     [SerializeField] TMP_Text player1Kills;
     [SerializeField] TMP_Text player2Kills;
@@ -34,6 +37,7 @@ public class UIStateMachine : StateManager<UIStateMachine.UIState>
         States.Add(UIState.Main, new UIMainState(UIState.Main, mainMenu, startButton));
         States.Add(UIState.Gameplay, new UIGameplayState(UIState.Gameplay, xpSlider, gameplayUI));
         States.Add(UIState.PlayerSelect, new UIPlayerSelectState(UIState.PlayerSelect, joinMenu));
+        States.Add(UIState.Pause, new UIPauseState(UIState.Pause, pauseMenu, resumeButton));
         States.Add(UIState.Upgrade, new UIUpgradeState(UIState.Upgrade, upgradeMenu));
         CurrentState = States[UIState.Main];
     }
@@ -56,6 +60,29 @@ public class UIStateMachine : StateManager<UIStateMachine.UIState>
     public void CloseMainMenu()
     {
         TransitionToState(UIState.PlayerSelect);
+    }
+
+    public void TogglePauseMenu(int playerNumber = 0)
+    {
+        print("Player " + playerNumber + " paused the game");
+        if (CurrentState.StateKey == UIState.Pause)
+        {
+            TransitionToState(UIState.Gameplay);
+            foreach (PlayerInput playerInput in PlayerInput.all)
+            {
+                Debug.Log("Clearing Pause Menu Controls");
+                playerInput.GetComponent<Player>().AssignMenuControls(null, null, playerNumber);
+            }
+        }
+        else if (CurrentState.StateKey == UIState.Gameplay)
+        {
+            TransitionToState(UIState.Pause);
+            foreach (PlayerInput playerInput in PlayerInput.all)
+            {
+                Debug.Log("Assigning Pause Menu Controls");
+                playerInput.GetComponent<Player>().AssignMenuControls(resumeButton, pauseMenu.gameObject, playerNumber);
+            }
+        }
     }
 
     public void ShowGameplayUI()

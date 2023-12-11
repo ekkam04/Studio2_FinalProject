@@ -18,7 +18,6 @@ namespace Ekkam {
         [SerializeField] Color32[] playerSilhouetteColors;
         [SerializeField] GameObject[] playerParts;
         [SerializeField] GameObject[] playerGlassParts;
-        // [SerializeField] GameObject playerCanvas;
         [SerializeField] GameObject playerCards;
         [SerializeField] GameObject playerSilhouette;
         [SerializeField] AudioSource playerAudioSource;
@@ -34,6 +33,7 @@ namespace Ekkam {
         PlayerInput playerInput;
         ShootingManager shootingManager;
         UpgradeManager upgradeManager;
+        UIStateMachine uiStateMachine;
         MultiplayerEventSystem eventSystem;
         Vector2 movementInput;
         Vector2 aimInput;
@@ -52,6 +52,10 @@ namespace Ekkam {
         public bool inDuoMode = false;
         bool isDashing = false;
         public bool cardPicked = false;
+
+        public bool hasMoved = false;
+        public bool hasShot = false;
+        public bool hasDashed = false;
 
         bool lockLeftMovement = false;
         bool lockRightMovement = false;
@@ -108,6 +112,7 @@ namespace Ekkam {
             playerInput = GetComponent<PlayerInput>();
             shootingManager = GetComponent<ShootingManager>();
             upgradeManager = FindObjectOfType<UpgradeManager>();
+            uiStateMachine = FindObjectOfType<UIStateMachine>();
             eventSystem = GetComponentInChildren<MultiplayerEventSystem>();
             eventSystem.SetSelectedGameObject(null);
             InitializeDamagableEntity();
@@ -161,7 +166,7 @@ namespace Ekkam {
             silhouetteTimer += Time.deltaTime;
             shieldTimer += Time.deltaTime;
 
-            if (hasDualsense == true) dualsenseGyroDirection = Dualsense.GetDirection(4000f * Time.deltaTime, playerInput.devices[0] as Gamepad).normalized;
+            if (hasDualsense == true) dualsenseGyroDirection = Dualsense.GetDirection2D(4000f * Time.deltaTime, playerInput.devices[0] as Gamepad).normalized;
             // print("dualsense gyro direction: " + dualsenseGyroDirection);
 
             ConstraintMovement();
@@ -171,7 +176,7 @@ namespace Ekkam {
             RegenerateHealth();
             UpdateDashDirection(movementInput);
 
-            if (hasDualsense == true && Dualsense.GetDirection(1000f * Time.deltaTime, playerInput.devices[0] as Gamepad).magnitude > 1f)
+            if (hasDualsense == true && Dualsense.GetDirection2D(1000f * Time.deltaTime, playerInput.devices[0] as Gamepad).magnitude > 1f)
             {
                 if (allowDashing == true)
                 {
@@ -192,7 +197,7 @@ namespace Ekkam {
                 }   
             }
 
-            TiltOnMovement();
+            if (allowMovement == true) TiltOnMovement();
             TiltOnDash();
 
             if (rightTriggerAxis > 0.5f && allowShooting)
@@ -205,7 +210,7 @@ namespace Ekkam {
                 ActivateShield();
                 allowShooting = false;
             }
-            else
+            else if (hasShield)
             {
                 DeactivateShield();
                 allowShooting = true;
@@ -554,6 +559,7 @@ namespace Ekkam {
         public void OnMove(InputAction.CallbackContext context)
         {
             movementInput = context.ReadValue<Vector2>();
+            hasMoved = true;
         }
 
         public void OnAim(InputAction.CallbackContext context)
@@ -564,6 +570,7 @@ namespace Ekkam {
         public void OnShoot(InputAction.CallbackContext context)
         {
             rightTriggerAxis = context.ReadValue<float>();
+            hasShot = true;
         }
 
         public void OnUtility(InputAction.CallbackContext context)
@@ -586,13 +593,23 @@ namespace Ekkam {
                 else
                 {
                     StartCoroutine(Dash());
+                    hasDashed = true;
                 }
+            }
+        }
+
+        public void OnPause(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                uiStateMachine.TogglePauseMenu(playerNumber);
             }
         }
 
         public void EnableDuoMode()
         {
             allowMovement = false;
+            rb.isKinematic = true;
             allowDashing = false;
             entityCanvas.SetActive(false);
             rb.velocity = Vector3.zero;
@@ -648,7 +665,7 @@ namespace Ekkam {
                 lastDashDirection = dashDirection;
             }
 
-            RumbleManager.instance.RumblePulse(playerInput.devices[0] as Gamepad, 0.5f, 0.5f, 0.3f);
+            if (playerInput != null) RumbleManager.instance.RumblePulse(playerInput.devices[0] as Gamepad, 0.5f, 0.5f, 0.3f);
             StartCoroutine(DashCooldownVisual());
 
             // spin the player 360 degrees according to the direction
@@ -715,6 +732,7 @@ namespace Ekkam {
         {
             inDuoMode = false;
             allowMovement = true;
+            rb.isKinematic = false;
             allowDashing = true;
             entityCanvas.SetActive(true);
 
@@ -827,6 +845,25 @@ namespace Ekkam {
             }
         }
 
+        public void AssignMenuControls(Button firstSelectedButton, GameObject playerRoot, int playerNumber)
+        {
+            if (playerNumber != this.playerNumber) return;
+
+            if (firstSelectedButton == null || playerRoot == null)
+            {
+                eventSystem.playerRoot = null;
+                eventSystem.firstSelectedGameObject = null;
+                eventSystem.SetSelectedGameObject(null);
+            }
+            else
+            {
+                eventSystem.playerRoot = playerRoot;
+                eventSystem.firstSelectedGameObject = firstSelectedButton.gameObject;
+                eventSystem.SetSelectedGameObject(firstSelectedButton.gameObject);
+                firstSelectedButton.GetComponent<Button>().OnSelect(null);
+            }
+        }
+
         public void Upgrade(string upgradeName)
         {
             switch (upgradeName)
@@ -835,14 +872,14 @@ namespace Ekkam {
                     shootingManager.projectileDamage += 1;
                     break;
                 case "Projectile Size":
-                    shootingManager.projectileSize += 0.5f;
+                    shootingManager.projectileSize += 1f;
                     break;
                 case "Projectile Speed":
                     shootingManager.projectileSpeed += 10f;
                     break;
                 case "Health":
-                    maxHealth += 8;
-                    health += 8;
+                    maxHealth += 10;
+                    health += 10;
                     healthBar.maxValue = maxHealth;
                     healthBar.value = health;
                     break;
@@ -869,6 +906,9 @@ namespace Ekkam {
                     break;
                 case "XP Multiplier":
                     xpMultiplier += 0.1f;
+                    break;
+                case "Critical Chance":
+                    if (shootingManager.projectileCritChance < 100) shootingManager.projectileCritChance += 10f;
                     break;
                 default:
                     break;

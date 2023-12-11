@@ -88,6 +88,9 @@ namespace Ekkam {
             {
                 print("Spawning procedural waves");
                 StartCoroutine(SpawnProceduralWaves());
+
+                print("No longer waiting for all enemies to die before spawning next wave");
+                waitForAllEnemiesToDieBeforeSpawningNextWave = false;
             }
         }
 

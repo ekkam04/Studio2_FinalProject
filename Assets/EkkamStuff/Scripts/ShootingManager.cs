@@ -46,6 +46,7 @@ namespace Ekkam {
 
         [Tooltip("The amount of projectiles fired per shot")] public int burstFireCount = 1;
         [Tooltip("The delay between each bullet being fired in burst")] public float burstFireDelay = 0.1f;
+        public bool scatterMiddleBurst = false;
 
         [Header("----- Lightning Stats -----")]
 
@@ -116,18 +117,29 @@ namespace Ekkam {
 
         async private void ShootProjectile(string tagToApply, Vector3 direction)
         {
+            int halfwayBurstFirePoint = (int)(burstFireCount / 2);
+            int initialMultishotCount = multishotCount;
             for (int i = 0; i < burstFireCount; i++)
             {
+                if (i == halfwayBurstFirePoint && scatterMiddleBurst)
+                {
+                    multishotCount = initialMultishotCount - 1;
+                }
+                else
+                {
+                    multishotCount = initialMultishotCount;
+                }
+
                 float bulletGapX = 0;
                 if (multishotCount > 1)
                 {
                     bulletGapX = -(multishotGapX * (multishotCount - 1) / 2);
                 }
-                int halfwayPoint = (int)(multishotCount / 2);
+                int halfwayMultishotPoint = (int)(multishotCount / 2);
 
                 for (int j = 0; j < multishotCount; j++)
                 {
-                    if (j == halfwayPoint && skipMiddleProjectile)
+                    if (j == halfwayMultishotPoint && skipMiddleProjectile)
                     {
                         continue;
                     }
