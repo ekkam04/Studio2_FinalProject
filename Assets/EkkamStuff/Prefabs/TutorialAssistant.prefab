@@ -731,7 +731,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c54bbe32d968ec94bb2d226803a2a6ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playTutorial: 1
+  playTutorialAtStart: 0
   path: {fileID: 765019641259527829, guid: f228657a7d56be045b6e604a8a42560c, type: 3}
   tutorialCanvas: {fileID: 8651044487920593490}
   tutorials:
@@ -745,7 +745,7 @@ MonoBehaviour:
     you get started.
   - First, let's get you moving around.
   - Great job on the movement! Now, let's talk firepower.
-  - Impressive! Now, for a nifty trick.
+  - Impressive! Now, let's see a useful trick.
   - You're a natural! You've mastered the art of dashing. With your skills, you're
     ready to explore the Nexus Ends like a pro.
   - The Nexus Ends are full of challenges and lurking enemies. Be vigilant as you
