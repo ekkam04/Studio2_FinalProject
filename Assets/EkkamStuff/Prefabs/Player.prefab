@@ -919,6 +919,10 @@ MonoBehaviour:
   - {fileID: 6370031895869388217}
   - {fileID: 1385040682485985259}
   - {fileID: 2836134448384735410}
+  upgradesToSave:
+  - Max Health
+  - Damage
+  - Critical Chance
   playerCards: {fileID: 3683245239006980493, guid: 0ff80f775c881d94084551214ae3860c, type: 3}
   playerSilhouette: {fileID: 2354661645630340860, guid: 7dd03e1ee18737045a27ce8df97cebbe, type: 3}
   playerAudioSource: {fileID: 5714158147523157160}
@@ -1031,10 +1035,11 @@ MonoBehaviour:
   projectileSize: 3
   multishotCount: 1
   multishotGapX: 3
-  multishotArcAngle: 0
+  multishotArcAngle: 2
   skipMiddleProjectile: 0
   burstFireCount: 1
   burstFireDelay: 0.08
+  scatterMiddleBurst: 0
   shootLightning: 0
   chainLightning: 1
   chainLightningCount: 3

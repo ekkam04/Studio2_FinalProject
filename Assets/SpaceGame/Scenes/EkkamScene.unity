@@ -2459,9 +2459,9 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 0
-    m_Bottom: 30
-  m_ChildAlignment: 7
+    m_Top: 30
+    m_Bottom: 0
+  m_ChildAlignment: 1
   m_StartCorner: 2
   m_StartAxis: 1
   m_CellSize: {x: 25, y: 25}
@@ -2560,7 +2560,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Studio 2 Game
+  m_text: Nexus Ends
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4d0bb7337f597634b94b9005947e8e28, type: 2}
   m_sharedMaterial: {fileID: 7503143391497007800, guid: 4d0bb7337f597634b94b9005947e8e28, type: 2}
@@ -4262,7 +4262,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &478253441
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5624,7 +5624,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &625951459
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7645,7 +7645,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &857431210
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8410,9 +8410,9 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 0
-    m_Bottom: 30
-  m_ChildAlignment: 7
+    m_Top: 30
+    m_Bottom: 0
+  m_ChildAlignment: 1
   m_StartCorner: 2
   m_StartAxis: 1
   m_CellSize: {x: 25, y: 25}
@@ -13046,7 +13046,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1357040290
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13341,7 +13341,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1393805097
 RectTransform:
   m_ObjectHideFlags: 0
@@ -14731,7 +14731,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1519925024
 RectTransform:
   m_ObjectHideFlags: 0
@@ -18399,7 +18399,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &1841117334
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -20963,7 +20963,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &2094217257
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -21257,7 +21257,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &2122102470
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -21878,6 +21878,7 @@ MonoBehaviour:
   upgradeMenu: {fileID: 245892114}
   player1Cards: []
   player2Cards: []
+  upgradeIconPrefab: {fileID: 2640602911700650501, guid: ff6f3a4cd19da2e42afb1415eddaed52, type: 3}
   player1Upgrades: {fileID: 892478302}
   player2Upgrades: {fileID: 315328782}
   upgradeParticles: {fileID: 5915638477163546118}
@@ -21885,82 +21886,84 @@ MonoBehaviour:
   upgrades:
   - upgradeName: Damage
     upgradeDescription: Increases your projectile damage
-    timesUpgraded: 0
     upgradeIcon: {fileID: 2800000, guid: e8cfafe9591c9b2409f3f71b63212f36, type: 3}
     upgradeBorderColor: {r: 1, g: 0.2971698, b: 0.2971698, a: 1}
     upgradeBGColor: {r: 0.254717, g: 0, b: 0, a: 1}
+    saveUpgrade: 0
   - upgradeName: Projectile Size
     upgradeDescription: Increases your projectile size
-    timesUpgraded: 0
     upgradeIcon: {fileID: 2800000, guid: 9e34d3eabdf58bc498232bc6a12cf1ce, type: 3}
     upgradeBorderColor: {r: 0.94987625, g: 0.9622642, b: 0.32226774, a: 1}
     upgradeBGColor: {r: 0.5097236, g: 0.5188679, b: 0.022027401, a: 1}
+    saveUpgrade: 0
   - upgradeName: Projectile Speed
     upgradeDescription: Increases your projectile speed
-    timesUpgraded: 0
     upgradeIcon: {fileID: 2800000, guid: dddf8957c8987c748aa70a0e2b78a3eb, type: 3}
     upgradeBorderColor: {r: 0.990566, g: 0.5495441, b: 0.36912602, a: 1}
     upgradeBGColor: {r: 0.4433962, g: 0.28358302, b: 0.18614274, a: 1}
+    saveUpgrade: 0
   - upgradeName: Max Health
-    upgradeDescription: Increases and grants health
-    timesUpgraded: 0
+    upgradeDescription: Increases and grants health (SAVES between runs)
     upgradeIcon: {fileID: 2800000, guid: ddbf64e52190a8e4cab2aa2cc6a69cb1, type: 3}
     upgradeBorderColor: {r: 0.46823213, g: 1, b: 0.3915094, a: 1}
     upgradeBGColor: {r: 0.024779284, g: 0.23584908, b: 0, a: 1}
+    saveUpgrade: 1
   - upgradeName: Lightning
     upgradeDescription: Adds another weapon to your ship
-    timesUpgraded: 0
     upgradeIcon: {fileID: 2800000, guid: 1ff5d6fba10b2b544ac75fe449d694cb, type: 3}
     upgradeBorderColor: {r: 0.43867922, g: 0.8360422, b: 1, a: 1}
     upgradeBGColor: {r: 0, g: 0.22699574, b: 0.3207547, a: 1}
+    saveUpgrade: 0
   - upgradeName: Backshots
     upgradeDescription: Shoot another projectile backwards
-    timesUpgraded: 0
     upgradeIcon: {fileID: 2800000, guid: 0172565170d0e4444ab4326afdfc3f8b, type: 3}
     upgradeBorderColor: {r: 0.5764706, g: 0.3254902, b: 1, a: 1}
     upgradeBGColor: {r: 0.19215687, g: 0, b: 0.5176471, a: 1}
+    saveUpgrade: 0
   - upgradeName: Multishot
     upgradeDescription: "Shoot another\_projectile side by side"
-    timesUpgraded: 0
     upgradeIcon: {fileID: 2800000, guid: 569ea5ffb8a24df42a469e1b09d65252, type: 3}
     upgradeBorderColor: {r: 0.9622642, g: 0.41304737, b: 0.6220578, a: 1}
     upgradeBGColor: {r: 0.5660378, g: 0, b: 0.218329, a: 1}
+    saveUpgrade: 0
   - upgradeName: Burst
     upgradeDescription: Shoot another projectile at once
-    timesUpgraded: 0
     upgradeIcon: {fileID: 2800000, guid: 0a68a618325bfac4f914433b14617fb4, type: 3}
     upgradeBorderColor: {r: 1, g: 0.49587476, b: 0.4009434, a: 1}
     upgradeBGColor: {r: 0.5188679, g: 0.107530184, b: 0.0465023, a: 1}
+    saveUpgrade: 0
   - upgradeName: Fire Rate
     upgradeDescription: Increases your fire rate
-    timesUpgraded: 0
     upgradeIcon: {fileID: 2800000, guid: 56aa9c7f839a91d4d8db30046bf13997, type: 3}
     upgradeBorderColor: {r: 1, g: 0.5145788, b: 0.2980392, a: 1}
     upgradeBGColor: {r: 0.4056604, g: 0.17573285, b: 0, a: 1}
+    saveUpgrade: 0
   - upgradeName: Regeneration
     upgradeDescription: Slowly regrenerates your health
-    timesUpgraded: 0
     upgradeIcon: {fileID: 2800000, guid: 8144acae632f40449aa9f42c8ccc8074, type: 3}
     upgradeBorderColor: {r: 0.34469718, g: 0.8113208, b: 0.2793699, a: 1}
     upgradeBGColor: {r: 0.019668926, g: 0.18867922, b: 0.00088999845, a: 1}
+    saveUpgrade: 0
   - upgradeName: Shield
     upgradeDescription: LT now brings up a shield in front of you
-    timesUpgraded: 0
     upgradeIcon: {fileID: 2800000, guid: 803f303e61b556b479c1200b715ed166, type: 3}
     upgradeBorderColor: {r: 0.43921566, g: 0.6254283, b: 1, a: 1}
     upgradeBGColor: {r: 0, g: 0.17279741, b: 0.32156864, a: 1}
+    saveUpgrade: 0
   - upgradeName: XP Multiplier
     upgradeDescription: Increases your XP multiplier
-    timesUpgraded: 0
     upgradeIcon: {fileID: 2800000, guid: 1a20af058152a1c40b8b40885a6ac0eb, type: 3}
     upgradeBorderColor: {r: 0.21293801, g: 1, b: 0.76192856, a: 1}
     upgradeBGColor: {r: 0.10715558, g: 0.46226418, b: 0.35449493, a: 1}
+    saveUpgrade: 0
   - upgradeName: Critical Chance
-    upgradeDescription: Increases your Critical Hit chance
-    timesUpgraded: 0
+    upgradeDescription: Increases your Critical Hit chance (SAVES between runs)
     upgradeIcon: {fileID: 2800000, guid: f530df733667d7949a19c3949dccb9e0, type: 3}
     upgradeBorderColor: {r: 0.8301887, g: 0.13866144, b: 0.105731584, a: 1}
     upgradeBGColor: {r: 0.3301887, g: 0.06875223, b: 0.05762727, a: 1}
+    saveUpgrade: 1
+  player1UpgradeData: []
+  player2UpgradeData: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

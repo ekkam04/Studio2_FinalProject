@@ -52,8 +52,8 @@ namespace Ekkam {
             waitingText.gameObject.SetActive(true);
             
             Color iconColor = upgradeIcon.color;
-            iconColor.a = 0.5f;
-            upgradeManager.UpgradePlayer(ownerPlayer, this, upgradeIcon, iconColor);
+            iconColor.a = 0.75f;
+            upgradeManager.UpgradePlayer(ownerPlayer, this, upgradeIcon.texture as Texture2D, iconColor);
         }
 
         public void SetCardColors(Color bgColor, Color borderColor)

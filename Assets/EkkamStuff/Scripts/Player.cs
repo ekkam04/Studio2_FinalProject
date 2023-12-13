@@ -153,6 +153,7 @@ namespace Ekkam {
             else
             {
                 hasDualsense = Dualsense.TryGettingDualsense(playerInput.devices[0] as Gamepad);
+                LoadSavedUpgrades();
             }
         }
 
@@ -914,6 +915,84 @@ namespace Ekkam {
                     break;
             }
             if (inDuoMode && playerDuo != null) playerDuo.CombineUpgrades();
+        }
+
+        private void LoadSavedUpgrades()
+        {
+            List<UpgradeData> playerUpgradeData = playerNumber == 1 ? upgradeManager.player1UpgradeData : upgradeManager.player2UpgradeData;
+
+            foreach (UpgradeData upgradeData in playerUpgradeData)
+            {
+                for (int i = 0; i < upgradeData.upgradeLevel; i++)
+                {
+                    Upgrade(upgradeData.upgradeName);
+                    if (playerNumber == 1)
+                    {
+                        bool upgradeAlreadyExists = false;
+                        GameObject existingIcon = null;
+                        foreach (Transform child in upgradeManager.player1Upgrades.transform)
+                        {
+                            if (child.name == upgradeData.upgradeName)
+                            {
+                                upgradeAlreadyExists = true;
+                                existingIcon = child.gameObject;
+                                break;
+                            }
+                        }
+                        if (!upgradeAlreadyExists)
+                        {
+                            AddUpgradeIcon(upgradeData.upgradeName);
+                        }
+                        else
+                        {
+                            TMP_Text existingIconText = existingIcon.GetComponentInChildren<TMP_Text>();
+                            int existingIconCount = int.Parse(existingIconText.text.Substring(0, existingIconText.text.Length - 1));
+                            existingIconText.text = (existingIconCount + 1) + "x";
+                        }
+                    }
+                    else
+                    {
+                        bool upgradeAlreadyExists = false;
+                        GameObject existingIcon = null;
+                        foreach (Transform child in upgradeManager.player2Upgrades.transform)
+                        {
+                            if (child.name == upgradeData.upgradeName)
+                            {
+                                upgradeAlreadyExists = true;
+                                existingIcon = child.gameObject;
+                                break;
+                            }
+                        }
+                        if (!upgradeAlreadyExists)
+                        {
+                            AddUpgradeIcon(upgradeData.upgradeName);
+                        }
+                        else
+                        {
+                            TMP_Text existingIconText = existingIcon.GetComponentInChildren<TMP_Text>();
+                            int existingIconCount = int.Parse(existingIconText.text.Substring(0, existingIconText.text.Length - 1));
+                            existingIconText.text = (existingIconCount + 1) + "x";
+                        }
+                    }
+                }
+            }
+        }
+
+        private void AddUpgradeIcon(string upgradeName)
+        {
+            Texture2D upgradeIcon = upgradeManager.upgrades.Find(x => x.upgradeName == upgradeName).upgradeIcon;
+            Color upgradeIconColor = upgradeManager.upgrades.Find(x => x.upgradeName == upgradeName).upgradeBorderColor;
+            upgradeIconColor.a = 0.75f;
+            GameObject newIcon = upgradeManager.SpawnUpgradeIcon(upgradeName, upgradeIcon, upgradeIconColor);
+            if (playerNumber == 1)
+            {
+                newIcon.transform.SetParent(upgradeManager.player1Upgrades.transform);
+            }
+            else if (playerNumber == 2)
+            {
+                newIcon.transform.SetParent(upgradeManager.player2Upgrades.transform);
+            }
+            newIcon.GetComponent<RectTransform>().localScale = new Vector3(2, 2, 2);
         }
 
         private void OnTriggerEnter(Collider other) {

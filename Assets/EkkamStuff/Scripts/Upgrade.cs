@@ -8,9 +8,9 @@ namespace Ekkam {
     {
         public string upgradeName;
         public string upgradeDescription;
-        public int timesUpgraded;
         public Texture2D upgradeIcon;
         public Color upgradeBorderColor;
         public Color upgradeBGColor;
+        public bool saveUpgrade;
     }
 }
