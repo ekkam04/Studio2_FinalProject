@@ -10,7 +10,8 @@ namespace Ekkam {
     {
         [SerializeField] GameObject projectilePrefab;
         [SerializeField] List<GameObject> projectilePool;
-        int projectilePoolSize = 3;
+        private Queue<GameObject> availableProjectiles;
+        int projectilePoolSize = 1;
         float projectileLifetime = 15f;
         Vector3 originalProjectileScale;
         GameObject projectilePoolHolder;
@@ -46,6 +47,7 @@ namespace Ekkam {
 
         [Tooltip("The amount of projectiles fired per shot")] public int burstFireCount = 1;
         [Tooltip("The delay between each bullet being fired in burst")] public float burstFireDelay = 0.1f;
+        public bool scatterMiddleBurst = false;
 
         [Header("----- Lightning Stats -----")]
 
@@ -65,13 +67,19 @@ namespace Ekkam {
             projectilePoolHolder.AddComponent<ProjectilePool>();
 
             projectilePool = new List<GameObject>();
-            projectilePoolSize = burstFireCount * multishotCount * ((int)projectileSpeed / 10) * (int)projectileLifetime;
+            availableProjectiles = new Queue<GameObject>();
+
+            // projectilePoolSize = burstFireCount * multishotCount * ((int)projectileSpeed / 10) * (int)projectileLifetime;
 
             for (int i = 0; i < projectilePoolSize; i++)
             {
                 GameObject newProjectile = SpawnProjectile();
                 projectilePool.Add(newProjectile);
-                newProjectile.SetActive(false);
+            }
+
+            foreach (var projectile in projectilePool)
+            {
+                DeactivateProjectile(projectile);
             }
         }
 
@@ -116,24 +124,36 @@ namespace Ekkam {
 
         async private void ShootProjectile(string tagToApply, Vector3 direction)
         {
+            int halfwayBurstFirePoint = (int)(burstFireCount / 2);
+            int initialMultishotCount = multishotCount;
             for (int i = 0; i < burstFireCount; i++)
             {
+                if (i == halfwayBurstFirePoint && scatterMiddleBurst)
+                {
+                    multishotCount = initialMultishotCount - 1;
+                }
+                else
+                {
+                    multishotCount = initialMultishotCount;
+                }
+
                 float bulletGapX = 0;
                 if (multishotCount > 1)
                 {
                     bulletGapX = -(multishotGapX * (multishotCount - 1) / 2);
                 }
-                int halfwayPoint = (int)(multishotCount / 2);
+                int halfwayMultishotPoint = (int)(multishotCount / 2);
 
                 for (int j = 0; j < multishotCount; j++)
                 {
-                    if (j == halfwayPoint && skipMiddleProjectile)
+                    if (j == halfwayMultishotPoint && skipMiddleProjectile)
                     {
                         continue;
                     }
                     float angleOffset = CalculateAngleOffset(j, multishotCount, multishotArcAngle);
                     Vector3 adjustedDirection = Quaternion.Euler(0f, angleOffset, 0f) * direction;
                     
+                    /*
                     GameObject projectile = null;
 
                     // Find an inactive projectile in the pool
@@ -155,12 +175,15 @@ namespace Ekkam {
                         projectile = SpawnProjectile();
                         projectilePool.Add(projectile);
                     }
+                    */
 
+                    GameObject projectile = SpawnProjectile();
                     Projectile projectileScript = projectile.GetComponent<Projectile>();
 
                     projectile.tag = tagToApply;
                     projectileScript.SetDamageWithCritChance(projectileDamage, projectileCritChance, projectileCritMultiplier);
                     projectileScript.projectileOwner = damagableEntity;
+                    projectileScript.shootingManager = this;
                     projectile.transform.rotation = Quaternion.LookRotation(adjustedDirection);
                     projectile.transform.eulerAngles = new Vector3(0, projectile.transform.eulerAngles.y, projectile.transform.eulerAngles.z);
                     projectile.transform.position = transform.position + (projectile.transform.right * bulletGapX) + (direction * projectileForwardOffset) + (Vector3.up * projectileHeightOffset);
@@ -186,6 +209,8 @@ namespace Ekkam {
 
         GameObject SpawnProjectile()
         {
+            // Old way of spawning projectiles
+            /*
             GameObject newProjectile = Instantiate(
                 projectilePrefab,
                 transform.position,
@@ -194,6 +219,36 @@ namespace Ekkam {
             );
             projectilePool.Add(newProjectile);
             return newProjectile;
+            */
+
+            // New way of spawning projectiles with queue
+            GameObject newProjectile;
+            // Try to dequeue an inactive projectile from the availableProjectiles queue
+            if (availableProjectiles.Count > 0)
+            {
+                newProjectile = availableProjectiles.Dequeue();
+            }
+            else
+            {
+                // If the queue is empty, create a new projectile
+                newProjectile = Instantiate(
+                    projectilePrefab,
+                    transform.position,
+                    Quaternion.identity,
+                    projectilePoolHolder.transform
+                );
+                // Add it to the list of all projectiles
+                projectilePool.Add(newProjectile);
+            }
+
+            return newProjectile;
+        }
+
+        public void DeactivateProjectile(GameObject projectile)
+        {
+            projectile.SetActive(false);
+            // Enqueue it into the availableProjectiles queue for reuse
+            availableProjectiles.Enqueue(projectile);
         }
 
         Quaternion GetProjectileRotation()

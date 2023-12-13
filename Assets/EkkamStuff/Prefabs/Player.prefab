@@ -758,7 +758,7 @@ Transform:
   m_GameObject: {fileID: 2354661645630340860}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.22, y: -181.48, z: 248.4}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -888,7 +888,7 @@ MonoBehaviour:
   entityCanvas: {fileID: 1891858151252943537}
   health: 12
   hasRegen: 0
-  regenAmount: 0.05
+  regenAmount: 0.025
   regenRate: 0.1
   audioManager: {fileID: 0}
   weaponAudioSource: {fileID: 1205753599434976350}
@@ -919,6 +919,10 @@ MonoBehaviour:
   - {fileID: 6370031895869388217}
   - {fileID: 1385040682485985259}
   - {fileID: 2836134448384735410}
+  upgradesToSave:
+  - Max Health
+  - Damage
+  - Critical Chance
   playerCards: {fileID: 3683245239006980493, guid: 0ff80f775c881d94084551214ae3860c, type: 3}
   playerSilhouette: {fileID: 2354661645630340860, guid: 7dd03e1ee18737045a27ce8df97cebbe, type: 3}
   playerAudioSource: {fileID: 5714158147523157160}
@@ -933,6 +937,9 @@ MonoBehaviour:
   allowShooting: 1
   inDuoMode: 0
   cardPicked: 0
+  hasMoved: 0
+  hasShot: 0
+  hasDashed: 0
   dashDirection: 0
   lastDashDirection: 0
   killCount: 0
@@ -998,7 +1005,7 @@ MonoBehaviour:
   dodgeSpeed: 2
   dashSpeed: 100
   attackSpeed: 0.2
-  dashCooldown: 1.5
+  dashCooldown: 1
   xpMultiplier: 1
   hasShield: 0
   shieldDuration: 2
@@ -1028,10 +1035,11 @@ MonoBehaviour:
   projectileSize: 3
   multishotCount: 1
   multishotGapX: 3
-  multishotArcAngle: 0
+  multishotArcAngle: 2
   skipMiddleProjectile: 0
   burstFireCount: 1
   burstFireDelay: 0.08
+  scatterMiddleBurst: 0
   shootLightning: 0
   chainLightning: 1
   chainLightningCount: 3
@@ -1151,6 +1159,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 3c242c07-276b-4679-9cda-4e19a98f1e71
     m_ActionName: Player/Utility[/XInputControllerWindows/leftTrigger]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2212650676498329963}
+        m_TargetAssemblyTypeName: Ekkam.Player, Assembly-CSharp
+        m_MethodName: OnPause
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: f0ce07d5-e255-4bff-86c7-4b7ec8e90ca8
+    m_ActionName: Player/Pause[/DualSenseGamepadHID/start,/Keyboard/escape]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

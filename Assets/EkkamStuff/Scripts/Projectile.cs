@@ -14,6 +14,7 @@ public class Projectile : MonoBehaviour
         [SerializeField] ParticleSystem[] projectileSubEmitters;
 
         public DamagableEntity projectileOwner; // Since only damagable entities can shoot projectiles, this will always be a damagable entity
+        public ShootingManager shootingManager;
 
         void Update()
         {
@@ -32,7 +33,7 @@ public class Projectile : MonoBehaviour
             }
             else
             {
-                gameObject.SetActive(false);
+                shootingManager.DeactivateProjectile(this.gameObject);
             }
 
         }
@@ -41,12 +42,12 @@ public class Projectile : MonoBehaviour
             if (other.CompareTag("Enemy") && this.gameObject.CompareTag("PlayerProjectile")) {
                 print("Enemy hit");
                 other.GetComponent<Enemy>().TakeDamage(projectileDamage, isCriticalHit, projectileOwner);
-                gameObject.SetActive(false);
+                shootingManager.DeactivateProjectile(this.gameObject);
             }
             else if ((other.CompareTag("Player") || other.CompareTag("PlayerDuo")) && this.gameObject.CompareTag("EnemyProjectile")) {
                 print("Player hit");
                 other.GetComponent<Player>().TakeDamage(projectileDamage, isCriticalHit, projectileOwner);
-                gameObject.SetActive(false); 
+                shootingManager.DeactivateProjectile(this.gameObject); 
             }
         }
 
@@ -56,12 +57,12 @@ public class Projectile : MonoBehaviour
             if (other.CompareTag("Enemy") && this.gameObject.CompareTag("PlayerProjectile")) {
                 print("Enemy hit");
                 other.GetComponent<Enemy>().TakeDamage(projectileDamage, isCriticalHit, projectileOwner);
-                gameObject.SetActive(false);
+                shootingManager.DeactivateProjectile(this.gameObject);
             }
             else if ((other.CompareTag("Player") || other.CompareTag("PlayerDuo")) && this.gameObject.CompareTag("EnemyProjectile")) {
                 print("Player hit");
                 other.GetComponent<Player>().TakeDamage(projectileDamage, isCriticalHit, projectileOwner);
-                gameObject.SetActive(false); 
+                shootingManager.DeactivateProjectile(this.gameObject);
             }
         }
 

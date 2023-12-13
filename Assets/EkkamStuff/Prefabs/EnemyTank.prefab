@@ -128,6 +128,9 @@ MonoBehaviour:
   healthBar: {fileID: 0}
   entityCanvas: {fileID: 0}
   health: 6
+  hasRegen: 0
+  regenAmount: 0
+  regenRate: 0
   audioManager: {fileID: 0}
   weaponAudioSource: {fileID: 0}
   hitSound: {fileID: 0}
@@ -143,11 +146,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 1
+      time: 0
       value: 1
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
@@ -156,14 +159,14 @@ MonoBehaviour:
       value: 1
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  moveSpeed: 60
+  moveSpeed: 40
   attackSpeed: 3
   damageOnImpact: 1
   waitWaypointDuration: 3

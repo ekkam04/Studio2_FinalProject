@@ -9,6 +9,9 @@ namespace Ekkam {
         public float timeToReachMaxDifficulty = 120f;
         public float timeToReachMaxEnemyTier = 60f;
 
+        public float waitTimeBetweenEnemySpawns = 0.75f;
+        public float waitTimeBetweenWaves = 2f;
+
         [SerializeField] [Tooltip("Enemies to use in procedural wave generation ordered in acsending difficulty.")] List<Enemy> enemies = new List<Enemy>();
         [SerializeField] List<Transform> paths = new List<Transform>();
 
@@ -56,6 +59,11 @@ namespace Ekkam {
                 previousWaveEnemy = waveEnemies[i];
             }
             proceduralWave.waveEnemies.AddRange(waveEnemies);
+            proceduralWave.timeBetweenEnemySpawns = waitTimeBetweenEnemySpawns;
+
+            if (waitTimeBetweenEnemySpawns > 0.2f) waitTimeBetweenEnemySpawns -= 0.01f;
+
+            if (waitTimeBetweenWaves > 0.5f) waitTimeBetweenWaves -= 0.01f;
 
             previouslyGeneratedWave = proceduralWave;
             return proceduralWave;
