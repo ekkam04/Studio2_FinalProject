@@ -165,6 +165,9 @@ MonoBehaviour:
   healthBar: {fileID: 4087897906784796970}
   entityCanvas: {fileID: 4698826047938423079}
   health: 150
+  hasRegen: 0
+  regenAmount: 0
+  regenRate: 0
   audioManager: {fileID: 0}
   weaponAudioSource: {fileID: 0}
   hitSound: {fileID: 0}
@@ -222,8 +225,8 @@ MonoBehaviour:
   projectileForwardOffset: 20
   shootProjectile: 1
   shootBackShots: 0
-  projectileSpeed: 15
-  projectileDamage: 0.5
+  projectileSpeed: 14
+  projectileDamage: 0.3
   projectileCritChance: 10
   projectileCritMultiplier: 2
   projectileSize: 3
@@ -231,7 +234,7 @@ MonoBehaviour:
   multishotGapX: 3
   multishotArcAngle: 15
   skipMiddleProjectile: 0
-  burstFireCount: 10
+  burstFireCount: 15
   burstFireDelay: 0.025
   shootLightning: 0
   chainLightning: 0

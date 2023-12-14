@@ -18,7 +18,6 @@ namespace Ekkam {
         [SerializeField] Color32[] playerSilhouetteColors;
         [SerializeField] GameObject[] playerParts;
         [SerializeField] GameObject[] playerGlassParts;
-        // [SerializeField] GameObject playerCanvas;
         [SerializeField] GameObject playerCards;
         [SerializeField] GameObject playerSilhouette;
         [SerializeField] AudioSource playerAudioSource;
@@ -34,6 +33,7 @@ namespace Ekkam {
         PlayerInput playerInput;
         ShootingManager shootingManager;
         UpgradeManager upgradeManager;
+        UIStateMachine uiStateMachine;
         MultiplayerEventSystem eventSystem;
         Vector2 movementInput;
         Vector2 aimInput;
@@ -41,8 +41,10 @@ namespace Ekkam {
         Vector3 repellingForceDirection;
         Vector3 lastRepellingForceDirection;
         Vector3 lastMovementInputBeforeDash;
+        Vector3 dualsenseGyroDirection;
         float rightTriggerAxis;
         float leftTriggerAxis;
+        bool hasDualsense = false;
 
         public bool allowMovement = true;
         public bool allowDashing = true;
@@ -50,6 +52,10 @@ namespace Ekkam {
         public bool inDuoMode = false;
         bool isDashing = false;
         public bool cardPicked = false;
+
+        public bool hasMoved = false;
+        public bool hasShot = false;
+        public bool hasDashed = false;
 
         bool lockLeftMovement = false;
         bool lockRightMovement = false;
@@ -106,6 +112,7 @@ namespace Ekkam {
             playerInput = GetComponent<PlayerInput>();
             shootingManager = GetComponent<ShootingManager>();
             upgradeManager = FindObjectOfType<UpgradeManager>();
+            uiStateMachine = FindObjectOfType<UIStateMachine>();
             eventSystem = GetComponentInChildren<MultiplayerEventSystem>();
             eventSystem.SetSelectedGameObject(null);
             InitializeDamagableEntity();
@@ -139,7 +146,15 @@ namespace Ekkam {
 
         void Start()
         {
-            if (playerInput == null) crosshair.SetActive(true);
+            if (playerInput == null)
+            {
+                crosshair.SetActive(true);
+            }
+            else
+            {
+                hasDualsense = Dualsense.TryGettingDualsense(playerInput.devices[0] as Gamepad);
+                LoadSavedUpgrades();
+            }
         }
 
         void Update()
@@ -152,12 +167,23 @@ namespace Ekkam {
             silhouetteTimer += Time.deltaTime;
             shieldTimer += Time.deltaTime;
 
+            if (hasDualsense == true) dualsenseGyroDirection = Dualsense.GetDirection2D(4000f * Time.deltaTime, playerInput.devices[0] as Gamepad).normalized;
+            // print("dualsense gyro direction: " + dualsenseGyroDirection);
+
             ConstraintMovement();
             ControlSpeed();
             Aim();
 
-            UpdateDashDirection();
             RegenerateHealth();
+            UpdateDashDirection(movementInput);
+
+            if (hasDualsense == true && Dualsense.GetDirection2D(1000f * Time.deltaTime, playerInput.devices[0] as Gamepad).magnitude > 1f)
+            {
+                if (allowDashing == true)
+                {
+                    StartCoroutine(Dash(true));
+                }
+            }
 
             if (inDuoMode && playerDuo != null)
             {
@@ -172,7 +198,7 @@ namespace Ekkam {
                 }   
             }
 
-            TiltOnMovement();
+            if (allowMovement == true) TiltOnMovement();
             TiltOnDash();
 
             if (rightTriggerAxis > 0.5f && allowShooting)
@@ -185,7 +211,7 @@ namespace Ekkam {
                 ActivateShield();
                 allowShooting = false;
             }
-            else
+            else if (hasShield)
             {
                 DeactivateShield();
                 allowShooting = true;
@@ -342,7 +368,7 @@ namespace Ekkam {
             }
         }
 
-        void UpdateDashDirection()
+        DashDirection UpdateDashDirection(Vector3 movementInput)
         {
             // update the dash direction depending on the movement input and keep top as the default direction if no input. snap to the closest direction from the 8 directions
             if (movementInput.x > 0.5f)
@@ -350,14 +376,17 @@ namespace Ekkam {
                 if (movementInput.y > 0.5f)
                 {
                     dashDirection = DashDirection.TopRight;
+                    return DashDirection.TopRight;
                 }
                 else if (movementInput.y < -0.5f)
                 {
                     dashDirection = DashDirection.BottomRight;
+                    return DashDirection.BottomRight;
                 }
                 else
                 {
                     dashDirection = DashDirection.Right;
+                    return DashDirection.Right;
                 }
             }
             else if (movementInput.x < -0.5f)
@@ -365,14 +394,17 @@ namespace Ekkam {
                 if (movementInput.y > 0.5f)
                 {
                     dashDirection = DashDirection.TopLeft;
+                    return DashDirection.TopLeft;
                 }
                 else if (movementInput.y < -0.5f)
                 {
                     dashDirection = DashDirection.BottomLeft;
+                    return DashDirection.BottomLeft;
                 }
                 else
                 {
                     dashDirection = DashDirection.Left;
+                    return DashDirection.Left;
                 }
             }
             else
@@ -380,10 +412,12 @@ namespace Ekkam {
                 if (movementInput.y < 0f)
                 {
                     dashDirection = DashDirection.Bottom;
+                    return DashDirection.Bottom;
                 }
                 else
                 {
                     dashDirection = DashDirection.Top;
+                    return DashDirection.Top;
                 }
             }
         }
@@ -526,6 +560,7 @@ namespace Ekkam {
         public void OnMove(InputAction.CallbackContext context)
         {
             movementInput = context.ReadValue<Vector2>();
+            hasMoved = true;
         }
 
         public void OnAim(InputAction.CallbackContext context)
@@ -536,6 +571,7 @@ namespace Ekkam {
         public void OnShoot(InputAction.CallbackContext context)
         {
             rightTriggerAxis = context.ReadValue<float>();
+            hasShot = true;
         }
 
         public void OnUtility(InputAction.CallbackContext context)
@@ -557,15 +593,24 @@ namespace Ekkam {
                 }
                 else
                 {
-                    RumbleManager.instance.RumblePulse(playerInput.devices[0] as Gamepad, 0.5f, 0.5f, 0.3f);
                     StartCoroutine(Dash());
+                    hasDashed = true;
                 }
+            }
+        }
+
+        public void OnPause(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                uiStateMachine.TogglePauseMenu(playerNumber);
             }
         }
 
         public void EnableDuoMode()
         {
             allowMovement = false;
+            rb.isKinematic = true;
             allowDashing = false;
             entityCanvas.SetActive(false);
             rb.velocity = Vector3.zero;
@@ -600,7 +645,7 @@ namespace Ekkam {
             HidePlayer();
         }
 
-        IEnumerator Dash()
+        IEnumerator Dash(bool usingGyro = false)
         {
             col.enabled = false;
             allowMovement = false;
@@ -609,12 +654,22 @@ namespace Ekkam {
             if (playerInput == null) DisableShootingForAllPlayers();
             if (crosshair != null) crosshair.SetActive(false);
 
+            if (usingGyro == true)
+            {
+                print("Gyro dash!");
+                lastMovementInputBeforeDash = dualsenseGyroDirection; 
+                lastDashDirection = UpdateDashDirection(dualsenseGyroDirection);
+            }
+            else
+            {
+                lastMovementInputBeforeDash = movementInput;
+                lastDashDirection = dashDirection;
+            }
+
+            if (playerInput != null) RumbleManager.instance.RumblePulse(playerInput.devices[0] as Gamepad, 0.5f, 0.5f, 0.3f);
             StartCoroutine(DashCooldownVisual());
 
             // spin the player 360 degrees according to the direction
-            lastDashDirection = dashDirection;
-            lastMovementInputBeforeDash = movementInput;
-
             float startingRotationZ = transform.rotation.eulerAngles.z;
 
             float targetRotationZ;
@@ -678,6 +733,7 @@ namespace Ekkam {
         {
             inDuoMode = false;
             allowMovement = true;
+            rb.isKinematic = false;
             allowDashing = true;
             entityCanvas.SetActive(true);
 
@@ -790,6 +846,25 @@ namespace Ekkam {
             }
         }
 
+        public void AssignMenuControls(Button firstSelectedButton, GameObject playerRoot, int playerNumber)
+        {
+            if (playerNumber != this.playerNumber) return;
+
+            if (firstSelectedButton == null || playerRoot == null)
+            {
+                eventSystem.playerRoot = null;
+                eventSystem.firstSelectedGameObject = null;
+                eventSystem.SetSelectedGameObject(null);
+            }
+            else
+            {
+                eventSystem.playerRoot = playerRoot;
+                eventSystem.firstSelectedGameObject = firstSelectedButton.gameObject;
+                eventSystem.SetSelectedGameObject(firstSelectedButton.gameObject);
+                firstSelectedButton.GetComponent<Button>().OnSelect(null);
+            }
+        }
+
         public void Upgrade(string upgradeName)
         {
             switch (upgradeName)
@@ -798,14 +873,14 @@ namespace Ekkam {
                     shootingManager.projectileDamage += 1;
                     break;
                 case "Projectile Size":
-                    shootingManager.projectileSize += 0.5f;
+                    shootingManager.projectileSize += 1f;
                     break;
                 case "Projectile Speed":
                     shootingManager.projectileSpeed += 10f;
                     break;
                 case "Health":
-                    maxHealth += 8;
-                    health += 8;
+                    maxHealth += 10;
+                    health += 10;
                     healthBar.maxValue = maxHealth;
                     healthBar.value = health;
                     break;
@@ -830,10 +905,94 @@ namespace Ekkam {
                 case "Shield":
                     hasShield = true;
                     break;
+                case "XP Multiplier":
+                    xpMultiplier += 0.1f;
+                    break;
+                case "Critical Chance":
+                    if (shootingManager.projectileCritChance < 100) shootingManager.projectileCritChance += 10f;
+                    break;
                 default:
                     break;
             }
             if (inDuoMode && playerDuo != null) playerDuo.CombineUpgrades();
+        }
+
+        private void LoadSavedUpgrades()
+        {
+            List<UpgradeData> playerUpgradeData = playerNumber == 1 ? upgradeManager.player1UpgradeData : upgradeManager.player2UpgradeData;
+
+            foreach (UpgradeData upgradeData in playerUpgradeData)
+            {
+                for (int i = 0; i < upgradeData.upgradeLevel; i++)
+                {
+                    Upgrade(upgradeData.upgradeName);
+                    if (playerNumber == 1)
+                    {
+                        bool upgradeAlreadyExists = false;
+                        GameObject existingIcon = null;
+                        foreach (Transform child in upgradeManager.player1Upgrades.transform)
+                        {
+                            if (child.name == upgradeData.upgradeName)
+                            {
+                                upgradeAlreadyExists = true;
+                                existingIcon = child.gameObject;
+                                break;
+                            }
+                        }
+                        if (!upgradeAlreadyExists)
+                        {
+                            AddUpgradeIcon(upgradeData.upgradeName);
+                        }
+                        else
+                        {
+                            TMP_Text existingIconText = existingIcon.GetComponentInChildren<TMP_Text>();
+                            int existingIconCount = int.Parse(existingIconText.text.Substring(0, existingIconText.text.Length - 1));
+                            existingIconText.text = (existingIconCount + 1) + "x";
+                        }
+                    }
+                    else
+                    {
+                        bool upgradeAlreadyExists = false;
+                        GameObject existingIcon = null;
+                        foreach (Transform child in upgradeManager.player2Upgrades.transform)
+                        {
+                            if (child.name == upgradeData.upgradeName)
+                            {
+                                upgradeAlreadyExists = true;
+                                existingIcon = child.gameObject;
+                                break;
+                            }
+                        }
+                        if (!upgradeAlreadyExists)
+                        {
+                            AddUpgradeIcon(upgradeData.upgradeName);
+                        }
+                        else
+                        {
+                            TMP_Text existingIconText = existingIcon.GetComponentInChildren<TMP_Text>();
+                            int existingIconCount = int.Parse(existingIconText.text.Substring(0, existingIconText.text.Length - 1));
+                            existingIconText.text = (existingIconCount + 1) + "x";
+                        }
+                    }
+                }
+            }
+        }
+
+        private void AddUpgradeIcon(string upgradeName)
+        {
+            Texture2D upgradeIcon = upgradeManager.upgrades.Find(x => x.upgradeName == upgradeName).upgradeIcon;
+            Color upgradeIconColor = upgradeManager.upgrades.Find(x => x.upgradeName == upgradeName).upgradeBorderColor;
+            upgradeIconColor.a = 0.75f;
+            GameObject newIcon = upgradeManager.SpawnUpgradeIcon(upgradeName, upgradeIcon, upgradeIconColor);
+            if (playerNumber == 1)
+            {
+                newIcon.transform.SetParent(upgradeManager.player1Upgrades.transform);
+            }
+            else if (playerNumber == 2)
+            {
+                newIcon.transform.SetParent(upgradeManager.player2Upgrades.transform);
+            }
+            newIcon.GetComponent<RectTransform>().localScale = new Vector3(2, 2, 2);
         }
 
         private void OnTriggerEnter(Collider other) {

@@ -49,6 +49,10 @@ namespace Ekkam {
         BackgroundLooper bgSpawner;
         PlayerInputManager playerInputManager;
         UIStateMachine uiStateMachine;
+        TutorialAssistant tutorialAssistant;
+
+        Gamepad controller;
+        [SerializeField] GameObject testCube;
 
         void Awake()
         {
@@ -58,6 +62,7 @@ namespace Ekkam {
             bgSpawner = FindObjectOfType<BackgroundLooper>();
             playerInputManager = GetComponent<PlayerInputManager>();
             uiStateMachine = FindObjectOfType<UIStateMachine>();
+            tutorialAssistant = FindObjectOfType<TutorialAssistant>();
             if (instance == null)
             {
                 instance = this;
@@ -92,10 +97,25 @@ namespace Ekkam {
                 takeOffVCam.SetActive(false);
                 StartCoroutine(FadeBGPlaneTransparency(0f, 0.5f));
             }
+
+            // controller = Dualsense.GetController();
         }
 
         void Update()
         {
+            // testCube.transform.rotation *= Dualsense.GetRotation(4000f * Time.deltaTime);
+            // move test cube with gyro if tilted and stop moving if not tilted
+            // if (Dualsense.GetDirection(1000f * Time.deltaTime, controller).magnitude > 0.75f)
+            // {
+            //     print(Dualsense.GetDirection(1000f * Time.deltaTime, controller).magnitude);
+            //     testCube.transform.position += Dualsense.GetDirection(1000f * Time.deltaTime, controller);
+            // }
+            // else
+            // {
+            //     testCube.transform.position = testCube.transform.position;
+            // }
+
+
             if (Input.GetKeyDown(KeyCode.E))
             {
                 if (OnCombinePlayers != null) StartCoroutine(CombinePlayers());
@@ -145,9 +165,19 @@ namespace Ekkam {
             {
                 player.rb.position = new Vector3(0, 0, -40);
                 player.ApplySeparationForce(15000);
-                player.allowMovement = true;
-                player.allowDashing = true;
-                player.allowShooting = true;
+
+                if (tutorialAssistant.playTutorialAtStart != true)
+                {
+                    player.allowMovement = true;
+                    player.allowDashing = true;
+                    player.allowShooting = true;
+                }
+                else
+                {
+                    player.allowMovement = false;
+                    player.allowDashing = false;
+                    player.allowShooting = false;
+                }
             }
             else
             {
@@ -203,9 +233,18 @@ namespace Ekkam {
 
                 player.ApplySeparationForce(15000);
 
-                player.allowMovement = true;
-                player.allowDashing = true;
-                player.allowShooting = true;
+                if (tutorialAssistant.playTutorialAtStart != true)
+                {
+                    player.allowMovement = true;
+                    player.allowDashing = true;
+                    player.allowShooting = true;
+                }
+                else
+                {
+                    player.allowMovement = false;
+                    player.allowDashing = false;
+                    player.allowShooting = false;
+                }
 
                 player.entityCanvas.gameObject.SetActive(true);
             }
@@ -214,7 +253,8 @@ namespace Ekkam {
             bgSpawner.enabled = true;
             yield return new WaitForSeconds(2f);
 
-            waveSpawner.StartSpawningWaves();
+            // waveSpawner.StartSpawningWaves();
+            tutorialAssistant.StartTutorialSequence();
         }
 
         IEnumerator FadeBGPlaneTransparency(float targetAlpha, float duration)
@@ -289,11 +329,6 @@ namespace Ekkam {
             }
         }
 
-        IEnumerator StartTutorialSequence()
-        {
-            yield return new WaitForSeconds(2f);
-        }
-
         public bool AllPlayersInDuoMode()
         {
             if (PlayerInput.all.Count < 2) return false;
@@ -348,6 +383,23 @@ namespace Ekkam {
         {
             print("Quitting Game...");
             Application.Quit();
+        }
+
+        public void RestartGameButtonPressed()
+        {
+            print("Restarting Game...");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+        public void ResumeGameButtonPressed()
+        {
+            print("Resuming Game...");
+            uiStateMachine.TogglePauseMenu();
+
+            foreach (Player player in GetPlayers())
+            {
+                player.AssignMenuControls(null, null, player.playerNumber);
+            }
         }
 
         public void SpawnXP(Vector3 position, int amount, DamagableEntity killer)
