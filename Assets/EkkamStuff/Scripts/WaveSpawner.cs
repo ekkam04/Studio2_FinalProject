@@ -57,6 +57,7 @@ namespace Ekkam {
         public void StopSpawningWaves()
         {
             spawningWaves = false;
+            StopAllCoroutines();
         }
 
         IEnumerator SpawnProceduralWaves()
@@ -97,7 +98,6 @@ namespace Ekkam {
         IEnumerator SpawnWave(WaveConfigSO wave)
         {
             print("Spawning wave " + currentWaveNumber);
-                // if (spawningWaves == false) yield break;
                 currentWave = wave;
                 currentWaveNumber++;
                 for (int i = 0; i < wave.waveEnemies.Count; i++)

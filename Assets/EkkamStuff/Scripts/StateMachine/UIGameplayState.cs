@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Ekkam;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,12 +9,16 @@ public class UIGameplayState : BaseState<UIStateMachine.UIState>
 {
 
     private Slider xpSlider;
+    private TMP_Text waveNumber;
     private RectTransform gameplayUI;
     GameManager gameManager;
 
-    public UIGameplayState(UIStateMachine.UIState key, Slider xpSlider, RectTransform gameplayUI) : base(key)
+    bool tweening = false;
+
+    public UIGameplayState(UIStateMachine.UIState key, Slider xpSlider, TMP_Text waveNumber, RectTransform gameplayUI) : base(key)
     {
         this.xpSlider = xpSlider;
+        this.waveNumber = waveNumber;
         gameManager = GameManager.instance;
         this.gameplayUI = gameplayUI;
     }
@@ -21,15 +26,25 @@ public class UIGameplayState : BaseState<UIStateMachine.UIState>
     public override void EnterState()
     {
         Debug.Log("UI Entered Gameplay State");
-        xpSlider.gameObject.SetActive(true);
-        gameplayUI.gameObject.SetActive(true);
+        tweening = true;
+
+        LeanTween.scale(gameplayUI, new Vector3(1.45f, 1.45f, 1.45f), 0f).setEaseOutCubic().setIgnoreTimeScale(true).setOnComplete(() => {
+            gameplayUI.gameObject.SetActive(true);
+            LeanTween.scale(gameplayUI, new Vector3(0.94f, 0.94f, 0.94f), 0.5f).setEaseOutCubic().setIgnoreTimeScale(true).setOnComplete(() => {
+                LeanTween.scale(gameplayUI, new Vector3(1f, 1f, 1f), 0.25f).setEaseOutCubic().setIgnoreTimeScale(true);
+            });
+        });
     }
 
     public override void ExitState()
     {
         Debug.Log("UI Exited Gameplay State");
-        xpSlider.gameObject.SetActive(false);
-        gameplayUI.gameObject.SetActive(false);
+        tweening = false;
+
+        LeanTween.scale(gameplayUI, new Vector3(1.45f, 1.45f, 1.45f), 1f).setEaseOutCubic().setIgnoreTimeScale(true).setOnComplete(() => {
+            if (!tweening) gameplayUI.gameObject.SetActive(false);
+            LeanTween.scale(gameplayUI, new Vector3(1f, 1f, 1f), 0f).setEaseOutCubic().setIgnoreTimeScale(true);
+        });
     }
 
     public override UIStateMachine.UIState GetNextState()
@@ -56,5 +71,7 @@ public class UIGameplayState : BaseState<UIStateMachine.UIState>
     {
         xpSlider.value = gameManager.playersXP;
         xpSlider.maxValue = gameManager.playersXPToNextLevel;
+
+        waveNumber.text = "Wave: " + gameManager.waveNumber;
     }
 }

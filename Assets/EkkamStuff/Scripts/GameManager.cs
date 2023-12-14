@@ -43,6 +43,8 @@ namespace Ekkam {
         public float playersTotalXP = 0f;
         public float playersXPToNextLevel = 20f;
 
+        public int waveNumber = 0;
+
         WaveSpawner waveSpawner;
         UpgradeManager upgradeManager;
         AudioManager audioManager;
@@ -115,6 +117,7 @@ namespace Ekkam {
             //     testCube.transform.position = testCube.transform.position;
             // }
 
+            waveNumber = waveSpawner.currentWaveNumber;
 
             if (Input.GetKeyDown(KeyCode.E))
             {
@@ -352,8 +355,10 @@ namespace Ekkam {
         public void EndGame()
         {
             print("Game Over");
+            uiStateMachine.ShowGameOverUI();
+            waveSpawner.StopSpawningWaves();
             // reload current scene
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
         public void CombinePlayersButtonPressed()
