@@ -20,11 +20,13 @@ namespace Ekkam {
 
         [SerializeField] GameObject playerDuoPrefab;
         [SerializeField] ParticleSystem xpParticles;
+        [SerializeField] ParticleSystem hpParticles;
 
         float landingPointHeightOffset = 40f;
         [SerializeField] Transform player1LandingPoint;
         [SerializeField] Transform player2LandingPoint;
         [SerializeField] AnimationCurve landingCurve;
+        [SerializeField] AnimationCurve takeOffCurve;
 
         [SerializeField] AudioSource xpAudioSource;
         [SerializeField] AudioSource gameAudioSource;
@@ -42,6 +44,8 @@ namespace Ekkam {
         public float playersXP = 0f;
         public float playersTotalXP = 0f;
         public float playersXPToNextLevel = 20f;
+
+        public int waveNumber = 0;
 
         WaveSpawner waveSpawner;
         UpgradeManager upgradeManager;
@@ -77,6 +81,7 @@ namespace Ekkam {
         {
             Time.timeScale = 1;
             playerPrefab.GetComponent<Player>().transform.position = player1LandingPoint.position + new Vector3(0, landingPointHeightOffset, 0);
+            playerInputManager.DisableJoining();
 
             if (skipIntro == true)
             {
@@ -87,6 +92,7 @@ namespace Ekkam {
                 mainMenuVCam.SetActive(false);
                 uiStateMachine.ShowGameplayUI();
                 StartCoroutine(FadeBGPlaneTransparency(0.8f, 0.5f));
+                playerInputManager.EnableJoining();
             }
             else
             {
@@ -115,6 +121,7 @@ namespace Ekkam {
             //     testCube.transform.position = testCube.transform.position;
             // }
 
+            waveNumber = waveSpawner.currentWaveNumber;
 
             if (Input.GetKeyDown(KeyCode.E))
             {
@@ -290,7 +297,7 @@ namespace Ekkam {
             while (timer < 1f)
             {
                 timer += Time.deltaTime;
-                float newY = Mathf.Lerp(startPosition.y, landingPoint.position.y + landingPointHeightOffset * 2, landingCurve.Evaluate(timer));
+                float newY = Mathf.Lerp(startPosition.y, landingPoint.position.y + landingPointHeightOffset * 2, takeOffCurve.Evaluate(timer));
                 player.transform.position = new Vector3(startPosition.x, newY, startPosition.z);
                 yield return null;
             }
@@ -352,8 +359,10 @@ namespace Ekkam {
         public void EndGame()
         {
             print("Game Over");
+            uiStateMachine.ShowGameOverUI();
+            waveSpawner.StopSpawningWaves();
             // reload current scene
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
         public void CombinePlayersButtonPressed()
@@ -434,11 +443,47 @@ namespace Ekkam {
             xpParticle.Emit(amount);
         }
 
+        public void SpawnHP(Vector3 position, int amount, DamagableEntity killer)
+        {
+            print(killer.name + " killed an enemy and gained " + amount + " HP");
+            ParticleSystem hpParticle = Instantiate(hpParticles, position, Quaternion.identity);
+            hpParticle.GetComponent<HPParticle>().playerToHeal = killer.GetComponent<Player>();
+
+            // check if the killer is a player and if so, add the player's collider and forcefield to the particle system
+            if (killer != null && killer.GetComponent<Player>() != null)
+            {
+                Player killerPlayer = killer.GetComponent<Player>();
+
+                ParticleSystem.TriggerModule triggerModule = hpParticle.trigger;
+                triggerModule.SetCollider(0, killerPlayer.GetComponent<Collider>());
+                // int colliderIndex = 0;
+                // foreach (Player player in GetPlayers())
+                // {
+                //     triggerModule.SetCollider(colliderIndex, player.GetComponent<Collider>());
+                //     colliderIndex++;
+                // }
+
+                ParticleSystem.ExternalForcesModule externalForcesModule = hpParticle.externalForces;
+                externalForcesModule.AddInfluence(killerPlayer.GetComponent<ParticleSystemForceField>());
+                // foreach (Player player in GetPlayers())
+                // {
+                //     externalForcesModule.AddInfluence(player.GetComponent<ParticleSystemForceField>());
+                // }
+            }
+
+            hpParticle.Emit(amount);
+        }
+
         public void CollectXP(float amount)
         {
             playersXP += amount;
             playersTotalXP += amount;
             audioManager.PlayXPSound(xpAudioSource);
+        }
+
+        public void CollectHP(float amount, Player player)
+        {
+            player.Heal((int)amount);
         }
 
         public void IncrementKillCount(Player killer)

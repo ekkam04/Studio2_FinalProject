@@ -5,11 +5,12 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace Ekkam {
-    public class TutorialAssistant : MonoBehaviour
+    public class TutorialAssistant : DamagableEntity
     {
         GameManager gameManager;
         WaveSpawner waveSpawner;
         public bool playTutorialAtStart = false;
+        bool skipTutorial = false;
         [SerializeField] Transform path;
         int waypointIndex = 0;
 
@@ -22,12 +23,14 @@ namespace Ekkam {
         {
             gameManager = FindObjectOfType<GameManager>();
             waveSpawner = FindObjectOfType<WaveSpawner>();
+            meshRenderer = GetComponent<MeshRenderer>();
         }
 
         void Start()
         {
             HideTutorial(); 
             transform.position = path.GetChild(waypointIndex).position;
+            InitializeDamagableEntity();
 
             if (playTutorialAtStart == true)
             {
@@ -54,6 +57,20 @@ namespace Ekkam {
             }
         }
 
+        IEnumerator FlyToLastWaypoint()
+        {
+            yield return new WaitForSeconds(3);
+            int lastWaypointIndex = path.childCount - 1;
+            while (transform.position != path.GetChild(lastWaypointIndex).position)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, path.GetChild(lastWaypointIndex).position, 100f * Time.deltaTime);
+                yield return null;
+            }
+            tutorialCanvas.SetActive(false);
+            waveSpawner.StartSpawningWaves();
+            Destroy(gameObject);
+        }
+
         public void StartTutorialSequence()
         {
             StartCoroutine(StartTutorial());
@@ -63,15 +80,16 @@ namespace Ekkam {
         {
             StartCoroutine(FlyToNextWaypoint());
             ShowDialog(0);
-            yield return new WaitForSeconds(5);
+            yield return new WaitForSeconds(1);
             StartCoroutine(FlyToNextWaypoint());
+            UnlockAbilitiesForAllPlayers(true, false, true);
             yield return new WaitForSeconds(5);
             ShowDialog(1);
             StartCoroutine(FlyToNextWaypoint());
             yield return new WaitForSeconds(4);
 
             ShowTutorial(0);
-            UnlockAbilitiesForAllPlayers(true, false, false);
+            // UnlockAbilitiesForAllPlayers(true, false, true);
             yield return new WaitUntil(() => AllPlayersMoved());
             yield return new WaitForSeconds(3);
 
@@ -80,7 +98,7 @@ namespace Ekkam {
             yield return new WaitForSeconds(5);
 
             ShowTutorial(1);
-            UnlockAbilitiesForAllPlayers(true, false, true);
+            // UnlockAbilitiesForAllPlayers(true, false, true);
             yield return new WaitUntil(() => AllPlayersShot());
             yield return new WaitForSeconds(3);
 
@@ -110,6 +128,7 @@ namespace Ekkam {
             yield return new WaitForSeconds(5);
 
             waveSpawner.StartSpawningWaves();
+            Destroy(gameObject);
         }
 
         public void ShowDialog(int dialogueIndex)
@@ -177,6 +196,22 @@ namespace Ekkam {
                 if (!player.hasDashed) return false;
             }
             return true;
+        }
+
+        public override void OnDamageTaken()
+        {
+            if (skipTutorial == true) return;
+            skipTutorial = true;
+            StopAllCoroutines();
+            UnlockAbilitiesForAllPlayers(true, true, true);
+
+            foreach (GameObject tutorial in tutorials)
+            {
+                tutorial.SetActive(false);
+            }
+            dialogText.text = "Owww! ok ok, I'll stop! Just don't hurt me anymore!";
+            tutorialCanvas.SetActive(true);
+            StartCoroutine(FlyToLastWaypoint());
         }
     }
 }

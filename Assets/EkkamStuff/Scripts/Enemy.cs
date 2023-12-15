@@ -27,6 +27,8 @@ namespace Ekkam {
         public bool dieOnEndOfPath = true;
         public bool lookAtPlayer = false;
 
+        [Range(0, 100)] public int hpDropChance = 10;
+
         [Header("----- Enemy Stats -----")]
 
         [HideInInspector]
@@ -153,10 +155,24 @@ namespace Ekkam {
             return waypoints;
         }
 
+        private bool DropHP()
+        {
+            int random = UnityEngine.Random.Range(0, 100);
+            if (random <= hpDropChance)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         private void OnDestroy() {
             if (killer != null)
             {
                 gameManager.SpawnXP(transform.position, 5, killer);
+                if (DropHP() == true) gameManager.SpawnHP(transform.position, 1, killer);
                 if (killer.GetComponent<Player>() != null) gameManager.IncrementKillCount(killer.GetComponent<Player>());
             }
             waveSpawner.enemiesOnScreen.Remove(this);

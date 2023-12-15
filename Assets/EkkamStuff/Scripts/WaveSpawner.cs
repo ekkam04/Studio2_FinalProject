@@ -19,6 +19,7 @@ namespace Ekkam {
         public int currentWaveNumber = 0;
         public bool waitForAllEnemiesToDieBeforeSpawningNextWave = true;
         GameManager gameManager;
+        AudioManager audioManager;
         ProceduralWaveGenerator proceduralWaveGenerator;
 
         [SerializeField] float enemyRotationY = 180f;
@@ -32,6 +33,7 @@ namespace Ekkam {
         void Awake()
         {
             gameManager = FindObjectOfType<GameManager>();
+            audioManager = FindObjectOfType<AudioManager>();
             proceduralWaveGenerator = GetComponent<ProceduralWaveGenerator>();
         }
 
@@ -57,6 +59,7 @@ namespace Ekkam {
         public void StopSpawningWaves()
         {
             spawningWaves = false;
+            StopAllCoroutines();
         }
 
         IEnumerator SpawnProceduralWaves()
@@ -97,49 +100,58 @@ namespace Ekkam {
         IEnumerator SpawnWave(WaveConfigSO wave)
         {
             print("Spawning wave " + currentWaveNumber);
-                // if (spawningWaves == false) yield break;
-                currentWave = wave;
-                currentWaveNumber++;
-                for (int i = 0; i < wave.waveEnemies.Count; i++)
-                {
-                    Enemy currentEnemy = currentWave.waveEnemies[i].enemy.GetComponent<Enemy>();
-                    Transform path = Instantiate(currentWave.waveEnemies[i].enemyPath, transform);
-                    if (currentWave.waveEnemies[i].invertPathX)
-                    {
-                        path.localScale = new Vector3(-1, 1, 1);
-                    }
-                    currentEnemy.pathPrefab = path;
-                    currentEnemy.moveSpeed = currentWave.waveEnemies[i].moveSpeed;
-                    currentEnemy.speedCurve = currentWave.waveEnemies[i].speedCurve;
-                    Instantiate(
-                        currentEnemy.gameObject,
-                        new Vector3(currentEnemy.pathPrefab.GetChild(0).position.x, 0, currentEnemy.pathPrefab.GetChild(0).position.z),
-                        Quaternion.Euler(0, enemyRotationY, 0),
-                        transform
-                    );
-                    yield return new WaitForSeconds(currentWave.GetSpawnTime(i));
-                }
+            currentWave = wave;
+            currentWaveNumber++;
 
-                if (waitForAllEnemiesToDieBeforeSpawningNextWave)
-                {
-                    yield return new WaitUntil(() => enemiesOnScreen.Count == 0);
-                }
-                else
-                {
-                    yield return new WaitForSeconds(currentWave.waitTimeBeforeNextWave);
-                }
+            if (currentWave.name.Contains("Boss"))
+            {
+                audioManager.PlayBossMusic();
+            }
+            else
+            {
+                audioManager.PlayGameMusic();
+            }
 
-                if (gameManager.AllPlayersInDuoMode())
+            for (int i = 0; i < wave.waveEnemies.Count; i++)
+            {
+                Enemy currentEnemy = currentWave.waveEnemies[i].enemy.GetComponent<Enemy>();
+                Transform path = Instantiate(currentWave.waveEnemies[i].enemyPath, transform);
+                if (currentWave.waveEnemies[i].invertPathX)
                 {
-                    gameManager.StartCoroutine("SeperatePlayers");
-                    yield return new WaitUntil(() => !gameManager.AllPlayersInDuoMode());
+                    path.localScale = new Vector3(-1, 1, 1);
                 }
+                currentEnemy.pathPrefab = path;
+                currentEnemy.moveSpeed = currentWave.waveEnemies[i].moveSpeed;
+                currentEnemy.speedCurve = currentWave.waveEnemies[i].speedCurve;
+                Instantiate(
+                    currentEnemy.gameObject,
+                    new Vector3(currentEnemy.pathPrefab.GetChild(0).position.x, 0, currentEnemy.pathPrefab.GetChild(0).position.z),
+                    Quaternion.Euler(0, enemyRotationY, 0),
+                    transform
+                );
+                yield return new WaitForSeconds(currentWave.GetSpawnTime(i));
+            }
 
-                if (currentWaveNumber % combineInterval == 0 && currentWaveNumber != 0 && PlayerInput.all.Count > 1)
-                {
-                    gameManager.StartCoroutine("CombinePlayers");
-                    yield return new WaitUntil(() => gameManager.AllPlayersInDuoMode());
-                }
+            if (waitForAllEnemiesToDieBeforeSpawningNextWave)
+            {
+                yield return new WaitUntil(() => enemiesOnScreen.Count == 0);
+            }
+            else
+            {
+                yield return new WaitForSeconds(currentWave.waitTimeBeforeNextWave);
+            }
+
+            if (gameManager.AllPlayersInDuoMode())
+            {
+                gameManager.StartCoroutine("SeperatePlayers");
+                yield return new WaitUntil(() => !gameManager.AllPlayersInDuoMode());
+            }
+
+            if (currentWaveNumber % combineInterval == 0 && currentWaveNumber != 0 && PlayerInput.all.Count > 1)
+            {
+                gameManager.StartCoroutine("CombinePlayers");
+                yield return new WaitUntil(() => gameManager.AllPlayersInDuoMode());
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ namespace Ekkam {
         public Slider healthBar;
         public GameObject entityCanvas;
         [Tooltip("The total health")] public float health;
+        public bool isInvincible = false;
 
         public bool hasRegen;
         public float regenAmount;
@@ -54,7 +55,8 @@ namespace Ekkam {
 
         public void TakeDamage(float damage, bool isCriticalHit, DamagableEntity attacker)
         {
-            health -= damage;
+            OnDamageTaken();
+            if (!isInvincible) health -= damage;
             ShowDamagePopup(damage, isCriticalHit);
             audioManager.PlayHitSound();
             if (GetComponent<PlayerInput>() != null) RumbleManager.instance.RumblePulse(GetComponent<PlayerInput>().devices[0] as Gamepad, 0.5f, 0.5f, 0.1f);
@@ -88,6 +90,18 @@ namespace Ekkam {
             {
                 StartCoroutine(FlashColor(Color.red, 0.1f));
             }
+        }
+
+        public void Heal(float amount)
+        {
+            health += amount;
+            if (health > maxHealth) health = maxHealth;
+            if (healthBar != null) healthBar.value = health;
+        }
+
+        public virtual void OnDamageTaken()
+        {
+            // this function is meant to be overridden
         }
 
         public void RegenerateHealth()

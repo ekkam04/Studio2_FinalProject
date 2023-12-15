@@ -887,6 +887,7 @@ MonoBehaviour:
   healthBar: {fileID: 4881066733859490969}
   entityCanvas: {fileID: 1891858151252943537}
   health: 12
+  isInvincible: 0
   hasRegen: 0
   regenAmount: 0.025
   regenRate: 0.1
@@ -919,10 +920,6 @@ MonoBehaviour:
   - {fileID: 6370031895869388217}
   - {fileID: 1385040682485985259}
   - {fileID: 2836134448384735410}
-  upgradesToSave:
-  - Max Health
-  - Damage
-  - Critical Chance
   playerCards: {fileID: 3683245239006980493, guid: 0ff80f775c881d94084551214ae3860c, type: 3}
   playerSilhouette: {fileID: 2354661645630340860, guid: 7dd03e1ee18737045a27ce8df97cebbe, type: 3}
   playerAudioSource: {fileID: 5714158147523157160}

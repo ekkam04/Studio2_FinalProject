@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1182782986468563836}
   - component: {fileID: 5671776712918336962}
   - component: {fileID: 8847524546310357740}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: DialogText_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -145,7 +145,7 @@ GameObject:
   - component: {fileID: 5846947338102481133}
   - component: {fileID: 339728253782871720}
   - component: {fileID: 795113290462462487}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: DialogText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -279,7 +279,7 @@ GameObject:
   - component: {fileID: 6178947481239670710}
   - component: {fileID: 1449245131388628878}
   - component: {fileID: 1533536773637354226}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: DialogText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -413,7 +413,7 @@ GameObject:
   - component: {fileID: 1092705726429105355}
   - component: {fileID: 2026120870248311241}
   - component: {fileID: 595253221448267697}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: DialogText_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -547,7 +547,7 @@ GameObject:
   - component: {fileID: 820678974700668612}
   - component: {fileID: 6246800070162229103}
   - component: {fileID: 759724145061457638}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: ButtonPrompt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -621,9 +621,9 @@ GameObject:
   - component: {fileID: 5718041585007703684}
   - component: {fileID: 1527773534312183196}
   - component: {fileID: 4768960744473600464}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TutorialAssistant
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -714,7 +714,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
@@ -731,6 +731,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c54bbe32d968ec94bb2d226803a2a6ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damagePopupPrefab: {fileID: 0}
+  healthBar: {fileID: 0}
+  entityCanvas: {fileID: 0}
+  health: 999
+  isInvincible: 0
+  hasRegen: 0
+  regenAmount: 0
+  regenRate: 0
+  audioManager: {fileID: 0}
+  weaponAudioSource: {fileID: 0}
+  hitSound: {fileID: 0}
+  maxHealth: 0
+  meshRenderer: {fileID: 0}
+  killer: {fileID: 0}
   playTutorialAtStart: 0
   path: {fileID: 765019641259527829, guid: f228657a7d56be045b6e604a8a42560c, type: 3}
   tutorialCanvas: {fileID: 8651044487920593490}
@@ -763,7 +777,7 @@ GameObject:
   - component: {fileID: 209824671607338878}
   - component: {fileID: 214628867623910114}
   - component: {fileID: 3240082911679331226}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: ButtonPrompt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -835,7 +849,7 @@ GameObject:
   - component: {fileID: 7017942039093478317}
   - component: {fileID: 4955143068819973198}
   - component: {fileID: 6343327433955318262}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: DialogTitleBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -909,7 +923,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6856144987902038627}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Tutorial1_Movement
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -948,7 +962,7 @@ GameObject:
   - component: {fileID: 2295782006559874245}
   - component: {fileID: 2520406001975361357}
   - component: {fileID: 5201069049283452746}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: DialogText_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1080,7 +1094,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8437846292114584348}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Tutorial2_Shooting
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1120,7 +1134,7 @@ GameObject:
   - component: {fileID: 767985233394430244}
   - component: {fileID: 2499402561573593596}
   - component: {fileID: 6944012118481562181}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Veh_Hover_Bike_01_Glass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1202,7 +1216,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8833873776082162162}
   - component: {fileID: 6353866168769901864}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Point Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1297,7 +1311,7 @@ GameObject:
   - component: {fileID: 4339911735556596450}
   - component: {fileID: 4904327833305895624}
   - component: {fileID: 8188239136451884472}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: DialogTitle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1431,7 +1445,7 @@ GameObject:
   - component: {fileID: 3798415674013253366}
   - component: {fileID: 5398108000822202551}
   - component: {fileID: 6445641182503564055}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: ButtonPrompt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1503,7 +1517,7 @@ GameObject:
   - component: {fileID: 3273439195959335856}
   - component: {fileID: 2948538780067234047}
   - component: {fileID: 4742174036788848443}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SM_Veh_Hover_Bike_01_HandleBars
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1584,7 +1598,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5492655818164592518}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Tutorial4_Merging
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1624,7 +1638,7 @@ GameObject:
   - component: {fileID: 1121480474451906728}
   - component: {fileID: 5182094588047328222}
   - component: {fileID: 7273549102284878137}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: ButtonPrompt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1696,7 +1710,7 @@ GameObject:
   - component: {fileID: 4496058491391513093}
   - component: {fileID: 7360754101847010461}
   - component: {fileID: 6363267664282368524}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: DialogText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1832,7 +1846,7 @@ GameObject:
   - component: {fileID: 24577779588567199}
   - component: {fileID: 9009250201391568671}
   - component: {fileID: 29551177970200153}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: DialogText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1967,7 +1981,7 @@ GameObject:
   - component: {fileID: 5818109915091526574}
   - component: {fileID: 495510297863142798}
   - component: {fileID: 3895899877065046324}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Btn_NextPage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2086,7 +2100,7 @@ GameObject:
   - component: {fileID: 972859873607515811}
   - component: {fileID: 6533534953065981946}
   - component: {fileID: 8845074913115702104}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: DialogBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2166,7 +2180,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2050250511700911436}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Tutorial3_Dashing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2206,7 +2220,7 @@ GameObject:
   - component: {fileID: 1676515734655971594}
   - component: {fileID: 7490239596022248987}
   - component: {fileID: 8465585460834676571}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: DialogText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2341,7 +2355,7 @@ GameObject:
   - component: {fileID: 3240502685778735857}
   - component: {fileID: 1112315660741606391}
   - component: {fileID: 6101111708379671896}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TutorialCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}

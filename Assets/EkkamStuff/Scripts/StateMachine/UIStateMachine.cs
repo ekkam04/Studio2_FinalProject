@@ -15,31 +15,44 @@ public class UIStateMachine : StateManager<UIStateMachine.UIState>
         PlayerSelect,
         Pause,
         Upgrade,
-        Settings,
-        Synergy,
-        GameOver
+        Settings
     }
 
     public GameObject mainCanvas;
     [SerializeField] Button startButton;
+
     [SerializeField] RectTransform upgradeMenu;
     [SerializeField] RectTransform mainMenu;
     [SerializeField] RectTransform joinMenu;
     [SerializeField] RectTransform gameplayUI;
+
     [SerializeField] RectTransform pauseMenu;
     [SerializeField] Button resumeButton;
+
+    [SerializeField] RectTransform gameOverUI;
+    [SerializeField] Button mainMenuButton;
+    public List<Image> gameOverImages = new List<Image>();
+
     [SerializeField] Slider xpSlider;
+    [SerializeField] TMP_Text waveNumberText;
     [SerializeField] TMP_Text player1Kills;
     [SerializeField] TMP_Text player2Kills;
 
     void Awake()
     {
         States.Add(UIState.Main, new UIMainState(UIState.Main, mainMenu, startButton));
-        States.Add(UIState.Gameplay, new UIGameplayState(UIState.Gameplay, xpSlider, gameplayUI));
+        States.Add(UIState.Gameplay, new UIGameplayState(UIState.Gameplay, xpSlider, waveNumberText, gameplayUI));
         States.Add(UIState.PlayerSelect, new UIPlayerSelectState(UIState.PlayerSelect, joinMenu));
         States.Add(UIState.Pause, new UIPauseState(UIState.Pause, pauseMenu, resumeButton));
         States.Add(UIState.Upgrade, new UIUpgradeState(UIState.Upgrade, upgradeMenu));
         CurrentState = States[UIState.Main];
+
+        foreach (Image image in gameOverUI.GetComponentsInChildren<Image>())
+        {
+            gameOverImages.Add(image);
+        }
+        gameOverImages.Remove(mainMenuButton.GetComponent<Image>());
+        gameOverUI.gameObject.SetActive(false);
     }
 
     public void OpenUpgradeMenu()
@@ -88,6 +101,22 @@ public class UIStateMachine : StateManager<UIStateMachine.UIState>
     public void ShowGameplayUI()
     {
         TransitionToState(UIState.Gameplay);
+    }
+
+    public void ShowGameOverUI()
+    {
+        foreach (Image image in gameOverImages)
+        {
+            image.color = new Color(image.color.r, image.color.g, image.color.b, 0f);
+        }
+        gameOverUI.gameObject.SetActive(true);
+
+        foreach (Image image in gameOverImages)
+        {
+            LeanTween.alpha(image.rectTransform, 0.75f, 3f).setEaseOutCubic().setIgnoreTimeScale(true);
+        }
+
+        mainMenuButton.Select();
     }
 
     public void UpdatePlayerKillCount(Player killer)

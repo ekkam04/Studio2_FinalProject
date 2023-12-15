@@ -8,6 +8,10 @@ namespace Ekkam {
         public static AudioManager instance;
         [SerializeField] AudioSource audioSource;
 
+        [SerializeField] AudioSource gameAudioSource;
+        [SerializeField] AudioClip gameMusic;
+        [SerializeField] AudioClip bossMusic;
+
         [Header("Audio Clips")]
         [SerializeField] AudioClip dashSound;
 
@@ -79,6 +83,23 @@ namespace Ekkam {
         public void PlayHitSound()
         {
             audioSource.PlayOneShot(hitSound);
+        }
+
+        public void PlayGameMusic()
+        {
+            if (gameAudioSource.clip != gameMusic)
+            {
+                gameAudioSource.clip = gameMusic;
+                gameAudioSource.volume = 0.03f;
+                gameAudioSource.Play();
+            }
+        }
+
+        public void PlayBossMusic()
+        {
+            gameAudioSource.clip = bossMusic;
+            gameAudioSource.volume = 0.1f;
+            gameAudioSource.Play();
         }
     }
 }
