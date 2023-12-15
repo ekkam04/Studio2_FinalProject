@@ -288,7 +288,21 @@ namespace Ekkam {
                 player.transform.position = new Vector3(startPosition.x, newY, startPosition.z);
                 yield return null;
             }
+            StartCoroutine(KeepPlayerLanded(player, landingPoint));
         } 
+
+        IEnumerator KeepPlayerLanded(Player player, Transform landingPoint)
+        {
+            float timer = 0f;
+            Vector3 startPosition = player.transform.position;
+            while (timer < 2f)
+            {
+                timer += Time.deltaTime;
+                print("Keeping player " + player.playerNumber + " landed");
+                player.transform.position = new Vector3(startPosition.x, landingPoint.position.y, startPosition.z);
+                yield return null;
+            }
+        }
 
         IEnumerator TakeOffPlayer(Player player, Transform landingPoint)
         {

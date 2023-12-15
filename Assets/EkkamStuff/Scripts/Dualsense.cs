@@ -9,7 +9,7 @@ public class Dualsense
     {
         Debug.Log("Dualsense.cs: TryGettingDualsense()");
 
-        string layout = File.ReadAllText(layoutFile == null ? "Assets/EkkamStuff/dualsenseHIDLayoutCustom.json" : layoutFile);
+        string layout = File.ReadAllText(layoutFile == null ? "C:/UnityProjects/Studio2_FinalProject/Assets/EkkamStuff/dualsenseHIDLayoutCustom.json" : layoutFile);
 
         InputSystem.RegisterLayoutOverride(layout, "DualSenseCustom");
 
