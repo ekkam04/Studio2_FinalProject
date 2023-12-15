@@ -20,6 +20,7 @@ namespace Ekkam {
 
         [SerializeField] GameObject playerDuoPrefab;
         [SerializeField] ParticleSystem xpParticles;
+        [SerializeField] ParticleSystem hpParticles;
 
         float landingPointHeightOffset = 40f;
         [SerializeField] Transform player1LandingPoint;
@@ -91,6 +92,7 @@ namespace Ekkam {
                 mainMenuVCam.SetActive(false);
                 uiStateMachine.ShowGameplayUI();
                 StartCoroutine(FadeBGPlaneTransparency(0.8f, 0.5f));
+                playerInputManager.EnableJoining();
             }
             else
             {
@@ -441,11 +443,47 @@ namespace Ekkam {
             xpParticle.Emit(amount);
         }
 
+        public void SpawnHP(Vector3 position, int amount, DamagableEntity killer)
+        {
+            print(killer.name + " killed an enemy and gained " + amount + " HP");
+            ParticleSystem hpParticle = Instantiate(hpParticles, position, Quaternion.identity);
+            hpParticle.GetComponent<HPParticle>().playerToHeal = killer.GetComponent<Player>();
+
+            // check if the killer is a player and if so, add the player's collider and forcefield to the particle system
+            if (killer != null && killer.GetComponent<Player>() != null)
+            {
+                Player killerPlayer = killer.GetComponent<Player>();
+
+                ParticleSystem.TriggerModule triggerModule = hpParticle.trigger;
+                triggerModule.SetCollider(0, killerPlayer.GetComponent<Collider>());
+                // int colliderIndex = 0;
+                // foreach (Player player in GetPlayers())
+                // {
+                //     triggerModule.SetCollider(colliderIndex, player.GetComponent<Collider>());
+                //     colliderIndex++;
+                // }
+
+                ParticleSystem.ExternalForcesModule externalForcesModule = hpParticle.externalForces;
+                externalForcesModule.AddInfluence(killerPlayer.GetComponent<ParticleSystemForceField>());
+                // foreach (Player player in GetPlayers())
+                // {
+                //     externalForcesModule.AddInfluence(player.GetComponent<ParticleSystemForceField>());
+                // }
+            }
+
+            hpParticle.Emit(amount);
+        }
+
         public void CollectXP(float amount)
         {
             playersXP += amount;
             playersTotalXP += amount;
             audioManager.PlayXPSound(xpAudioSource);
+        }
+
+        public void CollectHP(float amount, Player player)
+        {
+            player.Heal((int)amount);
         }
 
         public void IncrementKillCount(Player killer)

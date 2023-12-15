@@ -92,6 +92,13 @@ namespace Ekkam {
             }
         }
 
+        public void Heal(float amount)
+        {
+            health += amount;
+            if (health > maxHealth) health = maxHealth;
+            if (healthBar != null) healthBar.value = health;
+        }
+
         public virtual void OnDamageTaken()
         {
             // this function is meant to be overridden

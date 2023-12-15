@@ -68,6 +68,7 @@ namespace Ekkam {
             }
             tutorialCanvas.SetActive(false);
             waveSpawner.StartSpawningWaves();
+            Destroy(gameObject);
         }
 
         public void StartTutorialSequence()
@@ -127,6 +128,7 @@ namespace Ekkam {
             yield return new WaitForSeconds(5);
 
             waveSpawner.StartSpawningWaves();
+            Destroy(gameObject);
         }
 
         public void ShowDialog(int dialogueIndex)
