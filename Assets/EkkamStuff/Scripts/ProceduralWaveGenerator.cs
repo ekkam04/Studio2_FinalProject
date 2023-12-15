@@ -61,9 +61,9 @@ namespace Ekkam {
             proceduralWave.waveEnemies.AddRange(waveEnemies);
             proceduralWave.timeBetweenEnemySpawns = waitTimeBetweenEnemySpawns;
 
-            if (waitTimeBetweenEnemySpawns > 0.2f) waitTimeBetweenEnemySpawns -= 0.01f;
+            if (waitTimeBetweenEnemySpawns > 0.2f) waitTimeBetweenEnemySpawns -= 0.03f;
 
-            if (waitTimeBetweenWaves > 0.5f) waitTimeBetweenWaves -= 0.01f;
+            if (waitTimeBetweenWaves > 0.5f) waitTimeBetweenWaves -= 0.03f;
 
             previouslyGeneratedWave = proceduralWave;
             return proceduralWave;

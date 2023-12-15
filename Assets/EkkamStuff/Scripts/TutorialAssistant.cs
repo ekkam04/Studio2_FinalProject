@@ -30,11 +30,11 @@ namespace Ekkam {
         {
             HideTutorial(); 
             transform.position = path.GetChild(waypointIndex).position;
+            InitializeDamagableEntity();
 
             if (playTutorialAtStart == true)
             {
                 StartCoroutine(StartTutorial());
-                InitializeDamagableEntity();
             }
         }
 
@@ -79,8 +79,7 @@ namespace Ekkam {
         {
             StartCoroutine(FlyToNextWaypoint());
             ShowDialog(0);
-            UnlockAbilitiesForAllPlayers(true, false, true);
-            yield return new WaitForSeconds(5);
+            yield return new WaitForSeconds(1);
             StartCoroutine(FlyToNextWaypoint());
             UnlockAbilitiesForAllPlayers(true, false, true);
             yield return new WaitForSeconds(5);

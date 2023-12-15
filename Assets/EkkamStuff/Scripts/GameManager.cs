@@ -25,6 +25,7 @@ namespace Ekkam {
         [SerializeField] Transform player1LandingPoint;
         [SerializeField] Transform player2LandingPoint;
         [SerializeField] AnimationCurve landingCurve;
+        [SerializeField] AnimationCurve takeOffCurve;
 
         [SerializeField] AudioSource xpAudioSource;
         [SerializeField] AudioSource gameAudioSource;
@@ -79,6 +80,7 @@ namespace Ekkam {
         {
             Time.timeScale = 1;
             playerPrefab.GetComponent<Player>().transform.position = player1LandingPoint.position + new Vector3(0, landingPointHeightOffset, 0);
+            playerInputManager.DisableJoining();
 
             if (skipIntro == true)
             {
@@ -293,7 +295,7 @@ namespace Ekkam {
             while (timer < 1f)
             {
                 timer += Time.deltaTime;
-                float newY = Mathf.Lerp(startPosition.y, landingPoint.position.y + landingPointHeightOffset * 2, landingCurve.Evaluate(timer));
+                float newY = Mathf.Lerp(startPosition.y, landingPoint.position.y + landingPointHeightOffset * 2, takeOffCurve.Evaluate(timer));
                 player.transform.position = new Vector3(startPosition.x, newY, startPosition.z);
                 yield return null;
             }
