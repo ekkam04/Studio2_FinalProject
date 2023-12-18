@@ -513,6 +513,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5e4f75dd05bc924099041474ddda104, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  silhouetteColor: {r: 0, g: 0, b: 0, a: 0}
+  materials: []
+  fadeAway: 1
 --- !u!1 &2836134448384735410
 GameObject:
   m_ObjectHideFlags: 0
