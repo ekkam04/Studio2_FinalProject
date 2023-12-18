@@ -16,14 +16,18 @@ namespace Ekkam {
 
         [SerializeField] Material[] playerMaterials;
         [SerializeField] Color32[] playerSilhouetteColors;
+        [SerializeField] GameObject playerSilhouette;
         [SerializeField] GameObject[] playerParts;
         [SerializeField] GameObject[] playerGlassParts;
         [SerializeField] GameObject playerCards;
-        [SerializeField] GameObject playerSilhouette;
+        [SerializeField] GameObject playerSilhouettePrefab;
         [SerializeField] AudioSource playerAudioSource;
         [SerializeField] GameObject shield;
         [SerializeField] ParticleSystem shieldParticles;
         [SerializeField] Slider shieldSlider;
+        [SerializeField] ParticleSystem revivedParticles;
+        [SerializeField] ParticleSystem reviveAuraParticles;
+        [SerializeField] Slider reviveSlider;
         public GameObject crosshair;
 
         public Player playerDuo;
@@ -52,6 +56,7 @@ namespace Ekkam {
         public bool inDuoMode = false;
         bool isDashing = false;
         public bool cardPicked = false;
+        public bool isDBNO = false; // down but not out
 
         public bool hasMoved = false;
         public bool hasShot = false;
@@ -68,6 +73,7 @@ namespace Ekkam {
         float onDashTimer = 0f;
         float lockMovementTimer = 0f;
         float shieldTimer = 0f;
+        float reviveAuraFXTimer = 1f;
 
         public enum DashDirection
         {
@@ -103,6 +109,9 @@ namespace Ekkam {
         bool isShieldActive = false;
         float currentShieldDuration = 0f;
         float shieldCooldownTimer = 0f;
+
+        public float reviveDuration = 5f;
+        float currentReviveDuration = 0f;
 
         void Awake()
         {
@@ -154,8 +163,16 @@ namespace Ekkam {
             {
                 hasDualsense = Dualsense.TryGettingDualsense(playerInput.devices[0] as Gamepad);
                 LoadSavedUpgrades();
+
+                // if (playerNumber == 2) StartCoroutine(DieWithDelay()); // Testing
             }
         }
+
+        // IEnumerator DieWithDelay()
+        // {
+        //     yield return new WaitForSeconds(3f);
+        //     TakeDamage(99, false, null);
+        // }
 
         void Update()
         {
@@ -174,7 +191,6 @@ namespace Ekkam {
             ControlSpeed();
             Aim();
 
-            RegenerateHealth();
             UpdateDashDirection(movementInput);
 
             if (hasDualsense == true && Dualsense.GetDirection2D(1000f * Time.deltaTime, playerInput.devices[0] as Gamepad).magnitude > 1f)
@@ -187,7 +203,7 @@ namespace Ekkam {
 
             if (inDuoMode && playerDuo != null)
             {
-                transform.position = playerDuo.transform.position;
+                rb.transform.position = playerDuo.transform.position;
                 if (playerNumber == 1)
                 {
                     playerDuo.movementInput = movementInput;
@@ -237,6 +253,44 @@ namespace Ekkam {
                     SpawnPlayerSilhouette();
                     silhouetteTimer = 0f;
                 }
+            }
+
+            if (isDBNO)
+            {
+                Player closestPlayer = FindClosestPlayer();
+                float distanceToClosestPlayer = Vector3.Distance(transform.position, closestPlayer.transform.position);
+                // print("Distance to closest player: " + distanceToClosestPlayer);
+
+                if (distanceToClosestPlayer < 25)
+                {
+                    currentReviveDuration += Time.deltaTime;
+                    reviveSlider.value = currentReviveDuration / reviveDuration;
+                    
+                    reviveAuraFXTimer += Time.deltaTime;
+                    if (reviveAuraFXTimer > 1f)
+                    {
+                        reviveAuraParticles.Play();
+                        reviveAuraFXTimer = 0f;
+                    }
+
+                    if (currentReviveDuration >= reviveDuration)
+                    {
+                        ExitDBNOState();
+                        currentReviveDuration = 0f;
+                        if (closestPlayer.playerInput != null) RumbleManager.instance.RumblePulse(closestPlayer.playerInput.devices[0] as Gamepad, 0.75f, 0.75f, 0.5f);
+                    }
+                }
+                else if (currentReviveDuration > 0)
+                {
+                    reviveAuraFXTimer = 1f;
+
+                    currentReviveDuration -= Time.deltaTime;
+                    reviveSlider.value = currentReviveDuration / reviveDuration;
+                }
+            }
+            else
+            {
+                RegenerateHealth(); // Regenerate health if not DBNO (But you need the card also)
             }
         }
 
@@ -299,7 +353,7 @@ namespace Ekkam {
             {
                 if (playerNumber == 2)
                 {
-                    playerDuo.shootingManager.Shoot("PlayerProjectile", this.gameObject, playerDuo.crosshair.transform);
+                    if (playerDuo.GetComponent<ShootingManager>() != null) playerDuo.shootingManager.Shoot("PlayerProjectile", this.gameObject, playerDuo.crosshair.transform);
                 }
             }
             else
@@ -610,7 +664,6 @@ namespace Ekkam {
         public void EnableDuoMode()
         {
             allowMovement = false;
-            rb.isKinematic = true;
             allowDashing = false;
             entityCanvas.SetActive(false);
             rb.velocity = Vector3.zero;
@@ -630,16 +683,18 @@ namespace Ekkam {
             }
 
             float timeout = 0;
-            while (Vector3.Distance(transform.position, targetPlayer.transform.position) > 0.15f)
+            while (Vector3.Distance(transform.position, targetPlayer.transform.position) > 1.25f)
             {
                 print("Player " + playerNumber + " flying towards the other player");
-                transform.position = Vector3.Lerp(transform.position, targetPlayer.transform.position, Time.deltaTime * 5);
+                // transform.position = Vector3.Lerp(transform.position, targetPlayer.transform.position, Time.deltaTime * 5);
+                rb.AddForce((targetPlayer.transform.position - transform.position).normalized * 3000, ForceMode.Acceleration);
                 timeout += Time.deltaTime;
-                if (timeout > 5f) break;
+                if (timeout > 3f) break;
                 yield return null;
             }
 
             print("Duo mode enabled for player " + playerNumber);
+            rb.velocity = Vector3.zero;
             inDuoMode = true;
             allowDashing = true;
             HidePlayer();
@@ -733,7 +788,6 @@ namespace Ekkam {
         {
             inDuoMode = false;
             allowMovement = true;
-            rb.isKinematic = false;
             allowDashing = true;
             entityCanvas.SetActive(true);
 
@@ -774,7 +828,7 @@ namespace Ekkam {
 
         void SpawnPlayerSilhouette()
         {
-            GameObject newPlayerSilhouette = Instantiate(playerSilhouette, transform.position, transform.rotation);
+            GameObject newPlayerSilhouette = Instantiate(playerSilhouettePrefab, transform.position, transform.rotation);
             if (playerNumber == 1)
             {
                 newPlayerSilhouette.GetComponent<PlayerSilhouette>().silhouetteColor = playerSilhouetteColors[0];
@@ -878,11 +932,12 @@ namespace Ekkam {
                 case "Projectile Speed":
                     shootingManager.projectileSpeed += 10f;
                     break;
-                case "Health":
-                    maxHealth += 10;
-                    health += 10;
+                case "Max Health":
+                    maxHealth += 6;
+                    health += 6;
                     healthBar.maxValue = maxHealth;
                     healthBar.value = health;
+                    if (isDBNO) ExitDBNOState();
                     break;
                 case "Lightning":
                     shootingManager.shootLightning = true;
@@ -995,12 +1050,21 @@ namespace Ekkam {
             newIcon.GetComponent<RectTransform>().localScale = new Vector3(2, 2, 2);
         }
 
-        private void OnTriggerEnter(Collider other) {
-            if (other.CompareTag("Enemy"))
+        // private void OnTriggerEnter(Collider other) {
+        //     if (other.CompareTag("Enemy"))
+        //     {
+        //         print("Player collided with enemy");
+        //         Enemy collidedEnemy = other.GetComponent<Enemy>();
+        //         TakeDamage(other.GetComponent<Enemy>().damageOnImpact, false, collidedEnemy);
+        //     }
+        // }
+
+        private void OnCollisionEnter(Collision other) {
+            if (other.gameObject.CompareTag("Enemy"))
             {
                 print("Player collided with enemy");
-                Enemy collidedEnemy = other.GetComponent<Enemy>();
-                TakeDamage(other.GetComponent<Enemy>().damageOnImpact, false, collidedEnemy);
+                Enemy collidedEnemy = other.gameObject.GetComponent<Enemy>();
+                if (other.gameObject.GetComponent<Enemy>() != null) TakeDamage(other.gameObject.GetComponent<Enemy>().damageOnImpact, false, collidedEnemy);
             }
         }
 
@@ -1086,6 +1150,55 @@ namespace Ekkam {
             {
                 playerPart.SetActive(false);
             }
+        }
+
+        public void EnterDBNOState()
+        {
+            print("Player " + playerNumber + " entering DBNO state");
+            isDBNO = true;
+            HidePlayer();
+            playerSilhouette.SetActive(true);
+            if (playerNumber == 1)
+            {
+                playerSilhouette.GetComponent<PlayerSilhouette>().SetSilhouetteColor(playerSilhouetteColors[0]);
+            }
+            else if (playerNumber == 2)
+            {
+                playerSilhouette.GetComponent<PlayerSilhouette>().SetSilhouetteColor(playerSilhouetteColors[1]);
+            }
+
+            rb.isKinematic = true;
+            allowMovement = false;
+            allowDashing = false;
+            allowShooting = false;
+
+            col.enabled = false;
+
+            healthBar.gameObject.SetActive(false);
+            reviveSlider.gameObject.SetActive(true);
+            reviveSlider.value = currentReviveDuration;
+        }
+
+        public void ExitDBNOState()
+        {
+            print("Player " + playerNumber + " exiting DBNO state");
+            isDBNO = false;
+            ShowPlayer();
+            playerSilhouette.SetActive(false);
+
+            rb.isKinematic = false;
+            allowMovement = true;
+            allowDashing = true;
+            allowShooting = true;
+
+            col.enabled = true;
+
+            healthBar.gameObject.SetActive(true);
+            reviveSlider.gameObject.SetActive(false);
+
+            Heal(maxHealth);
+            if (playerInput != null && Time.timeScale > 0) RumbleManager.instance.RumblePulse(playerInput.devices[0] as Gamepad, 0.75f, 0.75f, 0.5f);
+            revivedParticles.Play();
         }
     }
 }

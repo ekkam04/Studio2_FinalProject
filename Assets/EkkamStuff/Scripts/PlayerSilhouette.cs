@@ -9,6 +9,7 @@ namespace Ekkam {
         public Color silhouetteColor;
         float disappearTimer;
         public List<Material> materials = new List<Material>();
+        public bool fadeAway = true;
 
         void Awake()
         {
@@ -28,6 +29,7 @@ namespace Ekkam {
 
         void Update()
         {
+            if (!fadeAway) return;
             disappearTimer += Time.deltaTime;
             foreach (Material material in materials)
             {
@@ -39,6 +41,16 @@ namespace Ekkam {
             if (disappearTimer >= 1f)
             {
                 Destroy(gameObject);
+            }
+        }
+
+        public void SetSilhouetteColor(Color color)
+        {
+            silhouetteColor = color;
+            silhouetteColor.a = 0.1f;
+            foreach (Material material in materials)
+            {
+                material.color = silhouetteColor;
             }
         }
     }

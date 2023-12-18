@@ -61,13 +61,14 @@ namespace Ekkam {
             audioManager.PlayHitSound();
             if (GetComponent<PlayerInput>() != null) RumbleManager.instance.RumblePulse(GetComponent<PlayerInput>().devices[0] as Gamepad, 0.5f, 0.5f, 0.1f);
             if (healthBar != null) healthBar.value = health;
-            if (health <= 0)
+            if (health <= 0) // When dead
             {
+                health = 0;
                 killer = attacker;
 
-                if (GetComponent<Player>() != null)
+                if (GetComponent<Player>() != null) // if a player
                 {
-                    if (GetComponent<PlayerInput>() == null)
+                    if (GetComponent<PlayerInput>() == null) // When combined player dies, both players die
                     {
                         GameManager.instance.EndGame();
                         foreach (Player player in FindObjectsOfType<Player>())
@@ -77,14 +78,44 @@ namespace Ekkam {
                                 Destroy(player.gameObject);
                             }
                         }
+                        Destroy(gameObject);
                     }
-                    else if (PlayerInput.all.Count < 2)
+                    else if (PlayerInput.all.Count > 1)
+                    {
+                        int playersAlive = 0;
+                        foreach (Player player in FindObjectsOfType<Player>())
+                        {
+                            if (player.isDBNO == false) playersAlive++;
+                        }
+
+                        if (playersAlive > 1)
+                        {
+                            GetComponent<Player>().EnterDBNOState();
+                        }
+                        else
+                        {
+                            GameManager.instance.EndGame();
+                            foreach (Player player in FindObjectsOfType<Player>())
+                            {
+                                if (player != this)
+                                {
+                                    Destroy(player.gameObject);
+                                }
+                            }
+                            Destroy(gameObject);
+                        }
+                    }
+                    else
                     {
                         GameManager.instance.EndGame();
+                        Destroy(gameObject);
                     }
                 }
+                else // if not a player
+                {
+                    Destroy(gameObject);
+                }
 
-                Destroy(gameObject); // Revive implementation goes here
             }
             else
             {
@@ -168,7 +199,7 @@ namespace Ekkam {
             float closestDistance = Mathf.Infinity;
             foreach (Player player in FindObjectsOfType<Player>())
             {
-                if (player == this) continue;
+                if (player == this || player.isDBNO) continue;
                 float distance = Vector3.Distance(transform.position, player.transform.position);
                 if (distance < closestDistance)
                 {

@@ -345,6 +345,7 @@ namespace Ekkam {
                 foreach (PlayerInput playerInput in PlayerInput.all)
                 {
                     playerInput.GetComponent<Player>().playerDuo = null;
+                    // playerInput.GetComponent<Player>().rb.transform.position = GameObject.FindGameObjectWithTag("PlayerDuo").transform.position;
                 }
                 Destroy(GameObject.FindGameObjectWithTag("PlayerDuo"));
             }
@@ -375,6 +376,9 @@ namespace Ekkam {
             print("Game Over");
             uiStateMachine.ShowGameOverUI();
             waveSpawner.StopSpawningWaves();
+
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
             // reload current scene
             // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
@@ -438,16 +442,18 @@ namespace Ekkam {
                 ParticleSystem.TriggerModule triggerModule = xpParticle.trigger;
                 // triggerModule.SetCollider(0, killerPlayer.GetComponent<Collider>());
                 int colliderIndex = 0;
-                foreach (Player player in GetPlayers())
+                foreach (Player player in FindObjectsOfType<Player>())
                 {
+                    // if (player.inDuoMode == true) continue;
                     triggerModule.SetCollider(colliderIndex, player.GetComponent<Collider>());
                     colliderIndex++;
                 }
 
                 ParticleSystem.ExternalForcesModule externalForcesModule = xpParticle.externalForces;
                 // externalForcesModule.AddInfluence(killerPlayer.GetComponent<ParticleSystemForceField>());
-                foreach (Player player in GetPlayers())
+                foreach (Player player in FindObjectsOfType<Player>())
                 {
+                    // if (player.inDuoMode == true) continue;
                     externalForcesModule.AddInfluence(player.GetComponent<ParticleSystemForceField>());
                 }
 

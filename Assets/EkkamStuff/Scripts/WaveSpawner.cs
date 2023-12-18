@@ -147,7 +147,13 @@ namespace Ekkam {
                 yield return new WaitUntil(() => !gameManager.AllPlayersInDuoMode());
             }
 
-            if (currentWaveNumber % combineInterval == 0 && currentWaveNumber != 0 && PlayerInput.all.Count > 1)
+            int playersAlive = 0;
+            foreach (Player player in FindObjectsOfType<Player>())
+            {
+                if (player.isDBNO == false) playersAlive++;
+            }
+
+            if (currentWaveNumber % combineInterval == 0 && currentWaveNumber != 0 && PlayerInput.all.Count > 1 && playersAlive > 1)
             {
                 gameManager.StartCoroutine("CombinePlayers");
                 yield return new WaitUntil(() => gameManager.AllPlayersInDuoMode());
